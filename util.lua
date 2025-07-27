@@ -45,11 +45,38 @@ export.playerTypeNames = {
     [PlayerType.PLAYER_JACOB_B] = "Tainted Jacob",
     [PlayerType.PLAYER_LAZARUS2_B] = "Tainted Lazarus",
     [PlayerType.PLAYER_JACOB2_B] = "Tainted Jacob",
-    [PlayerType.PLAYER_THESOUL_B] = "Tainted Forgotten",
+    [PlayerType.PLAYER_THESOUL_B] = "Tainted Forgotten"
+}
+
+export.taintedCharacters = {
+    [PlayerType.PLAYER_ISAAC_B] = true,
+    [PlayerType.PLAYER_MAGDALENE_B] = true,
+    [PlayerType.PLAYER_CAIN_B] = true,
+    [PlayerType.PLAYER_JUDAS_B] = true,
+    [PlayerType.PLAYER_BLUEBABY_B] = true,
+    [PlayerType.PLAYER_EVE_B] = true,
+    [PlayerType.PLAYER_SAMSON_B] = true,
+    [PlayerType.PLAYER_AZAZEL_B] = true,
+    [PlayerType.PLAYER_LAZARUS_B] = true,
+    [PlayerType.PLAYER_EDEN_B] = true,
+    [PlayerType.PLAYER_THELOST_B] = true,
+    [PlayerType.PLAYER_LILITH_B] = true,
+    [PlayerType.PLAYER_KEEPER_B] = true,
+    [PlayerType.PLAYER_APOLLYON_B] = true,
+    [PlayerType.PLAYER_THEFORGOTTEN_B] = true,
+    [PlayerType.PLAYER_BETHANY_B] = true,
+    [PlayerType.PLAYER_JACOB_B] = true,
+    [PlayerType.PLAYER_LAZARUS2_B] = true,
+    [PlayerType.PLAYER_JACOB2_B] = true,
+    [PlayerType.PLAYER_THESOUL_B] = true
 }
 
 function export.get_character_name ()
     return export.playerTypeNames[Isaac.GetPlayer():GetPlayerType()]
+end
+
+function export.is_character_tainted ()
+    return export.taintedCharacters[Isaac.GetPlayer():GetPlayerType()] ~= nil
 end
 
 -- http://lua-users.org/wiki/StringRecipes

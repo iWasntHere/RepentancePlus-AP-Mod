@@ -4,6 +4,7 @@ local util = require("util.lua")
 
 mod.ITEMS_DATA = include("item_data")
 mod.LOCATIONS_DATA = include("location_data")
+mod.ENTITIES_DATA = include("entities_data")
 
 AP_MAIN_MOD = mod
 
@@ -15,11 +16,12 @@ ArchipelagoModCallbacks = {
 -- Set location checks, scouts, and death link for the client-server bridge to pick up
 function mod:exposeData(location_checks, location_scouts, death_link_reason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
-	loadedString = mod:LoadData()
+	local loadedString = mod:LoadData()
+    local oldData = {}
 	if loadedString ~= "" then
-		old_data = json.decode(loadedString)
+		oldData = json.decode(loadedString)
 	else
-		old_data = {
+		oldData = {
             location_checks = {},
             location_scouts = {},
             died = ""
@@ -30,8 +32,8 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
 	local apData = {
 		slot_name = ARCHIPELAGO_SLOT,
 		seed_name = ARCHIPELAGO_SEED,
-		location_checks = old_data.location_checks, -- For location codes we just checked
-		location_scouts = old_data.location_scouts, -- For location codes we just scouted
+		location_checks = oldData.location_checks, -- For location codes we just checked
+		location_scouts = oldData.location_scouts, -- For location codes we just scouted
 		died = "" -- For deathlink (pending)
 	}
 
@@ -82,6 +84,7 @@ function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
         hud:ShowItemText(itemName, "for " .. playerName .. " has left the basement")
     end
 
+    local sound = nil
     if isTrap then
         sound = SoundEffect.SOUND_THUMBS_DOWN
     else
@@ -153,3 +156,5 @@ mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
 end)
 
 require("floor_completion")
+require("enemy_destruction")
+require("completion_marks")
