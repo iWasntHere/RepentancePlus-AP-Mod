@@ -27,7 +27,7 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
 	end
 
 	-- Any time we expose data, it will ALWAYS be in this format
-	ap_data = {
+	local apData = {
 		slot_name = ARCHIPELAGO_SLOT,
 		seed_name = ARCHIPELAGO_SEED,
 		location_checks = old_data.location_checks, -- For location codes we just checked
@@ -37,20 +37,20 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
 
     -- Death link
     if death_link_reason and death_link_reason ~= "" then
-        ap_data.died = death_link_reason
+        apData.died = death_link_reason
     end
 
     -- New location checks
     if location_checks then
-        util.table_concat(ap_data.location_checks, location_checks)
+        util.table_concat(apData.location_checks, location_checks)
     end
 
     -- New location scouts
     if location_scouts then
-        util.table_concat(ap_data.location_scouts, location_scouts)
+        util.table_concat(apData.location_scouts, location_scouts)
     end
 
-	mod:SaveData(json.encode(ap_data))
+	mod:SaveData(json.encode(apData))
 end
 
 -- Send a location to the server
@@ -94,12 +94,12 @@ end
 
 -- Draws text to the screen to verify mod setup is ok
 mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
-    if ARCHIPELAGO_SEED then
-            Isaac.RenderScaledText(ARCHIPELAGO_SLOT, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
-        else
-            Isaac.RenderScaledText("No Archipelago Mod Found", 4, 4, 0.5, 0.5, 1, 0, 0, 1)
-        end
-    end)
+if ARCHIPELAGO_SEED then
+        Isaac.RenderScaledText(ARCHIPELAGO_SLOT, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
+    else
+        Isaac.RenderScaledText("No Archipelago Mod Found", 4, 4, 0.5, 0.5, 1, 0, 0, 1)
+    end
+end)
 
 -- Remove collectibles and trinkets from the pool if they are locked
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
@@ -112,21 +112,21 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 		return
 	end
 
-	collectiblesRemoved = 0
-	trinketsRemoved = 0
+	local collectiblesRemoved = 0
+	local trinketsRemoved = 0
 	
 	for k, v in pairs(AP_SUPP_MOD.itemStates) do -- Loop through all items
 		if not v then -- The item is locked
 			if util.string_starts_with(k, "Item") then -- This is a Collectible
-				split = util.string_split(k, "-")
-				id = tonumber(split[2])
+				local split = util.string_split(k, "-")
+				local id = tonumber(split[2])
 				
 				itemPool:RemoveCollectible(id)
 				
 				collectiblesRemoved = collectiblesRemoved + 1
 			elseif util.string_starts_with(k, "Trinket") then -- This is a Trinket
-				split = util.string_split(k, "-")
-				id = tonumber(split[2])
+				local split = util.string_split(k, "-")
+				local id = tonumber(split[2])
 				
 				itemPool:RemoveTrinket(id)
 				
@@ -147,9 +147,9 @@ mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, it
 end)
 
 mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
-        if Input.IsButtonPressed(Keyboard.KEY_B, 0) then
-            mod:sendLocation(880)
-        end
-    end)
+    if Input.IsButtonPressed(Keyboard.KEY_B, 0) then
+        mod:sendLocation(880)
+    end
+end)
 
 require("floor_completion")
