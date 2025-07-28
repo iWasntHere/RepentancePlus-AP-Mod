@@ -2,9 +2,20 @@ local mod = RegisterMod("Archipelago", 1)
 local json = require("json")
 local util = require("util.lua")
 
-mod.ITEMS_DATA = include("item_data")
-mod.LOCATIONS_DATA = include("location_data")
-mod.ENTITIES_DATA = include("entities_data")
+mod.ITEMS_DATA = require("item_data")
+mod.LOCATIONS_DATA = require("location_data")
+mod.ENTITIES_DATA = require("entities_data")
+
+-- Fill out the rest of ITEMS_DATA with data we can pull out of it
+local codeToName = {}
+local codes = {}
+for name, code in pairs(mod.ITEMS_DATA.NAME_TO_CODE) do
+    codeToName[code] = name
+    codes[#codes + 1] = code
+end
+mod.ITEMS_DATA.CODE_TO_NAME = codeToName
+table.sort(codes) -- We'd prefer this in order, thanks
+mod.ITEMS_DATA.CODES = codes
 
 AP_MAIN_MOD = mod
 
@@ -70,9 +81,14 @@ function mod:sendDeathLink(reason)
     self:exposeData(nil, nil, reason)
 end
 
--- Returns true if the item is considered to be unlocked
-function mod:checkUnlocked(stateKey)
-    return AP_SUPP_MOD.itemStates[stateKey]
+-- Returns true if the item code is considered to be unlocked
+function mod:checkUnlocked(code)
+    return AP_SUPP_MOD.itemStates[tostring(code)] -- The codes are strings in the table
+end
+
+-- Same as above, but with an item's name instead
+function mod:checkUnlockedByName(name)
+    return AP_SUPP_MOD.itemStates[tostring(mod.ITEMS_DATA.NAME_TO_CODE[name])]
 end
 
 -- Does the effects when you send/receive an item
@@ -120,21 +136,19 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 		return
 	end
 	
-	for k, v in pairs(AP_SUPP_MOD.itemStates) do -- Loop through all items
-		if not v then -- The item is locked
-			if util.string_starts_with(k, "Item") then -- This is a Collectible
-				local split = util.string_split(k, "-")
-				local id = tonumber(split[2])
-				
-				itemPool:RemoveCollectible(id)
-			elseif util.string_starts_with(k, "Trinket") then -- This is a Trinket
-				local split = util.string_split(k, "-")
-				local id = tonumber(split[2])
-				
-				itemPool:RemoveTrinket(id)
-			end
-		end
-	end
+    -- Lock collectibles
+    for collectibleId, code in pairs(mod.ITEMS_DATA.COLLECTIBLE_ID_TO_CODE) do
+        if not mod:checkUnlocked(code) then
+            itemPool:RemoveCollectible(collectibleId)
+        end
+    end
+
+    -- Lock trinkets
+    for trinketId, code in pairs(mod.ITEMS_DATA.TRINKET_ID_TO_CODE) do
+        if not mod:checkUnlocked(code) then
+            itemPool:RemoveTrinket(trinketId)
+        end
+    end
 end)
 
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)

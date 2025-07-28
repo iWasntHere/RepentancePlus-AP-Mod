@@ -16,9 +16,15 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     -- Filter out locked pills
     local usablePills = {}
     for _, pillType in ipairs(pills) do
-        if AP_MAIN_MOD:checkUnlocked("Pill-" .. tostring(pillType)) then
+        if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.PILL_ID_TO_CODE[pillType]) then
             usablePills[#usablePills + 1] = pillType
         end
+    end
+
+    -- If all pills are locked..?
+    if #usablePills == 0 then
+        Isaac.ConsoleOutput("All pills are locked\n")
+        return
     end
 
     util.shuffle_table(rng, usablePills)
@@ -40,7 +46,7 @@ end)
 
 -- When rolling a new card
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
-    if AP_MAIN_MOD:checkUnlocked("Card-" .. tostring(card)) then -- This card is unlocked, we don't need to replace it
+    if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[card]) then -- This card is unlocked, we don't need to replace it
         return nil
     end
 
@@ -64,7 +70,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includ
 
         -- Filter the set down to only unlocked cards
         for _, cardType in ipairs(allSets) do
-            if AP_MAIN_MOD:checkUnlocked("Card-" .. tostring(cardType)) then
+            if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
                 cardSet[#cardSet + 1] = cardType
             end
         end

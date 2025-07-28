@@ -166,4 +166,18 @@ function export.array_tostring(array)
     return "[" .. string.sub(str, 1, #str - 2) .. "]"
 end
 
+function export.chunk_array(tab, count)
+    local out = {}
+
+    for i = 1, #tab, count do
+        out[#out + 1] = {table.unpack(tab, i, math.min(#tab, i + count - 1))}
+    end
+
+    return out
+end
+
+function export.clamp(value, min, max)
+    return math.max(min, math.min(value, max))
+end
+
 return export
