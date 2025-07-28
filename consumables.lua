@@ -16,13 +16,13 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     -- Filter out locked pills
     local usablePills = {}
     for _, pillType in ipairs(pills) do
-        if AP_SUPP_MOD.itemStates["Pill-" .. tostring(pillType)] then
+        if AP_MAIN_MOD:checkUnlocked("Pill-" .. tostring(pillType)) then
             usablePills[#usablePills + 1] = pillType
         end
     end
 
     util.shuffle_table(rng, usablePills)
-    
+
     -- This is actually horrible. We can't assign pillEffects to individual colours, so we just
     -- cross our fingers and hope, I guess. Stupid. Wait until all 13 colours are assigned
     local pillColors = {}
@@ -40,7 +40,7 @@ end)
 
 -- When rolling a new card
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
-    if AP_SUPP_MOD.itemStates["Card-" .. tostring(card)] then -- This card is unlocked, we don't need to replace it
+    if AP_MAIN_MOD:checkUnlocked("Card-" .. tostring(card)) then -- This card is unlocked, we don't need to replace it
         return nil
     end
 
@@ -64,10 +64,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includ
 
         -- Filter the set down to only unlocked cards
         for _, cardType in ipairs(allSets) do
-            if AP_SUPP_MOD.itemStates["Card-" .. tostring(cardType)] then
+            if AP_MAIN_MOD:checkUnlocked("Card-" .. tostring(cardType)) then
                 cardSet[#cardSet + 1] = cardType
-
-                Isaac.ConsoleOutput(tostring(cardType) .. " pick card \n")
             end
         end
     end

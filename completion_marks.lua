@@ -63,8 +63,6 @@ local function tryAwardMark(markName)
     -- Now, we award locations
     local locationName = playerName .. " (" .. markName .. ")"
 
-    Isaac.ConsoleOutput(playerName .. "'s " .. markName .. " mark!")
-
     if not isTainted then -- Only for non-tainteds
         -- Check for "all marks"
         if hasAllMarks(marks[playerName]) then

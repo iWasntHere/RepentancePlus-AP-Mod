@@ -70,6 +70,11 @@ function mod:sendDeathLink(reason)
     self:exposeData(nil, nil, reason)
 end
 
+-- Returns true if the item is considered to be unlocked
+function mod:checkUnlocked(stateKey)
+    return AP_SUPP_MOD.itemStates[stateKey]
+end
+
 -- Does the effects when you send/receive an item
 function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
     local hud = Game():GetHUD()
@@ -114,9 +119,6 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 	if not ARCHIPELAGO_SEED then
 		return
 	end
-
-	local collectiblesRemoved = 0
-	local trinketsRemoved = 0
 	
 	for k, v in pairs(AP_SUPP_MOD.itemStates) do -- Loop through all items
 		if not v then -- The item is locked
@@ -125,20 +127,14 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 				local id = tonumber(split[2])
 				
 				itemPool:RemoveCollectible(id)
-				
-				collectiblesRemoved = collectiblesRemoved + 1
 			elseif util.string_starts_with(k, "Trinket") then -- This is a Trinket
 				local split = util.string_split(k, "-")
 				local id = tonumber(split[2])
 				
 				itemPool:RemoveTrinket(id)
-				
-				trinketsRemoved = trinketsRemoved + 1
 			end
 		end
 	end
-	
-	Isaac.ConsoleOutput("Removed " .. collectiblesRemoved .. " collectibles and " .. trinketsRemoved .. " trinkets\n")
 end)
 
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
@@ -159,4 +155,5 @@ require("floor_completion")
 require("enemy_destruction")
 require("completion_marks")
 require("consumables")
+require("entities")
 require("ap_debug")

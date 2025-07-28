@@ -48,7 +48,5 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
     local locationName = playerName .. " (" .. chapterName .. ")"
     local locationCode = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
 
-    Isaac.ConsoleOutput(locationName .. " " .. locationCode .. "\n")
-
     AP_MAIN_MOD:sendLocation(locationCode)
 end)
