@@ -79,6 +79,48 @@ function export.is_character_tainted ()
     return export.taintedCharacters[Isaac.GetPlayer():GetPlayerType()] ~= nil
 end
 
+-- Picks a random value from the table
+function export.random_from_table (rng, table)
+    local keys = export.table_keys(table)
+    return table[rng:RandomInt(#keys) + 1]
+end
+
+-- Picks a random value from the array
+function export.random_from_array (rng, table)
+    return table[rng:RandomInt(#table) + 1]
+end
+
+-- Shuffles a table in-place
+function export.shuffle_table(rng, table)
+    for i = #table, 2, -1 do
+        local j = rng:RandomInt(i) + 1
+        table[i], table[j] = table[j], table[i]
+    end
+end
+
+-- Merges all arrays given into one array
+function export.merge_arrays (array_of_arrays)
+    local collection = {}
+    for _, array in ipairs(array_of_arrays) do
+        for _, value in ipairs(array) do
+            collection[#collection + 1] = value
+        end
+    end
+
+    return collection
+end
+
+-- Gets an array of table keys
+function export.table_keys(table)
+    local keys = {}
+
+    for key, value in pairs(table) do
+        keys[#keys] = key
+    end
+
+    return keys
+end
+
 -- http://lua-users.org/wiki/StringRecipes
 function export.string_starts_with (str, starts_with)
 	return str:sub(1, #starts_with) == starts_with
@@ -104,6 +146,24 @@ function export.table_concat(to_table, from_table)
     for _, v in ipairs(from_table) do
         table.insert(to_table, v)
     end
+end
+
+function export.table_tostring(table)
+    local str = ""
+    for key, value in pairs(table) do
+        str = str .. key .. ": " .. value .. ", "
+    end
+
+    return "{" .. string.sub(str, 1, #str - 2) .. "}"
+end
+
+function export.array_tostring(array)
+    local str = ""
+    for key, value in ipairs(array) do
+        str = str .. key .. ": " .. value .. ", "
+    end
+
+    return "[" .. string.sub(str, 1, #str - 2) .. "]"
 end
 
 return export
