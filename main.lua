@@ -7,13 +7,10 @@ mod.LOCATIONS_DATA = require("location_data")
 mod.ENTITIES_DATA = require("entities_data")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
-local codeToName = {}
 local codes = {}
-for name, code in pairs(mod.ITEMS_DATA.NAME_TO_CODE) do
-    codeToName[code] = name
+for _, code in pairs(mod.ITEMS_DATA.NAME_TO_CODE) do
     codes[#codes + 1] = code
 end
-mod.ITEMS_DATA.CODE_TO_NAME = codeToName
 table.sort(codes) -- We'd prefer this in order, thanks
 mod.ITEMS_DATA.CODES = codes
 

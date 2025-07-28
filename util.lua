@@ -180,4 +180,14 @@ function export.clamp(value, min, max)
     return math.max(min, math.min(value, max))
 end
 
+-- Returns the table, but the keys and values are swapped
+function export.invert_table(tab)
+    local newTable = {}
+    for key, value in pairs(tab) do
+        newTable[value] = key
+    end
+
+    return newTable
+end
+
 return export
