@@ -7,9 +7,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
         return
     end
 
-    local startSeed = Game():GetSeeds():GetStartSeed()
-    local rng = RNG()
-    rng:SetSeed(startSeed, 35)
+    local rng = util.getRNG()
 
     local pills = cardData.pill
 

@@ -169,5 +169,6 @@ require("locations/completion_marks")
 require("items/consumables")
 require("items/entities")
 require("items/quest")
+require("items/floors")
 
 require("ap_debug")

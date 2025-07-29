@@ -190,4 +190,23 @@ function export.invert_table(tab)
     return newTable
 end
 
+-- Creates a shallow copy of the table
+function export.shallow_copy_table(tab)
+    local out = {}
+    for k, v in pairs(tab) do
+        out[k] = v
+    end
+
+    return out
+end
+
+-- Creates an RNG object, by seeding it with the run's seed
+function export.getRNG()
+    local startSeed = Game():GetSeeds():GetStartSeed()
+    local rng = RNG()
+    rng:SetSeed(startSeed, 35)
+
+    return rng
+end
+
 return export
