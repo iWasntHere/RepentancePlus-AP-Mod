@@ -59,6 +59,18 @@ local ShopkeeperVariant = {
 }
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
+    -- It Lives!
+    if type == EntityType.ENTITY_MOMS_HEART and variant == 1 and not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
+        return {type, variant, 0}
+    end
+
+    -- Angels (Check for variant 0 as 1 is 'Fallen' angels)
+    if variant == 0 and not AP_MAIN_MOD:checkUnlockedByName("Angels") then
+        if type == EntityType.ENTITY_GABRIEL or type == EntityType.ENTITY_URIEL then
+            return {EntityType.ENTITY_FLY, variant, 0}
+        end
+    end
+
     if type == EntityType.ENTITY_PICKUP then
         -- Coins
         if variant == PickupVariant.PICKUP_COIN then
@@ -212,6 +224,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
         if variant == ShopkeeperVariant.SPECIAL_SECRET_ROOM_KEEPER and not AP_MAIN_MOD:checkUnlockedByName(EntityItemName.SPECIAL_SHOPKEEPERS) then
             return {type, ShopkeeperVariant.SECRET_ROOM_KEEPER, subType}
         end
+    end
+
+    if not AP_MAIN_MOD:checkUnlockedByName("Everything is Terrible!!!") and subType > 0 then
+        -- TODO: Remove champion effect on enemies (no way to tell if this is an enemy yet)
     end
 
     return nil

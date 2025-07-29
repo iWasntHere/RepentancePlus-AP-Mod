@@ -170,5 +170,6 @@ require("items/consumables")
 require("items/entities")
 require("items/quest")
 require("items/floors")
+require("items/grid_entities")
 
 require("ap_debug")

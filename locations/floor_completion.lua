@@ -5,7 +5,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()
 
-    if room:GetType() ~= RoomType.ROOM_BOSS then
+    -- This isn't the final boss room on this floor (Labyrinth), so disregard
+    if not util.isFinalBossRoomOfFloor(room) then
         return
     end
 
@@ -41,6 +42,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
         end
     end
 
+    -- This chapter isn't considered for locations
     if chapterName == nil then
         return
     end

@@ -209,4 +209,76 @@ function export.getRNG()
     return rng
 end
 
+-- 'True' if the room is the final boss room of the floor.
+-- This is helpful in case Curse of the Labyrinth is on.
+function export.isFinalBossRoomOfFloor(room)
+    if room:GetType() ~= RoomType.ROOM_BOSS then -- This isn't even a boss room
+        return false
+    end
+
+    -- In The Void, the only 2x2 boss room is Delirium's room
+    local stage = Game():GetLevel():GetStage()
+    if room:GetRoomShape() == RoomShape.ROOMSHAPE_2x2 and stage == LevelStage.STAGE7 then
+        return true
+    end
+
+    -- In Blue Womb, there can only ever be one boss
+    if stage == LevelStage.STAGE4_3 then
+        return true
+    end
+
+    -- Count the number of doors, in case of curse of labyrinth
+    local regularDoors = 0
+    local bossDoors = 0
+    for i = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
+        local door = room:GetDoor(i)
+
+        if door then
+            -- door:IsRoomType() is UNRELIABLE and USELESS for this, I GUESS
+            if door.TargetRoomType == RoomType.ROOM_DEFAULT then
+                regularDoors = regularDoors + 1
+            elseif door.TargetRoomType == RoomType.ROOM_BOSS then
+                bossDoors = bossDoors + 1
+            end
+        end
+    end
+
+    -- On curse of the labyrinth, this is the first boss room
+    if bossDoors == 1 and regularDoors == 1 then
+        return false
+    end
+
+    return true
+end
+
+-- Returns which stage this is.
+-- For labyrinth stages, this will be the latter half of the chapter (1_1 -> 1_2)
+function export.getEffectiveStage(level)
+    local isLabyrinth = level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0
+    local stage = level:GetStage()
+
+    -- All levels from 5 and on (sheol/cathedral) can't have Labyrinth
+    if stage > LevelStage.STAGE5 then
+        return stage
+    end
+
+    -- On labyrinth stages, it's only the first half, so stage + 1
+    if isLabyrinth then
+        return stage + 1
+    end
+
+    return stage
+end
+
+-- Removes the alt path door in boss rooms, and the ascent door in Depths
+function export.removeSecretExit(room)
+    for slot = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
+        local door = room:GetDoor(slot)
+
+        if door and door.TargetRoomType == RoomType.ROOM_SECRET_EXIT then
+            room:RemoveDoor(slot)
+        end
+    end
+end
+
 return export
