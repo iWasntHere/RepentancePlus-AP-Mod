@@ -61,7 +61,8 @@ local ShopkeeperVariant = {
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
     -- It Lives!
     if type == EntityType.ENTITY_MOMS_HEART and variant == 1 and not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
-        return {type, variant, 0}
+        Isaac.ConsoleOutput("hm,mm\n")
+        return {type, 0, 0}
     end
 
     -- Angels (Check for variant 0 as 1 is 'Fallen' angels)
