@@ -1,4 +1,4 @@
-local cardData = require("consumable_data")
+local cardData = require("data/consumable_data")
 local util = require("util")
 
 -- When starting a new game, fix pill effects

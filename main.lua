@@ -2,9 +2,9 @@ local mod = RegisterMod("Archipelago", 1)
 local json = require("json")
 local util = require("util.lua")
 
-mod.ITEMS_DATA = require("item_data")
-mod.LOCATIONS_DATA = require("location_data")
-mod.ENTITIES_DATA = require("entities_data")
+mod.ITEMS_DATA = require("data/item_data")
+mod.LOCATIONS_DATA = require("data/location_data")
+mod.ENTITIES_DATA = require("data/entities_data")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
 local codes = {}
@@ -162,9 +162,11 @@ mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
     end
 end)
 
-require("floor_completion")
-require("enemy_destruction")
-require("completion_marks")
-require("consumables")
-require("entities")
+require("locations/floor_completion")
+require("locations/enemy_destruction")
+require("locations/completion_marks")
+
+require("items/consumables")
+require("items/entities")
+
 require("ap_debug")
