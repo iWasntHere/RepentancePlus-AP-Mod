@@ -11,7 +11,17 @@ local bossLocationNames = {
     [EntityType.ENTITY_ISAAC] = "Isaac",
     [EntityType.ENTITY_SATAN] = "Satan",
     [EntityType.ENTITY_THE_LAMB] = "The Lamb",
-    [EntityType.ENTITY_MEGA_SATAN] = "Mega Satan"
+    [EntityType.ENTITY_MEGA_SATAN] = "Mega Satan",
+    [EntityType.ENTITY_MOMS_HEART] = "Mom's Heart"
+}
+
+-- Since tainted charcters have 'grouped' requirements for marks, these ones can act alone
+local singleTaintedLocations = {
+    ["Ultra Greedier"] = true,
+    ["The Beast"] = true,
+    ["Mother"] = true,
+    ["Delirium"] = true,
+    ["Mega Satan"] = true
 }
 
 local main4Bosses = {"Isaac", "???", "Satan", "The Lamb"}
@@ -31,7 +41,11 @@ local function hasBossRushAndHush(characterMarks)
     return characterMarks["Hush"] ~= nil and characterMarks["Boss Rush"] ~= nil
 end
 
-local allMarks = {"Isaac", "???", "Satan", "The Lamb", "Boss Rush", "Hush", "Delirium", "Mother", "The Beast", "Ultra Greed", "Ultra Greedier", "Mega Satan"}
+local allMarks = {
+    "Isaac", "???", "Satan", "The Lamb", "Boss Rush",
+    "Hush", "Delirium", "Mother", "The Beast", "Ultra Greed",
+    "Ultra Greedier", "Mega Satan", "Mom's Heart"
+}
 -- Returns true if the character has completed all marks.
 local function hasAllMarks(characterMarks)
     for _, v in ipairs(allMarks) do
@@ -72,6 +86,11 @@ local function tryAwardMark(markName)
     
         AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
         return
+    end
+
+    -- Award tainted's locations for the few specific marks that give them
+    if singleTaintedLocations[markName] then
+        AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
     end
 
     -- Tainted characters have more specific logic
