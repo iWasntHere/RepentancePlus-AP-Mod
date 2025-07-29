@@ -281,4 +281,20 @@ function export.removeSecretExit(room)
     end
 end
 
+local itemConfig = Isaac.GetItemConfig()
+
+-- Adds a collectible's costume to the player
+function export.addCostumeToPlayer(player, collectibleType, addToTwin)
+    local configItem = itemConfig:GetCollectible(collectibleType)
+    player:AddCostume(configItem)
+
+    if addToTwin then
+        local twin = player:GetOtherTwin()
+
+        if twin and twin ~= player then -- Sometimes they are the same???
+            twin:AddCostume(configItem)
+        end
+    end
+end
+
 return export

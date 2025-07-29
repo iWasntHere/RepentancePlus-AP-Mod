@@ -1,40 +1,28 @@
+local util = require("util")
 local characterLocked = false
 
 -- When a character is locked, all doors are removed
 local function characterIsLocked()
     characterLocked = true
 
+    -- Add costumes
     local player = Isaac.GetPlayer(0)
-    local room = Game():GetLevel():GetCurrentRoom()
-
-    player:AddCollectible(CollectibleType.COLLECTIBLE_SAD_ONION)
-    player:AddCollectible(CollectibleType.COLLECTIBLE_CRICKETS_HEAD)
-
-    -- Add these to the twin as well
-    local twin = player:GetOtherTwin()
-    if twin ~= nil then
-        twin:AddCollectible(CollectibleType.COLLECTIBLE_SAD_ONION)
-        twin:AddCollectible(CollectibleType.COLLECTIBLE_CRICKETS_HEAD)
+    if math.random() < 0.05 then
+        util.addCostumeToPlayer(player, CollectibleType.COLLECTIBLE_SAD_ONION, true)
+        util.addCostumeToPlayer(player, CollectibleType.COLLECTIBLE_CRICKETS_HEAD, true)
+    else
+        util.addCostumeToPlayer(player, CollectibleType.COLLECTIBLE_CHAOS, true) -- Very small chance for a trollface instead
     end
 
+    -- Remove doors
+    local room = Game():GetLevel():GetCurrentRoom()
     for i = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
         room:RemoveDoor(i)
     end
 end
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
-    if not continued then
-        return
-    end
-
-    characterLocked = false
-end)
-
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-    if Game():GetLevel():GetStage() > 1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
-        return
-    end
-
+-- Checks if the currently played character is locked, then applies locked code if it is
+local function checkCharacterLocked()
     local player = Isaac.GetPlayer(0)
     local character = player:GetPlayerType()
 
@@ -43,6 +31,24 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
     if not AP_MAIN_MOD:checkUnlocked(code) then
         characterIsLocked()
     end
+end
+
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+    if Game():GetLevel():GetStage() > 1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
+        return
+    end
+
+    characterLocked = false
+
+    checkCharacterLocked()
+end)
+
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+    if Game():GetLevel():GetStage() > 1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
+        return
+    end
+
+    checkCharacterLocked()
 end)
 
 local font = Font()
