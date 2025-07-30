@@ -6,21 +6,45 @@ local gridEntityTypeToName = {
     [GridEntityType.GRID_ROCK_ALT2] = "A Mysterious Door"
 }
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, function (_, type, variant, subType, gridIndex, seed)
-    if type < 1000 then -- Grid entities only!
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+    local room = Game():GetLevel():GetCurrentRoom()
+    local toSpawn = {} -- Table of index to type to spawn
+
+    local gridEntityTypeToUnlocked = {}
+
+    -- Loop through all grid entities, test if they need to be removed
+    for i = 0, room:GetGridSize(), 1 do
+        local gridEnt = room:GetGridEntity(i)
+        if gridEnt then
+            local type = gridEnt:GetType()
+            local name = gridEntityTypeToName[type]
+
+            if name then
+                local isUnlocked = gridEntityTypeToUnlocked[type]
+                if isUnlocked == nil then -- We can cache the value to make this faster (on this loop)
+                    isUnlocked = AP_MAIN_MOD:checkUnlockedByName(name)
+                    gridEntityTypeToUnlocked[type] = isUnlocked
+                end
+
+                if not AP_MAIN_MOD:checkUnlockedByName(name) then
+                    room:RemoveGridEntity(i, 0, true)
+                    gridEnt:Update()
+                    toSpawn[i] = GridEntityType.GRID_ROCK
+                end
+            end
+        end
+    end
+
+    -- Do we need to spawn anything?
+    if #util.table_keys(toSpawn) == 0 then
         return
     end
 
-    local name = gridEntityTypeToName[type]
+    room:Update() -- We have to update the room after we remove a grid entity because we're in hell.
 
-    if name == nil then -- Not an ap item, so we don't care
-        return
+    for index, type in pairs(toSpawn) do
+        room:SpawnGridEntity(index, type, 0, 0, 0)
     end
 
-    if AP_MAIN_MOD:checkUnlockedByName(name) then -- Item is unlocked so w/e
-        return
-    end
-
-    -- Anything locked is replaced with rocks
-    return {GridEntityType.GRID_ROCK, variant, subType, gridIndex}
+    -- room:Update() -- Unsure if we really need this as of now
 end)

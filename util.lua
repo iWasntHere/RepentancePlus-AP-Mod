@@ -114,8 +114,8 @@ end
 function export.table_keys(table)
     local keys = {}
 
-    for key, value in pairs(table) do
-        keys[#keys] = key
+    for key, _ in pairs(table) do
+        keys[#keys + 1] = key
     end
 
     return keys

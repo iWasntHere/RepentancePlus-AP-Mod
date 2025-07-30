@@ -72,7 +72,7 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
     -- Filter the set down to only unlocked cards
     for _, cardType in ipairs(allSets) do
         if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
-            print("Unlocked!")
+            --print("Unlocked!")
             cardSet[#cardSet + 1] = cardType
         end
     end

@@ -58,7 +58,9 @@ local ShopkeeperVariant = {
     SPECIAL_SECRET_ROOM_KEEPER = 4
 }
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
+-- Call to receive replacement entity data for the given passed entity data
+-- If nil, then the repalcement did not occur
+local function replaceEntity(type, variant, subType)
     -- It Lives!
     if type == EntityType.ENTITY_MOMS_HEART and variant == 1 and not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
         return {type, 0, 0}
@@ -231,4 +233,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
     end
 
     return nil
+end
+
+-- Replace entities that are freshly spawned, or exist in the room we return to
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
+    return replaceEntity(type, variant, subType)
+end)
+
+-- Replace entities that are a part of the layout
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, function (_, type, variant, subType, gridIndex, seed)
+    return replaceEntity(type, variant, subType)
 end)
