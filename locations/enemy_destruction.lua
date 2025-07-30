@@ -1,5 +1,35 @@
 -- Never check these entities. They will be subject to the "seen" method of defeating
 local excludedEntities = {
+    -- Larry Jr.
+    {type = 19, variant = 0},
+
+    -- The Hollow
+    {type = 19, variant = 1},
+
+    -- Tuff Twin
+    {type = 19, variant = 2},
+
+    -- The Shell
+    {type = 19, variant = 3},
+
+    -- Brownie
+    {type = 402, variant = 0},
+
+    -- Gurgling
+    {type = 237, variant = 1},
+
+    -- Turdling
+    {type = 237, variant = 2},
+
+    -- The Frail
+    {type = 64, variant = 2},
+
+    -- Gemini (Main)
+    {type = 79, variant = 0},
+
+    -- Steven (Main)
+    {type = 79, variant = 1},
+
     -- Big & Medium Fistula
     {type = 71, variant = 0},
     {type = 71, variant = 1},
