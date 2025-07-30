@@ -172,5 +172,6 @@ require("items/quest")
 require("items/floors")
 require("items/grid_entities")
 require("items/characters")
+require("items/curses")
 
 require("ap_debug")
