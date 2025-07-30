@@ -42,35 +42,38 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     end
 end)
 
--- When rolling a new card
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
-    if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[card]) then -- This card is unlocked, we don't need to replace it
-        return nil
+-- Returns an unlocked cardType type, if the given cardType is locked. Else, it returns the given CardType.
+local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
+    if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then -- This card is unlocked, we don't need to replace it
+        return cardType
     end
 
-    local cardSet = {}
+    
+    local allSets = {}
 
     if onlyRunes then
-        cardSet = cardData.rune
+        allSets = cardData.rune
     else
         -- Gather applicable sets
         local sets = {cardData.tarot, cardData.reverse, cardData.special, cardData.object}
 
         if includePlaying then
-            sets[#sets] = cardData.suit
+            sets[#sets + 1] = cardData.suit
         end
 
         if includeRunes then
-            sets[#sets] = cardData.rune
+            sets[#sets + 1] = cardData.rune
         end
         
-        local allSets = util.merge_arrays(sets)
+        allSets = util.merge_arrays(sets)
+    end
 
-        -- Filter the set down to only unlocked cards
-        for _, cardType in ipairs(allSets) do
-            if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
-                cardSet[#cardSet + 1] = cardType
-            end
+    local cardSet = {}
+    -- Filter the set down to only unlocked cards
+    for _, cardType in ipairs(allSets) do
+        if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
+            print("Unlocked!")
+            cardSet[#cardSet + 1] = cardType
         end
     end
 
@@ -80,4 +83,36 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includ
     end
 
     return util.random_from_array(rng, cardSet)
+end
+
+-- When rolling a new card
+-- NOTE: This *does not* work on Booster Pack (WHYYYY)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
+    return rollCard(rng, card, includePlaying, includeRunes, onlyRunes)
+end)
+
+-- When a card is spawned or is in an entered room (fixes booster pack, rune bag)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
+    if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD then
+        return
+    end
+
+    local rng = RNG()
+    rng:SetSeed(seed, 35)
+
+    -- Spawned from Rune Bag (WHY DON'T YOU USE THE GETCARD CALLBACK ARGH)
+    if spawnerEntity and spawnerEntity.Type == EntityType.ENTITY_FAMILIAR and spawnerEntity.Variant == FamiliarVariant.RUNE_BAG then
+        subType = rollCard(rng, subType, false, true, true)
+    else
+        local itemConfig = Isaac.GetItemConfig()
+        local itemConfigCard = itemConfig:GetCard(subType)
+
+        if itemConfigCard:IsCard() then -- Cards should reroll into other cards
+            subType = rollCard(rng, subType, true, false, false)
+        else -- Anything else should reroll into anything (I guess)
+            subType = rollCard(rng, subType, true, true, false)
+        end
+    end
+
+    return {entityType, variant, subType, seed}
 end)
