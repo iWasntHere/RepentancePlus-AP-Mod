@@ -11,7 +11,7 @@ local bossLocationNames = {
     [EntityType.ENTITY_ISAAC] = "Isaac",
     [EntityType.ENTITY_SATAN] = "Satan",
     [EntityType.ENTITY_THE_LAMB] = "The Lamb",
-    [EntityType.ENTITY_MEGA_SATAN] = "Mega Satan",
+    [EntityType.ENTITY_MEGA_SATAN_2] = "Mega Satan",
     [EntityType.ENTITY_MOMS_HEART] = "Mom's Heart"
 }
 
