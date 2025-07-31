@@ -7,7 +7,7 @@ local function characterIsLocked()
 
     -- Add costumes
     local player = Isaac.GetPlayer(0)
-    if math.random() < 0.05 then
+    if math.random() > 0.05 then
         util.addCostumeToPlayer(player, CollectibleType.COLLECTIBLE_SAD_ONION, true)
         util.addCostumeToPlayer(player, CollectibleType.COLLECTIBLE_CRICKETS_HEAD, true)
     else
@@ -30,21 +30,13 @@ local function checkCharacterLocked()
 
     if not AP_MAIN_MOD:checkUnlocked(code) then
         characterIsLocked()
+    else
+        characterLocked = false -- In case we had previously determined it was
     end
 end
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
-    if Game():GetLevel():GetStage() > 1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
-        return
-    end
-
-    characterLocked = false
-
-    checkCharacterLocked()
-end)
-
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-    if Game():GetLevel():GetStage() > 1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
+    if continued then -- Only do this when the run first starts. Prevents getting stuck with Clicker
         return
     end
 
