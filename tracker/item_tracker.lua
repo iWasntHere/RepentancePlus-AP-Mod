@@ -5,7 +5,7 @@ font:Load("font/teammeatfont12.fnt")
 local smallFont = Font()
 smallFont:Load("font/teammeatfont10.fnt")
 
-local page = 11
+local page = 1
 local pages = util.chunk_array(AP_MAIN_MOD.ITEMS_DATA.CODES, 30)
 
 local itemTypeSprite = Sprite() -- Used to render icons next to item names to show type
@@ -13,7 +13,7 @@ itemTypeSprite:Load("gfx/ui/Tracker_Icons.anm2", true)
 
 local backgroundSprite = Sprite()
 backgroundSprite:Load("gfx/ui/Tracker_Page.anm2", true)
-backgroundSprite:Play("Idle")
+backgroundSprite:Play("Items")
 
 local BG_WIDTH = 304
 local BG_HEIGHT = 212
@@ -56,6 +56,7 @@ local NAME_TO_ICON = {
     ["Gehenna"] = "Floor",
 }
 
+-- Returns an icon for a given item code in the item tracker
 local function getIcon(code)
     local type = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_TYPE[code]
     if TYPE_TO_ICON[type] then
@@ -71,43 +72,49 @@ local function getIcon(code)
     return "Unknown"
 end
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
-    if not Input.IsButtonPressed(Keyboard.KEY_BACKSLASH, 0) then
-        return
-    end
+--- Renders the item tracker page.
+--- @param offset Vector The pixel offset to draw at
+--- @param canControl boolean Whether you can control the page or not
+--- @param sfx SFXManager The SFX manager
+return function(offset, canControl, sfx)
+    -- Page previous/back controls
+    if canControl then
+        if Input.IsButtonTriggered(Keyboard.KEY_RIGHT_BRACKET, 0) and page < #pages then
+            page = page + 1
+            sfx:Play(SoundEffect.SOUND_CHARACTER_SELECT_RIGHT)
+        end
 
-    -- Page up/down controls
-    if Input.IsButtonTriggered(Keyboard.KEY_RIGHT_BRACKET, 0) then
-        page = page + 1
-    end
-
-    if Input.IsButtonTriggered(Keyboard.KEY_LEFT_BRACKET, 0) then
-        page = page - 1
+        if Input.IsButtonTriggered(Keyboard.KEY_LEFT_BRACKET, 0) and page > 1 then
+            page = page - 1
+            sfx:Play(SoundEffect.SOUND_CHARACTER_SELECT_LEFT)
+        end
     end
 
     local screenWidth = Isaac.GetScreenWidth()
     local screenHeight = Isaac.GetScreenHeight()
 
+    -- This is the origin of the entire ui
     local pageTopLeft = Vector(
-        (screenWidth / 2) - (BG_WIDTH / 2),
-        (screenHeight / 2) - (BG_HEIGHT / 2)
+        offset.X + ((screenWidth / 2) - (BG_WIDTH / 2)),
+        offset.Y + ((screenHeight / 2) - (BG_HEIGHT / 2))
     )
 
     backgroundSprite:Render(pageTopLeft)
 
-    page = util.clamp(page, 1, #pages)
-
     local columnStart = pageTopLeft.X + 24
     local rowStart = pageTopLeft.Y + 38
 
-    local x = columnStart
-    local y = rowStart
+    local row = 0
+    local column = 0
 
     local color = KColor(0.212, 0.184, 0.176, 1)
 
     font:DrawStringScaled(tostring(page) .. "/" .. tostring(#pages), pageTopLeft.X + 8, pageTopLeft.Y + 8, 0.5, 0.5, color)
     
     for _, code in ipairs(pages[page]) do
+        local x = columnStart + (96 * column)
+        local y = rowStart + (16 * row)
+
         local name = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_NAME[code]
         local unlocked = AP_MAIN_MOD:checkUnlocked(code)
 
@@ -126,7 +133,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
         end
 
         itemTypeSprite:Render(Vector(x - 8, y)) -- Render the item's icon
-        --Isaac.RenderScaledText(tostring(code), x - 12, y + 4, 0.5, 0.5, 1, 1, 1, 1)
 
         color.Alpha = 0.1
         smallFont:DrawStringScaled(tostring(code), x, y - 6, 0.5, 0.5, color)
@@ -139,11 +145,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
             font:DrawStringScaled(name, x, y, 0.5, 0.5, color)
         end
 
-        y = y + 16
+        row = row + 1
 
-        if y > 224 then
-            y = rowStart
-            x = x + 96
+        if row >= 10 then
+            row = 0
+            column = column + 1
         end
     end
-end)
+end

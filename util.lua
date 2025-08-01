@@ -200,6 +200,11 @@ function export.shallow_copy_table(tab)
     return out
 end
 
+-- Linearly interpolates a value
+function export.lerp(from, to, amount)
+    return (1 - amount) * from + amount * to
+end
+
 -- Creates an RNG object, by seeding it with the run's seed
 function export.getRNG()
     local startSeed = Game():GetSeeds():GetStartSeed()
