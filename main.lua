@@ -167,6 +167,7 @@ end)
 require("locations/floor_completion")
 require("locations/enemy_destruction")
 require("locations/completion_marks")
+require("locations/donations")
 
 require("items/consumables")
 require("items/entities")

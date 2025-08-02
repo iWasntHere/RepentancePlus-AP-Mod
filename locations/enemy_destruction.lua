@@ -22,7 +22,7 @@ local excludedEntities = {
     {type = 237, variant = 2},
 
     -- The Frail
-    {type = 64, variant = 2},
+    {type = 62, variant = 2},
 
     -- Gemini (Main)
     {type = 79, variant = 0},
@@ -30,31 +30,51 @@ local excludedEntities = {
     -- Steven (Main)
     {type = 79, variant = 1},
 
-    -- Big & Medium Fistula
+    -- Headless Horseman (Body)
+    {type = 82, variant = 0},
+
+    -- Sister Vis
+    {type = 410, variant = 0},
+
+    -- Fistula, Teratoma
     {type = 71, variant = 0},
     {type = 71, variant = 1},
     {type = 72, variant = 0},
     {type = 72, variant = 1},
+    {type = 73, variant = 0},
+    {type = 73, variant = 1},
 
-    -- Big & Medium Blastocyst
-    {type = 71, variant = 0},
-    {type = 72, variant = 0},
+    -- Blastocyst
+    {type = 74, variant = 0},
+    {type = 75, variant = 0},
+    {type = 76, variant = 0},
 
     -- Envy
     {type = 51, variant = 0},
     {type = 51, variant = 10},
     {type = 51, variant = 20},
+    {type = 51, variant = 30},
 
     -- Super Envy
     {type = 51, variant = 1},
     {type = 51, variant = 11},
     {type = 51, variant = 21},
+    {type = 51, variant = 31},
 
     -- The Fallen
     {type = 81, variant = 0},
 
     -- The Matriarch
-    {type = 413, variant = 0}
+    {type = 413, variant = 0},
+
+    -- Rotgut
+    {type = 911, variant = 0},
+
+    -- Chimera
+    {type = 910, variant = 0},
+
+    -- Lokii
+    {type = 69, variant = 1}
 }
 
 -- Tries to grant a location check for defeating this entity.
