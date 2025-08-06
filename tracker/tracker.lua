@@ -5,6 +5,7 @@ local page = 1
 
 local pages = {
     require("tracker/character_tracker"),
+    require("tracker/stage_tracker"),
     require("tracker/item_tracker"),
     require("tracker/baby_tracker")
 }
