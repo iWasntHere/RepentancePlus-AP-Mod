@@ -302,4 +302,11 @@ function export.addCostumeToPlayer(player, collectibleType, addToTwin)
     end
 end
 
+--- True if the player owns the given trinket (gulped or otherwise)
+--- @param player EntityPlayer
+--- @param trinketType TrinketType
+function export.hasTrinket(player, trinketType)
+    return player:GetTrinketMultiplier(trinketType) > 0
+end
+
 return export

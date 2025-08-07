@@ -174,6 +174,8 @@ require("locations/floor_completion")
 require("locations/enemy_destruction")
 require("locations/completion_marks")
 require("locations/donations")
+require("locations/challenge_completion")
+require("locations/one_offs")
 
 require("items/consumables")
 require("items/entities")

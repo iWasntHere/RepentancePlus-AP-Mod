@@ -166,8 +166,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     -- This is the Mom! fight
     if stage == LevelStage.STAGE3_2 and not isAltPath and isFinal then
         if not AP_MAIN_MOD:checkUnlockedByName("The Womb") then
-            -- Spawn the trophy!
-            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TROPHY, 0, spawnPosition, Vector(0, 0), nil)
+            -- Spawn the chest!
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
         end
     end
@@ -175,8 +175,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     -- This is the Mom's Heart fight
     if stage == LevelStage.STAGE4_2 and not isAltPath and isFinal then
         if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
-            -- Spawn the trophy!
-            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TROPHY, 0, spawnPosition, Vector(0, 0), nil)
+            -- Spawn the chest!
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
         end
     end
@@ -191,8 +191,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
         end
 
         if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
-            -- Spawn the trophy!
-            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TROPHY, 0, spawnPosition, Vector(0, 0), nil)
+            -- Spawn the chest!
+            Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
         end
     end

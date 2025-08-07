@@ -225,6 +225,11 @@ local function otherKillLocations(killsTable, locations)
     if allBossesKilled(MausoleumBosses) then
         locations[#locations + 1] = 369
     end
+
+    -- Kill 20 portals
+    if getKillsFor(killsTable, "Portal") == 20 then
+        locations[#locations + 1] = 481
+    end
 end
 
 -- Enemies we've seen this room
