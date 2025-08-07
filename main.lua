@@ -7,6 +7,7 @@ mod.LOCATIONS_DATA = require("data/location_data")
 mod.ENTITIES_DATA = require("data/entities_data")
 mod.BABY_SKIN_DATA = require("data/baby_skin_data")
 mod.CHARACTER_DATA = require("data/character_data")
+mod.CHALLENGE_DATA = require("data/challenge_data")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
 local codes = {}

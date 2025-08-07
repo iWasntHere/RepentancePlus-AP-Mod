@@ -1,0 +1,53 @@
+local export = {}
+
+export.ChallengeIDToName = {
+    [Challenge.CHALLENGE_PITCH_BLACK] = "Challenge #1 (Pitch Black)",
+    [Challenge.CHALLENGE_HIGH_BROW] = "Challenge #2 (High Brow)",
+    [Challenge.CHALLENGE_HEAD_TRAUMA] = "Challenge #3 (Head Trauma)",
+    [Challenge.CHALLENGE_DARKNESS_FALLS] = "Challenge #4 (Darkness Falls)",
+    [Challenge.CHALLENGE_THE_TANK] = "Challenge #5 (The Tank)",
+    [Challenge.CHALLENGE_SOLAR_SYSTEM] = "Challenge #6 (Solar System)",
+    [Challenge.CHALLENGE_SUICIDE_KING] = "Challenge #7 (Suicide King)",
+    [Challenge.CHALLENGE_CAT_GOT_YOUR_TONGUE] = "Challenge #8 (Cat Got Your Tongue)",
+    [Challenge.CHALLENGE_DEMO_MAN] = "Challenge #9 (Demo Man)",
+    [Challenge.CHALLENGE_CURSED] = "Challenge #10 (Cursed!)",
+    [Challenge.CHALLENGE_GLASS_CANNON] = "Challenge #11 (Glass Cannon)",
+    [Challenge.CHALLENGE_WHEN_LIFE_GIVES_LEMONS] = "Challenge #12 (When Life Gives You Lemons)",
+    [Challenge.CHALLENGE_BEANS] = "Challenge #13 (Beans!)",
+    [Challenge.CHALLENGE_ITS_IN_THE_CARDS] = "Challenge #14 (It's in the Cards)",
+    [Challenge.CHALLENGE_SLOW_ROLL] = "Challenge #15 (Slow Roll)",
+    [Challenge.CHALLENGE_COMPUTER_SAVY] = "Challenge #16 (Computer Savvy)",
+    [Challenge.CHALLENGE_WAKA_WAKA] = "Challenge #17 (Waka Waka)",
+    [Challenge.CHALLENGE_THE_HOST] = "Challenge #18 (The Host)",
+    [Challenge.CHALLENGE_THE_FAMILY_MAN] = "Challenge #19 (The Family Man)",
+    [Challenge.CHALLENGE_PURIST] = "Challenge #20 (Purist)",
+
+    [Challenge.CHALLENGE_XXXXXXXXL] = "Challenge #21 (XXXXXXXXL)",
+    [Challenge.CHALLENGE_SPEED] = "Challenge #22 (SPEED!)",
+    [Challenge.CHALLENGE_BLUE_BOMBER] = "Challenge #23 (Blue Bomber)",
+    [Challenge.CHALLENGE_PAY_TO_PLAY] = "Challenge #24 (PAY TO PLAY)",
+    [Challenge.CHALLENGE_HAVE_A_HEART] = "Challenge #25 (Have a Heart)",
+    [Challenge.CHALLENGE_I_RULE] = "Challenge #26 (I RULE!)",
+    [Challenge.CHALLENGE_BRAINS] = "Challenge #27 (BRAINS!)",
+    [Challenge.CHALLENGE_PRIDE_DAY] = "Challenge #28 (PRIDE DAY!)",
+    [Challenge.CHALLENGE_ONANS_STREAK] = "Challenge #29 (Onan's Streak)",
+    [Challenge.CHALLENGE_GUARDIAN] = "Challenge #30 (The Guardian)",
+
+    [Challenge.CHALLENGE_BACKASSWARDS] = "Challenge #31 (Backasswards)",
+    [Challenge.CHALLENGE_APRILS_FOOL] = "Challenge #32 (Aprils Fool)",
+    [Challenge.CHALLENGE_POKEY_MANS] = "Challenge #33 (Pokey Mans)",
+    [Challenge.CHALLENGE_ULTRA_HARD] = "Challenge #34 (Ultra Hard)",
+    [Challenge.CHALLENGE_PONG] = "Challenge #35 (Pong)",
+
+    [Challenge.CHALLENGE_SCAT_MAN] = "Challenge #36 (Scat Man)",
+    [Challenge.CHALLENGE_BAPTISM_BY_FIRE] = "Challenge #37 (Baptism by Fire)",
+    [Challenge.CHALLENGE_ISAACS_AWAKENING] = "Challenge #38 (Isaac's Awakening)",
+    [Challenge.CHALLENGE_SEEING_DOUBLE] = "Challenge #40 (Seeing Double)",
+    [Challenge.CHALLENGE_PICA_RUN] = "Challenge #41 (Pica Run)",
+    [Challenge.CHALLENGE_HOT_POTATO] = "Challenge #42 (Hot Potato)",
+    [Challenge.CHALLENGE_CANTRIPPED] = "Challenge #43 (Cantripped!)",
+    [Challenge.CHALLENGE_RED_REDEMPTION] = "Challenge #44 (Red Redemption)",
+    [Challenge.CHALLENGE_DELETE_THIS] = "Challenge #45 (DELETE THIS)",
+}
+
+return export

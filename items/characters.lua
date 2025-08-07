@@ -1,9 +1,16 @@
 local util = require("util")
+local runLocked = false
 local characterLocked = false
+local challengeLocked = false
 
--- When a character is locked, all doors are removed
-local function characterIsLocked()
-    characterLocked = true
+local function isLocked(character, challenge)
+    runLocked = true
+
+    if character then
+        characterLocked = true
+    elseif challenge then
+        challengeLocked = true
+    end
 
     -- Add costumes
     local player = Isaac.GetPlayer(0)
@@ -29,9 +36,27 @@ local function checkCharacterLocked()
     local code = AP_MAIN_MOD.ITEMS_DATA.CHARACTER_ID_TO_CODE[character]
 
     if not AP_MAIN_MOD:checkUnlocked(code) then
-        characterIsLocked()
+        isLocked(true, false)
     else
         characterLocked = false -- In case we had previously determined it was
+    end
+end
+
+-- Checks if the current challenge is locked, applies locked code if it is
+local function checkChallengeLocked()
+    local challengeId = Game().Challenge
+
+    -- Not doing a challenge
+    if challengeId == 0 then
+        return
+    end
+
+    local challengeName = AP_MAIN_MOD.CHALLENGE_DATA.ChallengeIDToName[challengeId]
+
+    if not AP_MAIN_MOD:checkUnlockedByName(challengeName) then
+        isLocked(false, true)
+    else
+        challengeLocked = false
     end
 end
 
@@ -41,13 +66,18 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     end
 
     checkCharacterLocked()
+    checkChallengeLocked()
+
+    if not characterLocked and not challengeLocked then
+        runLocked = false -- Neither is locked, run is free to go
+    end
 end)
 
 local font = Font()
 font:Load("font/terminus.fnt")
 local flashValue = 0
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
-    if not characterLocked then
+    if not runLocked then
         return
     end
 
@@ -57,6 +87,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     local height = Isaac.GetScreenHeight()
     local flash = 0.75 + (math.sin(flashValue * 0.1) / 4)
 
-    local textWidth = font:GetStringWidth("This character is locked!")
-    font:DrawString("This character is locked!", (width / 2) - (textWidth / 2), height / 2, KColor(1, flash, flash, 1))
+    local text = "This character is locked!"
+    if challengeLocked then
+        text = "This challenge is locked!"
+    end
+
+    local textWidth = font:GetStringWidth(text)
+    font:DrawString(text, (width / 2) - (textWidth / 2), height / 2, KColor(1, flash, flash, 1))
 end)
