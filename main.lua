@@ -70,6 +70,11 @@ function mod:sendLocation(location_code)
     self:exposeData({location_code}, nil, nil)
 end
 
+-- Sends multiple locations to the server
+function mod:sendLocations(location_codes)
+    self:exposeData(location_codes, nil, nil)
+end
+
 -- Send a location scout to the server
 function mod:sendLocationScout(location_code)
     self:exposeData(nil, {location_code}, nil)
