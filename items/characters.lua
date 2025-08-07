@@ -48,6 +48,7 @@ local function checkChallengeLocked()
 
     -- Not doing a challenge
     if challengeId == 0 then
+        challengeLocked = false
         return
     end
 
