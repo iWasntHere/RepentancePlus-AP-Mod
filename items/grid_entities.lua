@@ -42,8 +42,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
 
     room:Update() -- We have to update the room after we remove a grid entity because we're in hell.
 
+    local rng = util.getRNG()
     for index, type in pairs(toSpawn) do
-        room:SpawnGridEntity(index, type, 0, 0, 0)
+        rng:Next()
+        room:SpawnGridEntity(index, type, 0, rng:GetSeed(), 0)
     end
 
     -- room:Update() -- Unsure if we really need this as of now
