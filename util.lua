@@ -305,8 +305,54 @@ end
 --- True if the player owns the given trinket (gulped or otherwise)
 --- @param player EntityPlayer
 --- @param trinketType TrinketType
+--- @return boolean
 function export.hasTrinket(player, trinketType)
     return player:GetTrinketMultiplier(trinketType) > 0
+end
+
+--- True if the player has all of the given collectibles
+--- @param player EntityPlayer
+--- @param collectibleTypes CollectibleType[]
+--- @return boolean
+function export.hasAllCollectibles(player, collectibleTypes)
+    for _, collectibleType in ipairs(collectibleTypes) do
+        if not player:HasCollectible(collectibleType, true) then
+            return false -- Player doesn't have one of the collectibles :(
+        end
+    end
+
+    return true
+end
+
+--- Returns the total number of collectibles matching the given collectibles.
+--- @param player EntityPlayer
+--- @param collectibleTypes CollectibleType[]
+--- @return integer
+function export.countCollectibleTypes(player, collectibleTypes)
+    local count = 0
+
+    for _, collectibleType in ipairs(collectibleTypes) do
+        count = count + player:GetCollectibleNum(collectibleType, true)
+    end
+
+    return count
+end
+
+--- Returns the number of follower familiars in the room.
+--- @return integer
+function export.countFollowerFamiliars()
+    local count = 0
+
+    
+    for _, entity in ipairs(Isaac.GetRoomEntities()) do
+        local familiar = entity:ToFamiliar()
+
+        if familiar ~= nil and familiar.IsFollower then
+            count = count + 1
+        end
+    end
+
+    return count
 end
 
 return export

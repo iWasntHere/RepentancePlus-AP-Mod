@@ -8,6 +8,7 @@ mod.ENTITIES_DATA = require("data/entities_data")
 mod.BABY_SKIN_DATA = require("data/baby_skin_data")
 mod.CHARACTER_DATA = require("data/character_data")
 mod.CHALLENGE_DATA = require("data/challenge_data")
+mod.COLLECTIBLE_TAGS_DATA = require("data/collectible_tags")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
 local codes = {}
@@ -20,10 +21,12 @@ mod.ITEMS_DATA.CODES = codes
 AP_MAIN_MOD = mod
 
 ArchipelagoModCallbacks = {
-    MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED",
-    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT",
-    MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED",
-    MC_ARCHIPELAGO_CHEST_OPENED = "ARCHIPELAGO_CHEST_OPENED"
+    MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
+    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT", -- Called when the game sends an item through Archipelago
+    MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED", -- Called when the player picks up a pickup
+    MC_ARCHIPELAGO_CHEST_OPENED = "ARCHIPELAGO_CHEST_OPENED", -- Called when the player opens a chest
+    MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE = "ARCHIPELAGO_PRE_GET_COLLECTIBLE", -- Called when the player touches an item pedestal
+    MC_ARCHIPELAGO_POST_GET_COLLECTIBLE = "ARCHIPELAGO_POST_GET_COLLECTIBLE" -- Called when the item the player picked up is added to their inventory
 }
 
 -- Set location checks, scouts, and death link for the client-server bridge to pick up
@@ -172,7 +175,7 @@ mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
     end
 end)
 
-require("pickups")
+require("callbacks")
 
 require("locations/floor_completion")
 require("locations/enemy_destruction")
