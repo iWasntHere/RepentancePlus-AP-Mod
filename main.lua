@@ -21,7 +21,9 @@ AP_MAIN_MOD = mod
 
 ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED",
-    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT"
+    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT",
+    MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED",
+    MC_ARCHIPELAGO_CHEST_OPENED = "ARCHIPELAGO_CHEST_OPENED"
 }
 
 -- Set location checks, scouts, and death link for the client-server bridge to pick up
@@ -169,6 +171,8 @@ mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
         mod:sendLocation(880)
     end
 end)
+
+require("pickups")
 
 require("locations/floor_completion")
 require("locations/enemy_destruction")

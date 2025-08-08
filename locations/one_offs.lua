@@ -1,29 +1,50 @@
 local util = require("util")
 
-local function getDefaultRunStats()
-    return {
-        gulp_uses = 0
-    }
+--- @enum StatKeys
+local StatKeys = {
+    GULP_USES_THIS_RUN = "gulps",
+    ARCADE_VISITED_THIS_FLOOR = "arcade_visited_this_floor",
+    LOCKED_CHESTS_OPENED = "locked_chests_opened",
+    CARDS_USED = "cards_used",
+    DEATH_CARDS_USED = "death_cards_used",
+    TOTAL_DEATHS = "total_deaths",
+    ARCADES_VISITED = "arcades_visited",
+    LIL_BATTERIES_PICKED = "lil_batteries_picked"
+}
+
+--- Increases the given stat by 1, and returns the new value.
+--- @param statKey StatKeys
+--- @return integer
+local function incrementStat(statKey)
+    local value = AP_SUPP_MOD:LoadKey(statKey, 0) + 1
+    AP_SUPP_MOD:SaveKey(statKey, value)
+
+    return value
 end
 
-local perRunStats = getDefaultRunStats()
+--- Sets the given stat to the value.
+--- @param statKey StatKeys
+--- @param value any
+local function setStat(statKey, value)
+    AP_SUPP_MOD:SaveKey(statKey, value)
+end
 
---- Updates the given stat for this current run
---- @param key string The key that holds the value to update
---- @param value any The new value
-local function updateRunStat(key, value)
-    perRunStats[key] = value
-    AP_SUPP_MOD:SaveKey("per_run_stats", perRunStats)
+--- Gets the value of the stat key.
+--- @param statKey StatKeys
+--- @param default any
+--- @return any
+local function getStat(statKey, default)
+    return AP_SUPP_MOD:LoadKey(statKey, default)
 end
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if continued then
-        perRunStats = AP_SUPP_MOD:LoadKey("per_run_stats", getDefaultRunStats())
+        return
     end
 
-    AP_SUPP_MOD:SaveKey("per_run_stats", getDefaultRunStats())
-
-    AP_SUPP_MOD:SaveKey("arcade_visited_this_floor", false)
+    -- Reset these when a new game begins
+    setStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, false)
+    setStat(StatKeys.GULP_USES_THIS_RUN, 0)
 end)
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
@@ -73,19 +94,18 @@ end)
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_PILL, function (_, pillEffect, player, flags)
     if pillEffect == PillEffect.PILLEFFECT_GULP then
-        updateRunStat("gulp_uses", perRunStats.gulp_uses + 1)
-    end
-
-    -- Use Gulp! 5 times in one run
-    if perRunStats.gulp_uses == 5 then
-        AP_MAIN_MOD:sendLocation(470)
+        -- Use Gulp! 5 times in one run
+        if incrementStat(StatKeys.GULP_USES_THIS_RUN) == 5 then
+            AP_MAIN_MOD:sendLocation(470)
+        end
     end
 end)
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
     local game = Game()
 
-    AP_SUPP_MOD:SaveKey("arcade_visited_this_floor", false)
+    -- Reset these when a new floor is reached
+    setStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, false)
 
     -- 2 stages cleared without damage
     if game:GetStagesWithoutDamage() >= 2 then
@@ -108,64 +128,41 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     local game = Game()
 
     -- Visit 10 arcades
-    if not AP_SUPP_MOD:LoadKey("arcade_visited_this_floor", false) and game:GetRoom():GetType() == RoomType.ROOM_ARCADE then
-        AP_SUPP_MOD:SaveKey("arcade_visited_this_floor", true)
+    if not getStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, false) and game:GetRoom():GetType() == RoomType.ROOM_ARCADE then
+        setStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, true)
 
-        local arcadesVisited = AP_SUPP_MOD:LoadKey("arcades_visited", 0) + 1
-        AP_SUPP_MOD:SaveKey("arcades_visited", arcadesVisited)
-
-        if arcadesVisited == 10 then
+        if incrementStat(StatKeys.ARCADES_VISITED) == 10 then
             AP_MAIN_MOD:sendLocation(443)
         end
     end
 end)
 
-local checkingPickupVariants = {
-    [PickupVariant.PICKUP_LOCKEDCHEST] = true,
-    [PickupVariant.PICKUP_MOMSCHEST] = true
-}
-
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
-    if not checkingPickupVariants[pickup.Variant] then -- Not the chest we're looking for
-        return
-    end
-
-    local data = pickup:GetData()
-
-    if not data.archipelago_pickup_processed then -- We haven't processed this chest yet
-        local sprite = pickup:GetSprite()
-
-        if sprite:IsPlaying("Open") then
-            data.archipelago_pickup_processed = true -- Processed now
-
-            if pickup.Variant == PickupVariant.PICKUP_LOCKEDCHEST then
-                local chestsOpened = AP_SUPP_MOD:LoadKey("locked_chests_opened", 0) + 1
-                AP_SUPP_MOD:SaveKey("locked_chests_opened", chestsOpened)
-
-                if chestsOpened == 20 then
-                    AP_MAIN_MOD:sendLocation(454) -- Open 20 locked chests
-                end
-            elseif pickup.Variant == PickupVariant.PICKUP_MOMSCHEST then
-                AP_MAIN_MOD:sendLocation(475) -- Open Mom's Chest
-            end
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PICKUP_PICKED, function (_, pickup)
+    if pickup.Variant == PickupVariant.PICKUP_LIL_BATTERY then
+        if incrementStat(StatKeys.LIL_BATTERIES_PICKED) == 20 then
+            AP_MAIN_MOD:sendLocation(485) -- Collect 20 lil batteries
         end
     end
 end)
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player, flags)
-    local cardsUsed = AP_SUPP_MOD:LoadKey("cards_used", 0) + 1
-    AP_SUPP_MOD:SaveKey("cards_used", cardsUsed)
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, function (_, chest)
+    if (chest.Variant == PickupVariant.PICKUP_LOCKEDCHEST) then
+        if incrementStat(StatKeys.LOCKED_CHESTS_OPENED) == 20 then
+            AP_MAIN_MOD:sendLocation(454) -- Open 20 locked chests
+        end
+    elseif (chest.Variant == PickupVariant.PICKUP_MOMSCHEST) then
+        AP_MAIN_MOD:sendLocation(475) -- Open Mom's Chest
+    end
+end)
 
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player, flags)
     -- 20 Cards or Runes used
-    if cardsUsed == 20 then
+    if incrementStat(StatKeys.CARDS_USED) == 20 then
         AP_MAIN_MOD:sendLocation(489)
     end
 
     if cardType == Card.CARD_DEATH then
-        local deathUses = AP_SUPP_MOD:LoadKey("death_used", 0) + 1
-        AP_SUPP_MOD:SaveKey("death_used", deathUses)
-
-        if deathUses == 4 then
+        if incrementStat(StatKeys.DEATH_CARDS_USED) == 4 then
             AP_MAIN_MOD:sendLocation(446)
         end
     end
@@ -180,10 +177,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
     end
 
     -- Die 100 times
-    local timesDied = AP_SUPP_MOD:LoadKey("deaths", 0) + 1
-    AP_SUPP_MOD:SaveKey("deaths", timesDied)
-
-    if timesDied == 100 then
+    if incrementStat(StatKeys.TOTAL_DEATHS) == 100 then
         AP_MAIN_MOD:sendLocation(445)
     end
 end, EntityType.ENTITY_PLAYER)
