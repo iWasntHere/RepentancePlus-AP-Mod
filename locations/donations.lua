@@ -18,8 +18,6 @@ local function awardDonationCheck()
         locationCode = AP_MAIN_MOD.LOCATIONS_DATA["Greed Donation"]
     end
 
-    print(locationCode)
-
     local donations = AP_SUPP_MOD:LoadKey(key, 0)
     donations = donations + 1
     AP_MAIN_MOD:sendLocation(locationCode + donations)
@@ -34,8 +32,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
     if type ~= EntityType.ENTITY_SLOT or (variant ~= SlotVariant.DONATION_MACHINE and variant ~= SlotVariant.GREED_DONATION_MACHINE) then
         return
     end
-
-    print("replace")
 
     return {beggarType, beggarVariant, 0, seed}
 end)

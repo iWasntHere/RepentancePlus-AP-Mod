@@ -71,9 +71,6 @@ local function tryAwardMark(markName)
 
     marks[playerName][markName] = true
 
-    print(playerName)
-    print(markName)
-
     -- Save 'em
     AP_SUPP_MOD:SaveKey("completion_marks", marks)
 
