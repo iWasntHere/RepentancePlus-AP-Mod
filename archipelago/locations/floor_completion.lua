@@ -1,4 +1,4 @@
-local util = require("util.lua")
+local util = require("archipelago.util")
 
 -- Handles locations for completing floors
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPosition)

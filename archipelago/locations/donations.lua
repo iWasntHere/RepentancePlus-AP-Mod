@@ -1,4 +1,4 @@
-local util = require "util"
+local util = require("archipelago.util")
 local beggarType = Isaac.GetEntityTypeByName("Archipelago Beggar")
 local beggarVariant = Isaac.GetEntityVariantByName("Archipelago Beggar")
 local sfx = SFXManager()

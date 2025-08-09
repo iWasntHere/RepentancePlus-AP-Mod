@@ -1,13 +1,13 @@
-local util = require("util")
+local util = require("archipelago.util")
 local sfx = SFXManager()
 
 local page = 1
 
 local pages = {
-    require("tracker/character_tracker"),
-    require("tracker/stage_tracker"),
-    require("tracker/item_tracker"),
-    require("tracker/baby_tracker")
+    require("archipelago.tracker.character_tracker"),
+    require("archipelago.tracker.stage_tracker"),
+    require("archipelago.tracker.item_tracker"),
+    require("archipelago.tracker.baby_tracker")
 }
 
 local fadeSprite = Sprite()

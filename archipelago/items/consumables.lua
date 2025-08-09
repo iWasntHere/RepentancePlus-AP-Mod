@@ -1,8 +1,9 @@
-local cardData = require("data/consumable_data")
-local util = require("util")
+local cardData = require("archipelago.data.consumable_data")
+local util = require("archipelago.util")
 
 -- When starting a new game, fix pill effects
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+    --[[ TODO: Re-enable once I'm able to generate lua for ALL pills (we're missing I Can See Forever and Phermones)
     if continued then -- Only on new runs pls
         return
     end
@@ -14,7 +15,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     -- Filter out locked pills
     local usablePills = {}
     for _, pillType in ipairs(pills) do
-        if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.PILL_ID_TO_CODE[pillType]) then
+        local pillCode = AP_MAIN_MOD.ITEMS_DATA.PILL_ID_TO_CODE[pillType]
+        if pillCode == nil then -- Error checking
+            AP_MAIN_MOD:Error("No code for PillType " .. tostring(pillType), false)
+        end
+        
+        if AP_MAIN_MOD:checkUnlocked(pillCode) then
             usablePills[#usablePills + 1] = pillType
         end
     end
@@ -40,6 +46,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
 
         i = i + 1
     end
+    --]]
 end)
 
 -- Returns an unlocked cardType type, if the given cardType is locked. Else, it returns the given CardType.

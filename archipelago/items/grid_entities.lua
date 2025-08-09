@@ -1,9 +1,9 @@
-local util = require("util")
+local util = require("archipelago.util")
 
 local gridEntityTypeToName = {
     [GridEntityType.GRID_ROCK_SS] = "Super Special Rocks",
     [GridEntityType.GRID_ROCK_GOLD] = "Fool's Gold",
-    [GridEntityType.GRID_ROCK_ALT2] = "A Mysterious Door"
+    [GridEntityType.GRID_ROCK_ALT2] = "A Strange Door"
 }
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()

@@ -1,4 +1,4 @@
-local util = require "util"
+local util = require("archipelago.util")
 local FloorItemNames = {
     "The Womb",
     "Blue Womb",
@@ -248,8 +248,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
         return
     end
 
-    -- Remove the "Mysterious Door" ascent path entrance
-    if roomType == RoomType.ROOM_DEFAULT and not AP_MAIN_MOD:checkUnlockedByName("A Mysterious Door") then
+    -- Remove the "Strange Door" ascent path entrance
+    if roomType == RoomType.ROOM_DEFAULT and not AP_MAIN_MOD:checkUnlockedByName("A Strange Door") then
         util.removeSecretExit(room)
         return
     end

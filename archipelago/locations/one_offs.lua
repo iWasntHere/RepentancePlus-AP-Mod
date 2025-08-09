@@ -1,4 +1,4 @@
-local util = require("util")
+local util = require("archipelago.util")
 
 --- @enum StatKeys
 local StatKeys = {

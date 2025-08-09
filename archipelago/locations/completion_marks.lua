@@ -1,4 +1,4 @@
-local util = require("util")
+local util = require("archipelago.util")
 
 local bossLocationNames = {
     [EntityType.ENTITY_MOM] = "Mom",

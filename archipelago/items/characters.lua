@@ -1,4 +1,4 @@
-local util = require("util")
+local util = require("archipelago.util")
 local runLocked = false
 local characterLocked = false
 local challengeLocked = false

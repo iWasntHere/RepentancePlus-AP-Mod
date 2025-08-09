@@ -1,4 +1,4 @@
-local util = require("util")
+local util = require("archipelago.util")
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 
@@ -44,7 +44,7 @@ local stageProgression = {
         {item = "The Negative", anim = "Dark Room"},
     },
     { -- Chapter ?
-        {item = "A Mysterious Door", anim = "Home"},
+        {item = "A Strange Door", anim = "Home"},
         {item = "New Area", anim = "The Void"}
     }
 }

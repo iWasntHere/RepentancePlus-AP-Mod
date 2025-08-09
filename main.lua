@@ -1,14 +1,14 @@
 local mod = RegisterMod("Archipelago", 1)
 local json = require("json")
-local util = require("util.lua")
+local util = require("archipelago.util")
 
-mod.ITEMS_DATA = require("data/item_data")
-mod.LOCATIONS_DATA = require("data/location_data")
-mod.ENTITIES_DATA = require("data/entities_data")
-mod.BABY_SKIN_DATA = require("data/baby_skin_data")
-mod.CHARACTER_DATA = require("data/character_data")
-mod.CHALLENGE_DATA = require("data/challenge_data")
-mod.COLLECTIBLE_TAGS_DATA = require("data/collectible_tags")
+mod.ITEMS_DATA = require("archipelago.data.item_data")
+mod.LOCATIONS_DATA = require("archipelago.data.location_data")
+mod.ENTITIES_DATA = require("archipelago.data.entities_data")
+mod.BABY_SKIN_DATA = require("archipelago.data.baby_skin_data")
+mod.CHARACTER_DATA = require("archipelago.data.character_data")
+mod.CHALLENGE_DATA = require("archipelago.data.challenge_data")
+mod.COLLECTIBLE_TAGS_DATA = require("archipelago.data.collectible_tags")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
 local codes = {}
@@ -19,7 +19,7 @@ table.sort(codes) -- We'd prefer this in order, thanks
 mod.ITEMS_DATA.CODES = codes
 
 AP_MAIN_MOD = mod
-local spawnConfetti = require("confetti")
+local spawnConfetti = require("archipelago.confetti")
 
 ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
@@ -32,6 +32,22 @@ ArchipelagoModCallbacks = {
 
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
 local sentLocations = {}
+
+--- Prints an error to the console and log output.
+--- @param text string
+--- @param stackTrace boolean|nil Whether to print an entire stack trace, 'true' by default
+function mod:Error(text, stackTrace)
+    if stackTrace == nil then -- Default parameter value
+        stackTrace = true
+    end
+
+    if stackTrace and debug then -- Lua debugging, then transform to print a traceback
+        text = debug.traceback(text)
+    end
+
+    print(text)
+    Isaac.DebugString(text)
+end
 
 -- Set location checks, scouts, and death link for the client-server bridge to pick up
 function mod:exposeData(location_checks, location_scouts, death_link_reason)
@@ -72,14 +88,17 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
         util.table_concat(apData.location_scouts, location_scouts)
     end
 
-    local encode = json.encode(apData)
-	mod:SaveData(encode)
-    print(encode)
+	mod:SaveData(json.encode(apData))
 end
 
 -- Send a location to the server
 function mod:sendLocation(location_code)
-    self:sendLocations({location_code}, nil, nil)
+    if location_code == nil then
+        mod:Error("'nil' location given")
+        return false
+    end
+
+    self:sendLocations({location_code})
 end
 
 -- Sends multiple locations to the server
@@ -112,12 +131,30 @@ end
 
 -- Returns true if the item code is considered to be unlocked
 function mod:checkUnlocked(code)
-    return AP_SUPP_MOD.itemStates[tostring(code)] -- The codes are strings in the table
+    if code == nil then -- A nil code was given
+        mod:Error("'nil' item code given")
+        return false
+    end
+
+    if not mod.ITEMS_DATA.CODE_TO_NAME[code] then -- A nonexistant code was given
+        mod:Error("No such item code " .. tostring(code))
+        return false
+    end
+
+    return AP_SUPP_MOD:IsItemUnlocked(tostring(code)) -- The codes are strings in the table
 end
 
 -- Same as above, but with an item's name instead
 function mod:checkUnlockedByName(name)
-    return AP_SUPP_MOD.itemStates[tostring(mod.ITEMS_DATA.NAME_TO_CODE[name])]
+    local code = tostring(mod.ITEMS_DATA.NAME_TO_CODE[name])
+
+    -- A bad item name was given
+    if code == nil then
+        mod:Error("No such item named '" .. name .. "'")
+        return false
+    end
+
+    return AP_SUPP_MOD:IsItemUnlocked(code) -- The codes are strings in the table
 end
 
 -- Does the effects when you send/receive an item
@@ -197,21 +234,21 @@ mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
     end
 end)
 
-require("callbacks")
+require("archipelago.callbacks")
 
-require("locations/floor_completion")
-require("locations/enemy_destruction")
-require("locations/completion_marks")
-require("locations/donations")
-require("locations/challenge_completion")
-require("locations/one_offs")
+require("archipelago.locations.floor_completion")
+require("archipelago.locations.enemy_destruction")
+require("archipelago.locations.completion_marks")
+require("archipelago.locations.donations")
+require("archipelago.locations.challenge_completion")
+require("archipelago.locations.one_offs")
 
-require("items/consumables")
-require("items/entities")
-require("items/quest")
-require("items/floors")
-require("items/grid_entities")
-require("items/characters")
-require("items/curses")
+require("archipelago.items.consumables")
+require("archipelago.items.entities")
+require("archipelago.items.quest")
+require("archipelago.items.floors")
+require("archipelago.items.grid_entities")
+require("archipelago.items.characters")
+require("archipelago.items.curses")
 
-require("tracker/tracker")
+require("archipelago.tracker.tracker")

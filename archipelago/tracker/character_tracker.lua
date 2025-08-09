@@ -1,4 +1,4 @@
-local util = require("util")
+local util = require("archipelago.util")
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 

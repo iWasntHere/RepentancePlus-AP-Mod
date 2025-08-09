@@ -1,4 +1,4 @@
-local util = require "util"
+local util = require("archipelago.util")
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_CURSE_EVAL, function (_, curses)
     local isTerrible = AP_MAIN_MOD:checkUnlockedByName("Everything is Terrible!!!")
     local difficulty = Game().Difficulty
