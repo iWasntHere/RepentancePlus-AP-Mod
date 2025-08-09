@@ -46,11 +46,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, playe
         return
     end
 
-    if playerEntity:GetNumCoins() < 0 then -- Player is too poor to pay :(
+    if playerEntity:GetNumCoins() < 15 then -- Player is too poor to pay :(
         return
     end
 
-    playerEntity:AddCoins(1)
+    playerEntity:AddCoins(-15)
     collidedEntity:GetSprite():Play("PayPrize", true)
     sfx:Play(SoundEffect.SOUND_SCAMPER)
 end)
