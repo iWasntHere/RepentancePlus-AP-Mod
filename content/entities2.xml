@@ -2,4 +2,8 @@
     <entity anm2path="items/slots/LocationBeggar.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="3" collisionRadius="12" friction="1" id="6" name="Archipelago Beggar" numGridCollisionPoints="24" shadowSize="15" stageHP="0" variant="">
         <gibs amount="6" blood="1" bone="1" eye="1" gut="1" large="0"/>
     </entity>
+	
+    <entity anm2path="effects/Confetti.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0" collisionMass="0" collisionRadius="0" friction="0" id="1000" name="Confetti" numGridCollisionPoints="0" shadowSize="0" stageHP="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0"/>
+    </entity>
 </entities>

@@ -19,6 +19,7 @@ table.sort(codes) -- We'd prefer this in order, thanks
 mod.ITEMS_DATA.CODES = codes
 
 AP_MAIN_MOD = mod
+local spawnConfetti = require("confetti")
 
 ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
@@ -71,7 +72,9 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
         util.table_concat(apData.location_scouts, location_scouts)
     end
 
-	mod:SaveData(json.encode(apData))
+    local encode = json.encode(apData)
+	mod:SaveData(encode)
+    print(encode)
 end
 
 -- Send a location to the server
@@ -179,6 +182,9 @@ end)
 
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
     mod:showItemGet(itemName, playerName, locationName, isTrap, true)
+
+    -- Celebratory confetti (awesome)
+    spawnConfetti(math.random(15, 30))
 end)
 
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
