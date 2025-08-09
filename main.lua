@@ -92,7 +92,9 @@ function mod:sendLocations(location_codes)
         end
     end
 
-    self:exposeData(finalCodes, nil, nil)
+    if #finalCodes > 0 then
+        self:exposeData(finalCodes, nil, nil)
+    end
 end
 
 -- Send a location scout to the server

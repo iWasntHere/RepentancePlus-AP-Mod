@@ -50,6 +50,9 @@ local function defeatLocations(name, locations)
 
     if locationID ~= nil then
         locations[#locations + 1] = locationID
+
+        -- Debug to ensure that the game caught it
+        print(locationName)
     end
 end
 

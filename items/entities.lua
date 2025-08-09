@@ -58,8 +58,11 @@ local ShopkeeperVariant = {
     SPECIAL_SECRET_ROOM_KEEPER = 4
 }
 
--- Call to receive replacement entity data for the given passed entity data
--- If nil, then the repalcement did not occur
+--- Call to receive replacement entity data for the given passed entity data
+--- If nil, then the repalcement did not occur
+--- @param type EntityType
+--- @param variant integer
+--- @param subType integer
 local function replaceEntity(type, variant, subType)
     -- It Lives!
     if type == EntityType.ENTITY_MOMS_HEART and variant == 1 and not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
@@ -243,4 +246,18 @@ end)
 -- Replace entities that are a part of the layout
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, function (_, type, variant, subType, gridIndex, seed)
     return replaceEntity(type, variant, subType)
+end)
+
+--- Used to do basically the same thing as the previous two, but for room drops (I guess???)
+--- @param pickup EntityPickup
+--- @param variant PickupVariant
+--- @param subType integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_SELECTION, function (_, pickup, variant, subType)
+    local newValues = replaceEntity(EntityType.ENTITY_PICKUP, variant, subType)
+
+    if not newValues then
+        return
+    end
+
+    return {newValues[2], newValues[3]}
 end)
