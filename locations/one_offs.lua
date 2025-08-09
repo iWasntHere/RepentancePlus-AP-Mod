@@ -370,7 +370,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     end
 
     -- Collect at least 3 celestial items
-    if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS) >= 2 then
+    if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS) >= 3 then
         AP_MAIN_MOD:sendLocation(427)
     end
 
