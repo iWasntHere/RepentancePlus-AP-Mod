@@ -43,11 +43,6 @@ local function defeatLocations(name, locations)
         locations[#locations + 1] = 360
     end
 
-    -- Mom's Heart defeated as Lazarus w/ no deaths
-    if (name == "Mom's Heart" or name == "It Lives") and Isaac.GetPlayer():GetPlayerType() == PlayerTypes.PLAYER_LAZARUS and not AP_SUPP_MOD:LoadKey("died_this_run", false) then
-        locations[#locations + 1] = 358
-    end
-
     if locationID ~= nil then
         locations[#locations + 1] = locationID
 
@@ -243,11 +238,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     local type = entity.Type
     local variant = entity.Variant
 
-    -- For Lazarus @ Mom's Heart (No Deaths)
-    if type == EntityType.ENTITY_PLAYER then
-        AP_SUPP_MOD:SaveKey("died_this_run", true)
-    end
-
     -- Mark enemies that we've "seen" (read: killed) in this room.
     -- When the room is completed, checks will be granted and this will be flushed
     seen[#seen + 1] = {type = type, variant = variant}
@@ -282,15 +272,6 @@ end)
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     seen = {} -- Flush seen table, in case the player escapes a fight and doesn't actually win
-end)
-
--- Used to track if the player has died this run (for Lazarus @ Mom's Heart (No Deaths))
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
-    if continued then -- Only reset the 'died this run' state when a new game begins
-        return
-    end
-
-    AP_SUPP_MOD.SaveKey("died_this_run", false)
 end)
 
 -- Handles sparing Baby Plum

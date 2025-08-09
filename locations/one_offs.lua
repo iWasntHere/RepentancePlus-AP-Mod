@@ -25,7 +25,8 @@ local StatKeys = {
     RESETS = "resets", -- Mr Reseter!
     HEARTS_COINS_BOMBS_PICKED_THIS_RUN = "hearts_coins_bombs_picked_this_run", -- It's the Key!
     WIN_STREAK = "win_streak",
-    TEARS_UP_PILLS_THIS_RUN = "tears_up_pills_this_run"
+    TEARS_UP_PILLS_THIS_RUN = "tears_up_pills_this_run",
+    DIED_THIS_RUN = "died_this_run" -- Lazarus @ Mom's Heart w/o Deaths
 }
 
 --- Increases the given stat by 1, and returns the new value.
@@ -81,6 +82,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     setStat(StatKeys.LAST_RUN_COMPLETED, false)
     setStat(StatKeys.HEARTS_COINS_BOMBS_PICKED_THIS_RUN, false)
     setStat(StatKeys.TEARS_UP_PILLS_THIS_RUN, 0)
+    setStat(StatKeys.DIED_THIS_RUN, false)
 end)
 
 --- @param player EntityPlayer
@@ -271,6 +273,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
     if incrementStat(StatKeys.TOTAL_DEATHS) == 100 then
         AP_MAIN_MOD:sendLocation(445)
     end
+
+    setStat(StatKeys.DIED_THIS_RUN, true)
 end, EntityType.ENTITY_PLAYER)
 
 --- When The Lamb dies (It's the Key!)
@@ -280,6 +284,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
         AP_MAIN_MOD:sendLocation(460)
     end
 end, EntityType.ENTITY_THE_LAMB)
+
+--- When Mom's Heart dies (Lazarus to Mom's Heart w/o Deaths)
+--- @param entity EntityNPC
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
+    if not getStat(StatKeys.DIED_THIS_RUN, true) and Isaac.GetPlayer(0):GetType() == PlayerType.PLAYER_LAZARUS then
+        AP_MAIN_MOD:sendLocation(358)
+    end
+end, EntityType.ENTITY_MOMS_HEART)
 
 --- @param player EntityPlayer
 --- @param item ItemConfigItem
