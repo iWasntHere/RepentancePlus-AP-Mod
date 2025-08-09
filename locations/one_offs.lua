@@ -24,7 +24,8 @@ local StatKeys = {
     LAST_RUN_COMPLETED = "last_run_completed", -- Mr Resetter!
     RESETS = "resets", -- Mr Reseter!
     HEARTS_COINS_BOMBS_PICKED_THIS_RUN = "hearts_coins_bombs_picked_this_run", -- It's the Key!
-    WIN_STREAK = "win_streak"
+    WIN_STREAK = "win_streak",
+    TEARS_UP_PILLS_THIS_RUN = "tears_up_pills_this_run"
 }
 
 --- Increases the given stat by 1, and returns the new value.
@@ -79,6 +80,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     setStat(StatKeys.DEVIL_ITEMS_TAKEN_THIS_RUN, 0)
     setStat(StatKeys.LAST_RUN_COMPLETED, false)
     setStat(StatKeys.HEARTS_COINS_BOMBS_PICKED_THIS_RUN, false)
+    setStat(StatKeys.TEARS_UP_PILLS_THIS_RUN, 0)
 end)
 
 --- @param player EntityPlayer
@@ -320,6 +322,16 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     end
 end)
 
+---Determines if the player has fulfilled the "collect 10 tears up items or pills" condition, and sends the location
+---@param player EntityPlayer
+local function tryTearsUpCollectionLocation(player)
+    -- Collect at least 10 tears up items or pills
+    local tearsItems = util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS)
+    if tearsItems + getStat(StatKeys.TEARS_UP_PILLS_THIS_RUN, 0) >= 10 then
+        AP_MAIN_MOD:sendLocation(464)
+    end
+end
+
 --- @param player EntityPlayer
 --- @param item ItemConfigItem
 --- @param charge integer
@@ -398,6 +410,8 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
         AP_MAIN_MOD:sendLocation(427)
     end
 
+    tryTearsUpCollectionLocation(player)
+
     -- Collect at least 5 familiars
     if util.countFollowerFamiliars() >= 5 then
         AP_MAIN_MOD:sendLocation(431)
@@ -424,5 +438,16 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_END, function (_, isGameOver)
         if wins >= 5 then
             AP_MAIN_MOD:sendLocation(458)
         end
+    end
+end)
+
+--- Used to track how many Tears Up pills were used this run
+--- @param effect PillEffect
+--- @param player EntityPlayer
+--- @param flags integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_PILL, function (effect, player, flags)
+    if effect == PillEffect.PILLEFFECT_TEARS_UP then
+        incrementStat(StatKeys.TEARS_UP_PILLS_THIS_RUN)
+        tryTearsUpCollectionLocation(player)
     end
 end)
