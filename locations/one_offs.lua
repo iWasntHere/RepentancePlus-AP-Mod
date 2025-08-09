@@ -318,8 +318,32 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
             AP_MAIN_MOD:sendLocation(449)
         end
     end
+end)
 
-    -- Own at least 50 collectibles
+--- @param player EntityPlayer
+--- @param item ItemConfigItem
+--- @param charge integer
+--- @param touched boolean
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE, function (_, player, item, charge, touched)
+    if touched then -- We only want to check for new items
+        return
+    end
+
+    -- Collected 5 Rubber Cements
+    if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
+        if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 5 then
+            AP_MAIN_MOD:sendLocation(430)
+        end
+    end
+
+    -- Collected 10 Blood Clots
+    if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
+        if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 10 then
+            AP_MAIN_MOD:sendLocation(436)
+        end
+    end
+
+   -- Own at least 50 collectibles
     if player:GetCollectibleCount() >= 50 then
         AP_MAIN_MOD:sendLocation(428)
     end
@@ -377,30 +401,6 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     -- Collect at least 5 familiars
     if util.countFollowerFamiliars() >= 5 then
         AP_MAIN_MOD:sendLocation(431)
-    end
-end)
-
---- @param player EntityPlayer
---- @param item ItemConfigItem
---- @param charge integer
---- @param touched boolean
-AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE, function (_, player, item, charge, touched)
-    if touched then -- We only want to check for new items
-        return
-    end
-
-    -- Collected 5 Rubber Cements
-    if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
-        if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 5 then
-            AP_MAIN_MOD:sendLocation(430)
-        end
-    end
-
-    -- Collected 10 Blood Clots
-    if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
-        if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 10 then
-            AP_MAIN_MOD:sendLocation(436)
-        end
     end
 end)
 

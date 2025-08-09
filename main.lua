@@ -29,6 +29,9 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_POST_GET_COLLECTIBLE = "ARCHIPELAGO_POST_GET_COLLECTIBLE" -- Called when the item the player picked up is added to their inventory
 }
 
+--- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
+local sentLocations = {}
+
 -- Set location checks, scouts, and death link for the client-server bridge to pick up
 function mod:exposeData(location_checks, location_scouts, death_link_reason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
@@ -73,12 +76,23 @@ end
 
 -- Send a location to the server
 function mod:sendLocation(location_code)
-    self:exposeData({location_code}, nil, nil)
+    self:sendLocations({location_code}, nil, nil)
 end
 
 -- Sends multiple locations to the server
 function mod:sendLocations(location_codes)
-    self:exposeData(location_codes, nil, nil)
+    -- Filter out any location codes that have already been sent
+    local finalCodes = {}
+    for _, locationCode in ipairs(location_codes) do
+        if not sentLocations[locationCode] then
+            finalCodes[#finalCodes + 1] = locationCode
+
+            -- Make sure we don't try sending this location again later
+            sentLocations[#sentLocations + 1] = locationCode
+        end
+    end
+
+    self:exposeData(finalCodes, nil, nil)
 end
 
 -- Send a location scout to the server
