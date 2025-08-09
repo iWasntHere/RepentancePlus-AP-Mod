@@ -112,7 +112,7 @@ return function(offset, canControl, sfx)
             font:DrawStringScaled(name, x + textXOffset, y, 0.5, 0.5, color)
         end
 
-        drawMarks(marks[name], x, y - 40)
+        drawMarks(marks[AP_MAIN_MOD.CHARACTER_DATA.ItemNameToInternalName[name]], x, y - 40)
 
         row = row + 1
         column = column + 1

@@ -50,5 +50,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
     local locationName = playerName .. " (" .. chapterName .. ")"
     local locationCode = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
 
+    if locationCode == nil then
+        Isaac.DebugString("Missing location name '" .. locationName .. "'")
+        return
+    end
+
     AP_MAIN_MOD:sendLocation(locationCode)
 end)
