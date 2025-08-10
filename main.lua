@@ -83,12 +83,12 @@ function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 
     -- New location checks
     if locationChecks then
-        util.table_concat(apData.location_checks, locationChecks)
+        apData.location_checks = util.concatArrays({apData.location_checks, locationChecks})
     end
 
     -- New location scouts
     if locationScouts then
-        util.table_concat(apData.location_scouts, locationScouts)
+        apData.location_scouts = util.concatArrays({apData.location_scouts, locationScouts})
     end
 
 	mod:SaveData(json.encode(apData))

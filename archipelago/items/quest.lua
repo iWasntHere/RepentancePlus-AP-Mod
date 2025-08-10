@@ -19,6 +19,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
         return
     end
 
+    -- In case collectibleType is ever nil
+    if collectibleType == nil then
+        AP_MAIN_MOD:Error("CollectibleType is nil")
+        return
+    end
+
     -- Get the code for the collectible that's trying to spawn
     local code = AP_MAIN_MOD.ITEMS_DATA.COLLECTIBLE_ID_TO_CODE[collectibleType]
 

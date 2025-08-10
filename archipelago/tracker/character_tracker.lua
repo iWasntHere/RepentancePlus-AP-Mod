@@ -30,9 +30,9 @@ local function drawMarks(marks, x, y)
         marks = {}
     end
 
-    local numMarks = #AP_MAIN_MOD.CHARACTER_DATA.CompletionMarks
+    local numMarks = #AP_MAIN_MOD.CHARACTER_DATA.COMPLETION_MARKS
     local twoPi = 2 * math.pi
-    for i, mark in ipairs(AP_MAIN_MOD.CHARACTER_DATA.CompletionMarks) do
+    for i, mark in ipairs(AP_MAIN_MOD.CHARACTER_DATA.COMPLETION_MARKS) do
         local xx = x + math.cos((i / numMarks) * twoPi) * 32
         local yy = y + math.sin((i / numMarks) * twoPi) * 32
 
