@@ -71,26 +71,38 @@ export.taintedCharacters = {
     [PlayerType.PLAYER_THESOUL_B] = true
 }
 
-function export.get_character_name ()
+--- Returns the name of the currently played character.
+--- @return string
+function export.get_character_name()
     return export.playerTypeNames[Isaac.GetPlayer():GetPlayerType()]
 end
 
-function export.is_character_tainted ()
+--- 'true' if the currently played character is tainted.
+--- @return boolean
+function export.is_character_tainted()
     return export.taintedCharacters[Isaac.GetPlayer():GetPlayerType()] ~= nil
 end
 
--- Picks a random value from the table
-function export.random_from_table (rng, table)
+--- Picks a random value from the table.
+--- @param rng RNG
+--- @param table table
+--- @return any
+function export.random_from_table(rng, table)
     local keys = export.table_keys(table)
     return table[rng:RandomInt(#keys) + 1]
 end
 
--- Picks a random value from the array
-function export.random_from_array (rng, table)
+--- Picks a random value from the array.
+--- @param rng RNG
+--- @param table any[]
+--- @return any
+function export.random_from_array(rng, table)
     return table[rng:RandomInt(#table) + 1]
 end
 
--- Shuffles a table in-place
+--- Shuffles an array in-place.
+--- @param rng RNG
+--- @param table any[]
 function export.shuffle_table(rng, table)
     for i = #table, 2, -1 do
         local j = rng:RandomInt(i) + 1
@@ -98,8 +110,10 @@ function export.shuffle_table(rng, table)
     end
 end
 
--- Merges all arrays given into one array
-function export.merge_arrays (array_of_arrays)
+--- Concatenates all given arrays into a single output array.
+--- @param array_of_arrays table[]
+--- @return table
+function export.merge_arrays(array_of_arrays)
     local collection = {}
     for _, array in ipairs(array_of_arrays) do
         for _, value in ipairs(array) do
@@ -110,7 +124,9 @@ function export.merge_arrays (array_of_arrays)
     return collection
 end
 
--- Gets an array of table keys
+--- Returns all of the keys for the table as an array.
+--- @param table table
+--- @return integer[]|string[]
 function export.table_keys(table)
     local keys = {}
 
@@ -122,15 +138,28 @@ function export.table_keys(table)
 end
 
 -- http://lua-users.org/wiki/StringRecipes
-function export.string_starts_with (str, starts_with)
+
+--- Returns 'true' if the string starts with the given substring.
+--- @param str string
+--- @param starts_with string
+--- @return boolean
+function export.string_starts_with(str, starts_with)
 	return str:sub(1, #starts_with) == starts_with
 end
 
-function export.string_ends_with (str, ends_with)
+--- Returns 'true' if the string ends with the given substring.
+--- @param str string
+--- @param ends_with string
+--- @return boolean
+function export.string_ends_with(str, ends_with)
 	return ends_with == "" or str:sub(-#ends_with) == ends_with
 end
 
-function export.string_split (str, delimiter)
+--- Splits a string into an array of substrings by a delimitter.
+--- @param str string
+--- @param delimiter string
+--- @return string[]
+function export.string_split(str, delimiter)
 	local output = {}
 	local i = 1
 	
@@ -142,12 +171,18 @@ function export.string_split (str, delimiter)
 	return output
 end
 
+--- Adds all values from one table to the other, in place.
+--- @param to_table table
+--- @param from_table table
 function export.table_concat(to_table, from_table)
     for _, v in ipairs(from_table) do
         table.insert(to_table, v)
     end
 end
 
+--- Turns a table into a string.
+--- @param table table
+--- @return string
 function export.table_tostring(table)
     local str = ""
     for key, value in pairs(table) do
@@ -157,6 +192,9 @@ function export.table_tostring(table)
     return "{" .. string.sub(str, 1, #str - 2) .. "}"
 end
 
+--- Turns an array into a string.
+--- @param array table
+--- @return string
 function export.array_tostring(array)
     local str = ""
     for key, value in ipairs(array) do
@@ -166,6 +204,10 @@ function export.array_tostring(array)
     return "[" .. string.sub(str, 1, #str - 2) .. "]"
 end
 
+--- Splits an array into smaller arrays.
+--- @param tab table
+--- @param count number The number of entries in each arrray.
+--- @return table
 function export.chunk_array(tab, count)
     local out = {}
 
@@ -176,11 +218,18 @@ function export.chunk_array(tab, count)
     return out
 end
 
+--- Returns the value clamped between min and max, inclusive.
+--- @param value number
+--- @param min number
+--- @param max number
+--- @return number
 function export.clamp(value, min, max)
     return math.max(min, math.min(value, max))
 end
 
--- Returns the table, but the keys and values are swapped
+--- Returns the input table, but the keys and values are swapped.
+--- @param tab table
+--- @return table
 function export.invert_table(tab)
     local newTable = {}
     for key, value in pairs(tab) do
@@ -190,7 +239,9 @@ function export.invert_table(tab)
     return newTable
 end
 
--- Creates a shallow copy of the table
+--- Creates a shallow copy of the table.
+--- @param tab table
+--- @return table
 function export.shallow_copy_table(tab)
     local out = {}
     for k, v in pairs(tab) do
@@ -200,12 +251,17 @@ function export.shallow_copy_table(tab)
     return out
 end
 
--- Linearly interpolates a value
+--- Linearly interpolates a value.
+--- @param from number
+--- @param to number
+--- @param amount number
+--- @return number
 function export.lerp(from, to, amount)
     return (1 - amount) * from + amount * to
 end
 
--- Creates an RNG object, by seeding it with the run's seed
+--- Creates an RNG object, by seeding it with the run's seed.
+--- @return RNG
 function export.getRNG()
     local startSeed = Game():GetSeeds():GetStartSeed()
     local rng = RNG()
@@ -214,8 +270,10 @@ function export.getRNG()
     return rng
 end
 
--- 'True' if the room is the final boss room of the floor.
--- This is helpful in case Curse of the Labyrinth is on.
+--- 'True' if the room is the final boss room of the floor.
+--- This is helpful in case Curse of the Labyrinth is on.
+--- @param room Room
+--- @return boolean
 function export.isFinalBossRoomOfFloor(room)
     if room:GetType() ~= RoomType.ROOM_BOSS then -- This isn't even a boss room
         return false
@@ -256,8 +314,10 @@ function export.isFinalBossRoomOfFloor(room)
     return true
 end
 
--- Returns which stage this is.
--- For labyrinth stages, this will be the latter half of the chapter (1_1 -> 1_2)
+--- Returns which stage this is.
+--- For labyrinth stages, this will be the latter half of the chapter (1_1 -> 1_2)
+--- @param level Level
+--- @return LevelStage
 function export.getEffectiveStage(level)
     local isLabyrinth = level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0
     local stage = level:GetStage()
@@ -275,7 +335,8 @@ function export.getEffectiveStage(level)
     return stage
 end
 
--- Removes the alt path door in boss rooms, and the ascent door in Depths
+--- Removes the alt path door in boss rooms, and the ascent door in Depths.
+--- @param room Room
 function export.removeSecretExit(room)
     for slot = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
         local door = room:GetDoor(slot)
@@ -288,7 +349,10 @@ end
 
 local itemConfig = Isaac.GetItemConfig()
 
--- Adds a collectible's costume to the player
+--- Adds a collectible's costum to the player.
+--- @param player EntityPlayer
+--- @param collectibleType CollectibleType
+--- @param addToTwin boolean
 function export.addCostumeToPlayer(player, collectibleType, addToTwin)
     local configItem = itemConfig:GetCollectible(collectibleType)
     player:AddCostume(configItem)
@@ -302,7 +366,7 @@ function export.addCostumeToPlayer(player, collectibleType, addToTwin)
     end
 end
 
---- True if the player owns the given trinket (gulped or otherwise)
+--- True if the player owns the given trinket (gulped or otherwise).
 --- @param player EntityPlayer
 --- @param trinketType TrinketType
 --- @return boolean
