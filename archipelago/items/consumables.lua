@@ -1,7 +1,8 @@
 local cardData = require("archipelago.data.consumable_data")
 local util = require("archipelago.util")
 
--- When starting a new game, fix pill effects
+--- When starting a new game, fix pill effects.
+--- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     --[[ TODO: Re-enable once I'm able to generate lua for ALL pills (we're missing I Can See Forever and Phermones)
     if continued then -- Only on new runs pls
@@ -49,7 +50,13 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     --]]
 end)
 
--- Returns an unlocked cardType type, if the given cardType is locked. Else, it returns the given CardType.
+--- Returns an unlocked cardType type, if the given cardType is locked. Else, it returns the given CardType.
+--- @param rng RNG
+--- @param cardType Card
+--- @param includePlaying boolean
+--- @param includeRunes boolean
+--- @param onlyRunes boolean
+--- @return Card
 local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
     if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then -- This card is unlocked, we don't need to replace it
         return cardType
@@ -92,13 +99,25 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
     return util.randomFromArray(rng, cardSet)
 end
 
--- When rolling a new card
--- NOTE: This *does not* work on Booster Pack (WHYYYY)
+--- When rolling a new card.
+--- NOTE: This *does not* work on Booster Pack (WHYYYY).
+--- @param rng RNG
+--- @param card Card
+--- @param includePlaying boolean
+--- @param includeRunes boolean
+--- @param onlyRunes boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
     return rollCard(rng, card, includePlaying, includeRunes, onlyRunes)
 end)
 
--- When a card is spawned or is in an entered room (fixes booster pack, rune bag)
+--- When a card is spawned or is in an entered room (fixes booster pack, rune bag).
+--- @param entityType EntityType
+--- @param variant integer
+--- @param subType integer
+--- @param position Vector
+--- @param velocity Vector
+--- @param spawnerEntity Entity|nil
+--- @param seed integer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
     if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD then
         return

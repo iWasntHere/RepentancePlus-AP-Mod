@@ -1,22 +1,4 @@
 local util = require("archipelago.util")
-local FloorItemNames = {
-    "The Womb",
-    "Blue Womb",
-    "New Area",
-
-    "The Cellar",
-    "The Catacombs",
-    "The Necropolis",
-
-    "Burning Basement",
-    "Flooded Caves",
-    "Dank Depths",
-    "Scarred Womb",
-
-    "Dross",
-    "Ashpit",
-    "Gehenna"
-}
 
 local stageNames = {
     ["1-" .. tostring(StageType.STAGETYPE_ORIGINAL)] = "Basement",
@@ -153,7 +135,9 @@ local repStageTypes = {
 -- Set when the room is completed. Set false on update below. Used to clear Void portals.
 local roomJustCompleted = false
 
--- Ends the game early in most cases, prevents entry to The Void from Hush
+--- Ends the game early in most cases, prevents entry to The Void from Hush.
+--- @param rng RNG
+--- @param spawnPosition Vector
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, spawnPosition)
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()
@@ -207,7 +191,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     roomJustCompleted = true
 end)
 
--- Used to remove the Void trapdoor after you complete a boss fight
+--- Used to remove the Void trapdoor after you complete a boss fight.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
     if not roomJustCompleted then
         return
@@ -228,7 +212,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
     end
 end)
 
--- Used to remove various doors
+--- Used to remove various doors.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()

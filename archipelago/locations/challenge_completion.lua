@@ -1,4 +1,7 @@
--- Handles locations involved with completing challenges
+--- Handles locations involved with completing challenges.
+--- @param type EntityType
+--- @param variant integer
+--- @param subType integer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType)
     if type ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TROPHY then
         return

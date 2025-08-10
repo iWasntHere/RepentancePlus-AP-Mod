@@ -334,8 +334,8 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     end
 end)
 
----Determines if the player has fulfilled the "collect 10 tears up items or pills" condition, and sends the location
----@param player EntityPlayer
+--- Determines if the player has fulfilled the "collect 10 tears up items or pills" condition, and sends the location
+--- @param player EntityPlayer
 local function tryTearsUpCollectionLocation(player)
     -- Collect at least 10 tears up items or pills
     local tearsItems = util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS)

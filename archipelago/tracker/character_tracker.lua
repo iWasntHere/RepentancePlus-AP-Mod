@@ -21,6 +21,10 @@ characterSprite:Load("gfx/ui/Characters.anm2", true)
 local marksSprite = Sprite()
 marksSprite:Load("gfx/ui/Completion_Marks.anm2", true)
 
+--- Draws the completion marks in a circle around the given x, y coordinate.
+--- @param marks table
+--- @param x number
+--- @param y number
 local function drawMarks(marks, x, y)
     if marks == nil then -- We don't really want it to be nil.
         marks = {}
@@ -43,7 +47,7 @@ local function drawMarks(marks, x, y)
     end
 end
 
---- Renders the baby tracker page.
+--- Renders the character tracker page.
 --- @param offset Vector The pixel offset to draw at
 --- @param canControl boolean Whether you can control the page or not
 --- @param sfx SFXManager The SFX manager

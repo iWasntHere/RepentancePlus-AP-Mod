@@ -1,6 +1,7 @@
 local util = require("archipelago.util")
 
--- Handles locations for completing floors
+--- Handles locations for completing chapters.
+--- @param spawnPosition Vector
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPosition)
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()

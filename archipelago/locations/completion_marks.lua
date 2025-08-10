@@ -25,7 +25,8 @@ local singleTaintedLocations = {
 }
 
 local main4Bosses = {"Isaac", "???", "Satan", "The Lamb"}
--- Returns true if the character has completed the "main 4" bosses.
+--- Returns true if the character has completed the "main 4" bosses.
+--- @param characterMarks table
 local function hasMain4BossMarks(characterMarks)
     for _, v in ipairs(main4Bosses) do
         if characterMarks[v] == nil then
@@ -36,7 +37,8 @@ local function hasMain4BossMarks(characterMarks)
     return true
 end
 
--- Returns true if the character has completed boss rush and hush
+--- Returns true if the character has completed boss rush and hush
+--- @param characterMarks table
 local function hasBossRushAndHush(characterMarks)
     return characterMarks["Hush"] ~= nil and characterMarks["Boss Rush"] ~= nil
 end
@@ -46,7 +48,9 @@ local allMarks = {
     "Hush", "Delirium", "Mother", "The Beast", "Ultra Greed",
     "Ultra Greedier", "Mega Satan", "Mom's Heart"
 }
--- Returns true if the character has completed all marks.
+--- Returns true if the character has completed all marks.
+--- @param characterMarks table
+--- @return boolean
 local function hasAllMarks(characterMarks)
     for _, v in ipairs(allMarks) do
         if characterMarks[v] == nil then
@@ -57,6 +61,8 @@ local function hasAllMarks(characterMarks)
     return true
 end
 
+--- Attempts to award a completion mark for the current character.
+--- @param markName string
 local function tryAwardMark(markName)
     local playerName = util.getCharacterName()
     local isTainted = util.isCharacterTainted()
@@ -111,7 +117,8 @@ local function tryAwardMark(markName)
     end
 end
 
--- For bosses
+--- Called when a boss is defeated, so the completion mark may be awarded.
+--- @param entity Entity
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     local type = entity.Type
     local variant = entity.Variant
@@ -134,7 +141,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     tryAwardMark(bossName)
 end)
 
--- For boss rush
+--- Fired when clearing boss rush.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()

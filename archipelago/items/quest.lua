@@ -7,6 +7,13 @@ local function getItemForCurrentRoom(seed)
     return itemPool:GetCollectible(poolForRoom, false, seed, CollectibleType.COLLECTIBLE_BREAKFAST)
 end
 
+--- @param entityType EntityType
+--- @param variant integer
+--- @param collectibleType CollectibleType
+--- @param position Vector
+--- @param velocity Vector
+--- @param spawnerEntity Entity|nil
+--- @param seed integer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, collectibleType, position, velocity, spawnerEntity, seed)
     if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_COLLECTIBLE then
         return

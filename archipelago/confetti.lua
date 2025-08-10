@@ -1,6 +1,7 @@
 -- Handles drawing the fun confetti effect that happens when you get a check
 
 local confettiVariant = Isaac.GetEntityVariantByName("Confetti")
+local currentRoomConfetti = 0
 
 local colours = {
     "Red",
@@ -9,7 +10,7 @@ local colours = {
     "Yellow"
 }
 
---- Sets the colour of the confetti
+--- Sets the colour of the confetti.
 --- @param effect EntityEffect
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function (_, effect)
     effect:GetSprite():Play(colours[math.random(#colours)], true)
@@ -19,7 +20,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function (_, effect)
     effect:GetData().FallSpeed = 1 + (math.random() * 5)
 end, confettiVariant)
 
---- Render confetti
+--- Render confetti.
 --- @param effect EntityEffect
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
     -- Float down
@@ -31,8 +32,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
     end
 end, confettiVariant)
 
--- Reset confetti when moving to a new room
-local currentRoomConfetti = 0
+--- Reset confetti count when moving to a new room.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     currentRoomConfetti = 0
 end)

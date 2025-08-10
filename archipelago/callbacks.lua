@@ -1,6 +1,6 @@
 -- Provides callbacks for annoying operations
 
--- For picking up pickups @ opening chests
+--- For picking up pickups and opening chests.
 --- @param pickup EntityPickup
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
     local data = pickup:GetData()
@@ -34,10 +34,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
     end
 end)
 
--- For picking up collectibles
 --- @type QueuedItemData
 local lastFrameItem = nil
 
+--- Handles picking up collectibles.
 --- @param player EntityPlayer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     local queuedItem = player.QueuedItem

@@ -3,6 +3,9 @@ local runLocked = false
 local characterLocked = false
 local challengeLocked = false
 
+--- Locks the run.
+--- @param character boolean If the cause was because the character was locked
+--- @param challenge boolean If the cause was because the challenge was locked
 local function isLocked(character, challenge)
     runLocked = true
 
@@ -28,7 +31,7 @@ local function isLocked(character, challenge)
     end
 end
 
--- Checks if the currently played character is locked, then applies locked code if it is
+--- Checks if the currently played character is locked, then applies locked code if it is.
 local function checkCharacterLocked()
     local player = Isaac.GetPlayer(0)
     local character = player:GetPlayerType()
@@ -42,7 +45,7 @@ local function checkCharacterLocked()
     end
 end
 
--- Checks if the current challenge is locked, applies locked code if it is
+--- Checks if the current challenge is locked, applies locked code if it is.
 local function checkChallengeLocked()
     local challengeId = Game().Challenge
 
@@ -61,6 +64,7 @@ local function checkChallengeLocked()
     end
 end
 
+--- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if continued then -- Only do this when the run first starts. Prevents getting stuck with Clicker
         return

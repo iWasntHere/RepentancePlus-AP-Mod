@@ -62,7 +62,7 @@ backgroundSprite:Play("Stages")
 local BG_WIDTH = 304
 local BG_HEIGHT = 212
 
---- Renders the item tracker page.
+--- Renders the stage tracker page.
 --- @param offset Vector The pixel offset to draw at
 --- @param canControl boolean Whether you can control the page or not
 --- @param sfx SFXManager The SFX manager

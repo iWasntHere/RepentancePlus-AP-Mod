@@ -18,6 +18,7 @@ local trackerYPosition = 0
 
 local wasOutLastFrame = false
 
+--- Handles rendering tracker pages.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     local isOut = false
     local screenWidth = Isaac.GetScreenWidth()

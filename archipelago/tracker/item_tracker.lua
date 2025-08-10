@@ -56,7 +56,8 @@ local NAME_TO_ICON = {
     ["Gehenna"] = "Floor",
 }
 
--- Returns an icon for a given item code in the item tracker
+--- Returns an icon for a given item code in the item tracker.
+--- @return string
 local function getIcon(code)
     local type = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_TYPE[code]
     if TYPE_TO_ICON[type] then

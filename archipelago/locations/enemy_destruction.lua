@@ -22,13 +22,17 @@ local MausoleumBosses = {
     "The Siren", "The Heretic"
 }
 
+--- Returns the name of an entity based on its type and variant.
+--- @param type EntityType
+--- @param variant integer
+--- @return string
 local function typeVariantToName(type, variant)
     return AP_MAIN_MOD.ENTITIES_DATA[tostring(type) .. ":" .. tostring(variant)]
 end
 
 --- Tries to grant a location check for defeating this entity.
----@param name string The name of the defeated entity
----@param locations table The table of locations to modify
+--- @param name string The name of the defeated entity
+--- @param locations table The table of locations to modify
 local function defeatLocations(name, locations)
     local locationName = name .. " Defeated"
     local locationID = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
@@ -82,6 +86,8 @@ local function setKills(killsTable)
     AP_SUPP_MOD:SaveKey("kills", killsTable)
 end
 
+--- Modifies the location tables to grant locations for more specific kill conditions.
+--- For example, killing Mom's Heart X number of times or killing all 7 sins.
 --- @param killsTable table The table of kills
 --- @param locations table The table of locations to modify
 local function otherKillLocations(killsTable, locations)
@@ -233,7 +239,8 @@ end
 -- Enemies we've seen this room
 local seen = {}
 
--- Handles "seeing" enemies (that we have defeated!)
+--- Handles "seeing" enemies (that we have defeated!).
+--- @param entity Entity
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     local type = entity.Type
     local variant = entity.Variant
@@ -243,6 +250,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     seen[#seen + 1] = {type = type, variant = variant}
 end)
 
+--- Fired when the room is cleared, to grant locations for all enemies that were defeated in the room.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
     local kills = getAllKills() -- Load all stats
     local locations = {}
@@ -270,12 +278,15 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
     seen = {} -- Flush the seen table
 end)
 
+--- Flushes the 'seen' table when entering a new room, in case the player escapes a fight and doesn't actually win.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
-    seen = {} -- Flush seen table, in case the player escapes a fight and doesn't actually win
+    seen = {}
 end)
 
--- Handles sparing Baby Plum
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
+
+--- Handles sparing Baby Plum.
+--- @param npc Entity
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, npc)
     if babyPlumSpared then
         return

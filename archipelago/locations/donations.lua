@@ -8,6 +8,7 @@ local SlotVariant = {
     GREED_DONATION_MACHINE = 11
 }
 
+--- Awards the next location for donating on the current game mode.
 local function awardDonationCheck()
     local isGreedMode = Game():IsGreedMode()
     local key = "donations"
@@ -28,6 +29,14 @@ local function awardDonationCheck()
     end
 end
 
+--- Replaces the donation machine with the special Archipelago beggar.
+--- @param type EntityType
+--- @param variant integer
+--- @param subType integer
+--- @param position Vector
+--- @param velocity Vector
+--- @param spawnerEntity Entity|nil
+--- @param seed integer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
     if type ~= EntityType.ENTITY_SLOT or (variant ~= SlotVariant.DONATION_MACHINE and variant ~= SlotVariant.GREED_DONATION_MACHINE) then
         return
@@ -36,7 +45,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
     return {beggarType, beggarVariant, 0, seed}
 end)
 
--- Handles donating
+--- Fired when the player bumps into the Archipelago beggar.
+--- @param playerEntity EntityPlayer
+--- @param collidedEntity Entity
+--- @param low boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, playerEntity, collidedEntity, low)
     if collidedEntity.Type ~= beggarType or collidedEntity.Variant ~= beggarVariant then -- Archi beggar only
         return
@@ -55,7 +67,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, playe
     sfx:Play(SoundEffect.SOUND_SCAMPER)
 end)
 
--- For when you blow this sucker up
+--- Fired when you blow up the Archipelago beggar.
+--- @param entity Entity
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     if entity.Variant ~= beggarVariant then
         return
@@ -68,7 +81,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     end
 end, EntityType.ENTITY_SLOT)
 
---- Update cycle for the archipelago beggar
+--- Update cycle for the Archipelago beggar.
 --- @param beggarEntity Entity
 local function updateBeggar(beggarEntity)
     local sprite = beggarEntity:GetSprite()
@@ -83,7 +96,8 @@ local function updateBeggar(beggarEntity)
     end
 end
 
--- There is no other way to update a custom slot entity. Please. Please. Please. Please. Please.
+--- There is no other way to update a custom slot entity. Please. Please. Please. Please. Please.
+--- This calls the update cycle for the beggar.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity.Type == beggarType and entity.Variant == beggarVariant then

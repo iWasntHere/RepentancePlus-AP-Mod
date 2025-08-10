@@ -49,8 +49,11 @@ function mod:Error(text, stackTrace)
     Isaac.DebugString(text)
 end
 
--- Set location checks, scouts, and death link for the client-server bridge to pick up
-function mod:exposeData(location_checks, location_scouts, death_link_reason)
+--- Set location checks, scouts, and death link for the client-server bridge to pick up.
+--- @param locationChecks table|nil
+--- @param locationScouts table|nil
+--- @param deathLinkReason string|nil
+function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
 	local loadedString = mod:LoadData()
     local oldData = {}
@@ -74,38 +77,40 @@ function mod:exposeData(location_checks, location_scouts, death_link_reason)
 	}
 
     -- Death link
-    if death_link_reason and death_link_reason ~= "" then
-        apData.died = death_link_reason
+    if deathLinkReason and deathLinkReason ~= "" then
+        apData.died = deathLinkReason
     end
 
     -- New location checks
-    if location_checks then
-        util.table_concat(apData.location_checks, location_checks)
+    if locationChecks then
+        util.table_concat(apData.location_checks, locationChecks)
     end
 
     -- New location scouts
-    if location_scouts then
-        util.table_concat(apData.location_scouts, location_scouts)
+    if locationScouts then
+        util.table_concat(apData.location_scouts, locationScouts)
     end
 
 	mod:SaveData(json.encode(apData))
 end
 
--- Send a location to the server
-function mod:sendLocation(location_code)
-    if location_code == nil then
+--- Send a location to the server.
+--- @param locationCode integer
+function mod:sendLocation(locationCode)
+    if locationCode == nil then
         mod:Error("'nil' location given")
         return false
     end
 
-    self:sendLocations({location_code})
+    self:sendLocations({locationCode})
 end
 
--- Sends multiple locations to the server
-function mod:sendLocations(location_codes)
+--- Sends multiple locations to the server.
+--- @param locationCodes integer[]
+function mod:sendLocations(locationCodes)
     -- Filter out any location codes that have already been sent
     local finalCodes = {}
-    for _, locationCode in ipairs(location_codes) do
+    for _, locationCode in ipairs(locationCodes) do
         if not sentLocations[locationCode] then
             finalCodes[#finalCodes + 1] = locationCode
 
@@ -119,17 +124,21 @@ function mod:sendLocations(location_codes)
     end
 end
 
--- Send a location scout to the server
-function mod:sendLocationScout(location_code)
-    self:exposeData(nil, {location_code}, nil)
+--- Send a location scout to the server.
+--- @param locationCode integer
+function mod:sendLocationScout(locationCode)
+    self:exposeData(nil, {locationCode}, nil)
 end
 
--- Send deathlink to the server
+--- Send deathlink to the server.
+--- @param reason string The reason for the deathlink being triggered
 function mod:sendDeathLink(reason)
     self:exposeData(nil, nil, reason)
 end
 
--- Returns true if the item code is considered to be unlocked
+--- 'true' if the item code is considered to be unlocked.
+--- @param code integer
+--- @return boolean
 function mod:checkUnlocked(code)
     if code == nil then -- A nil code was given
         mod:Error("'nil' item code given")
@@ -144,7 +153,9 @@ function mod:checkUnlocked(code)
     return AP_SUPP_MOD:IsItemUnlocked(tostring(code)) -- The codes are strings in the table
 end
 
--- Same as above, but with an item's name instead
+--- 'true' if the item name is considered to be unlocked.
+--- @param name string
+--- @return boolean
 function mod:checkUnlockedByName(name)
     local code = tostring(mod.ITEMS_DATA.NAME_TO_CODE[name])
 
@@ -157,7 +168,12 @@ function mod:checkUnlockedByName(name)
     return AP_SUPP_MOD:IsItemUnlocked(code) -- The codes are strings in the table
 end
 
--- Does the effects when you send/receive an item
+--- Performs effects when you get an item.
+--- @param itemName string The item's name
+--- @param playerName string The player that sent the item
+--- @param locationName string The location the item came from
+--- @param isTrap boolean If the item is considered a trap (a bad item)
+--- @param isReceived boolean Whether the item is being sent, or received
 function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
     local hud = Game():GetHUD()
 
@@ -182,7 +198,7 @@ function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
     sfx:Play(sound)
 end
 
--- Draws text to the screen to verify mod setup is ok
+--- Draws the player's slot name to the screen to better verify that everything is set up correctly.
 mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 if ARCHIPELAGO_SEED then
         Isaac.RenderScaledText(ARCHIPELAGO_SLOT, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
@@ -191,7 +207,8 @@ if ARCHIPELAGO_SEED then
     end
 end)
 
--- Remove collectibles and trinkets from the pool if they are locked
+--- Remove collectibles and trinkets from the pool if they are locked.
+--- @param isContinued boolean
 mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 	mod:exposeData() -- Expose the basic AP data
 
@@ -217,6 +234,11 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
     end
 end)
 
+--- Fired when an item is received from the Archipelago server.
+--- @param itemName string
+--- @param playerName string
+--- @param locationName string
+--- @param isTrap boolean
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
     mod:showItemGet(itemName, playerName, locationName, isTrap, true)
 
@@ -224,14 +246,13 @@ mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_
     spawnConfetti(math.random(15, 30))
 end)
 
+--- Fired when an item is sent to the Archipelago server.
+--- @param itemName string
+--- @param playerName string
+--- @param locationName string
+--- @param isTrap boolean
 mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
     mod:showItemGet(itemName, playerName, locationName, isTrap, false)
-end)
-
-mod:AddCallback(ModCallbacks.MC_POST_UPDATE, function ()
-    if Input.IsButtonPressed(Keyboard.KEY_B, 0) then
-        mod:sendLocation(880)
-    end
 end)
 
 require("archipelago.callbacks")
