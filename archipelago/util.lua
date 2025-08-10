@@ -338,16 +338,37 @@ function export.countCollectibleTypes(player, collectibleTypes)
     return count
 end
 
+-- These familiars don't really count as familiars
+local disallowedFamiliars = {
+    [FamiliarVariant.BLUE_FLY] = true,
+    [FamiliarVariant.BLUE_SPIDER] = true,
+    [FamiliarVariant.DIP] = true,
+    [FamiliarVariant.ABYSS_LOCUST] = true,
+    [FamiliarVariant.MINISAAC] = true,
+    [FamiliarVariant.BROWN_NUGGET_POOTER] = true,
+    [FamiliarVariant.ITEM_WISP] = true,
+    [FamiliarVariant.KNIFE_PIECE_1] = true,
+    [FamiliarVariant.KNIFE_PIECE_2] = true, -- I'd argue the full knife is a true familiar
+    [FamiliarVariant.KEY_PIECE_1] = true,
+    [FamiliarVariant.KEY_PIECE_2] = true,
+    [FamiliarVariant.KEY_FULL] = true,
+    [FamiliarVariant.FORGOTTEN_BODY] = true,
+    [FamiliarVariant.UMBILICAL_BABY] = true,
+    [FamiliarVariant.SWARM_FLY_ORBITAL] = true,
+    [FamiliarVariant.SIREN_MINION] = true,
+    [FamiliarVariant.TINYTOMA_2] = true,
+    [FamiliarVariant.BONE_ORBITAL] = true
+}
+
 --- Returns the number of follower familiars in the room.
 --- @return integer
-function export.countFollowerFamiliars()
+function export.countFamiliars()
     local count = 0
 
-    
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         local familiar = entity:ToFamiliar()
 
-        if familiar ~= nil and familiar.IsFollower then
+        if familiar ~= nil and not disallowedFamiliars[entity.Variant] then
             count = count + 1
         end
     end

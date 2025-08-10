@@ -425,7 +425,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     tryTearsUpCollectionLocation(player)
 
     -- Collect at least 5 familiars
-    if util.countFollowerFamiliars() >= 5 then
+    if util.countFamiliars() >= 5 then
         AP_MAIN_MOD:sendLocation(431)
     end
 end)
