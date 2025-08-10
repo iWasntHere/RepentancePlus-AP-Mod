@@ -110,7 +110,7 @@ function mod:sendLocations(location_codes)
             finalCodes[#finalCodes + 1] = locationCode
 
             -- Make sure we don't try sending this location again later
-            sentLocations[#sentLocations + 1] = locationCode
+            sentLocations[locationCode] = true
         end
     end
 
