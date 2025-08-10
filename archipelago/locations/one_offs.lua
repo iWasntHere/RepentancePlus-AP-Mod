@@ -191,8 +191,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         end
     end
 
-    -- Visit 6 shops in one run
-    if not getStat(StatKeys.SHOP_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SHOP then
+    -- Visit 6 shops in one run (no greed mode)
+    if not Game():IsGreedMode() and not getStat(StatKeys.SHOP_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SHOP then
         setStat(StatKeys.SHOP_VISITED_THIS_FLOOR, true)
 
         if incrementStat(StatKeys.SHOPS_VISITED_THIS_RUN) == 6 then
