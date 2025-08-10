@@ -6,7 +6,7 @@ local smallFont = Font()
 smallFont:Load("font/teammeatfont10.fnt")
 
 local page = 1
-local pages = util.chunk_array(AP_MAIN_MOD.ITEMS_DATA.CODES, 30)
+local pages = util.chunkArray(AP_MAIN_MOD.ITEMS_DATA.CODES, 30)
 
 local itemTypeSprite = Sprite() -- Used to render icons next to item names to show type
 itemTypeSprite:Load("gfx/ui/Tracker_Icons.anm2", true)

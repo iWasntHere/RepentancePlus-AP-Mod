@@ -6,7 +6,7 @@ local smallFont = Font()
 smallFont:Load("font/teammeatfont10.fnt")
 
 local page = 1
-local pages = util.chunk_array(AP_MAIN_MOD.CHARACTER_DATA.ItemNames, 4)
+local pages = util.chunkArray(AP_MAIN_MOD.CHARACTER_DATA.ITEM_NAMES, 4)
 
 local backgroundSprite = Sprite()
 backgroundSprite:Load("gfx/ui/Tracker_Page.anm2", true)
@@ -91,7 +91,8 @@ return function(offset, canControl, sfx)
         local code = AP_MAIN_MOD.ITEMS_DATA.NAME_TO_CODE[name]
         local unlocked = AP_MAIN_MOD:checkUnlocked(code)
 
-        local animName = AP_MAIN_MOD.CHARACTER_DATA.ItemNameToInternalName[name]
+        local charName = AP_MAIN_MOD.CHARACTER_DATA.ITEM_NAME_TO_INTERNAL_NAME[name]
+        local animName = charName
         if not unlocked then
             animName = "Locked" .. animName
         end
@@ -112,7 +113,7 @@ return function(offset, canControl, sfx)
             font:DrawStringScaled(name, x + textXOffset, y, 0.5, 0.5, color)
         end
 
-        drawMarks(marks[AP_MAIN_MOD.CHARACTER_DATA.ItemNameToInternalName[name]], x, y - 40)
+        drawMarks(marks[charName], x, y - 40)
 
         row = row + 1
         column = column + 1

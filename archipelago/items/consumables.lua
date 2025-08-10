@@ -62,17 +62,17 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         allSets = cardData.rune
     else
         -- Gather applicable sets
-        local sets = {cardData.tarot, cardData.reverse, cardData.special, cardData.object}
+        local sets = {cardData.TAROT_TYPE, cardData.REVERSE_TYPE, cardData.SPECIAL_TYPE, cardData.OBJECT_TYPE}
 
         if includePlaying then
-            sets[#sets + 1] = cardData.suit
+            sets[#sets + 1] = cardData.SUIT_TYPE
         end
 
         if includeRunes then
-            sets[#sets + 1] = cardData.rune
+            sets[#sets + 1] = cardData.RUNE_TYPE
         end
         
-        allSets = util.merge_arrays(sets)
+        allSets = util.concatArrays(sets)
     end
 
     local cardSet = {}
@@ -89,7 +89,7 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         return Card.CARD_RULES
     end
 
-    return util.random_from_array(rng, cardSet)
+    return util.randomFromArray(rng, cardSet)
 end
 
 -- When rolling a new card

@@ -129,8 +129,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
     end
 
     -- We'll need to create a copy of this table since we're going to shuffle it
-    stageGroup = util.shallow_copy_table(stageGroup)
-    util.shuffle_table(util.getRNG(), stageGroup)
+    stageGroup = util.shallowCopyTable(stageGroup)
+    util.shuffleTable(util.getRNG(), stageGroup)
 
     -- Now, we run down the list until we find the first unlocked stage.
     for _, stageData in ipairs(stageGroup) do

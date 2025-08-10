@@ -1,4 +1,6 @@
-local tarotType = {
+local export = {}
+
+export.TAROT_TYPE = {
     Card.CARD_FOOL,
     Card.CARD_MAGICIAN,
     Card.CARD_HIGH_PRIESTESS,
@@ -23,7 +25,7 @@ local tarotType = {
     Card.CARD_WORLD
 }
 
-local reverseTarotType = {
+export.REVERSE_TYPE = {
     Card.CARD_REVERSE_FOOL,
     Card.CARD_REVERSE_MAGICIAN,
     Card.CARD_REVERSE_HIGH_PRIESTESS,
@@ -48,7 +50,7 @@ local reverseTarotType = {
     Card.CARD_REVERSE_WORLD
 }
 
-local suitType = {
+export.SUIT_TYPE = {
     Card.CARD_CLUBS_2,
     Card.CARD_DIAMONDS_2,
     Card.CARD_SPADES_2,
@@ -61,7 +63,7 @@ local suitType = {
     Card.CARD_QUEEN_OF_HEARTS
 }
 
-local specialType = {
+export.SPECIAL_TYPE = {
     Card.CARD_CHAOS,
     Card.CARD_CREDIT,
     Card.CARD_RULES,
@@ -76,7 +78,7 @@ local specialType = {
     Card.CARD_WILD
 }
 
-local runeType = {
+export.RUNE_TYPE = {
     -- Runes
     Card.RUNE_HAGALAZ,
     Card.RUNE_JERA,
@@ -110,13 +112,13 @@ local runeType = {
     Card.CARD_SOUL_JACOB
 }
 
-local objectType = {
+export.OBJECT_TYPE = {
     Card.CARD_DICE_SHARD,
     Card.CARD_EMERGENCY_CONTACT,
     Card.CARD_CRACKED_KEY
 }
 
-local pillEffectType = {
+export.PILL_EFFECT_TYPE = {
     PillEffect.PILLEFFECT_BAD_GAS,
     PillEffect.PILLEFFECT_BAD_TRIP,
     PillEffect.PILLEFFECT_BALLS_OF_STEEL,
@@ -169,7 +171,7 @@ local pillEffectType = {
     PillEffect.PILLEFFECT_EXPERIMENTAL
 }
 
-local pillEffectName = {
+export.PILL_EFFECT_NAME = {
     "BAD_GAS",
     "BAD_TRIP",
     "BALLS_OF_STEEL",
@@ -222,13 +224,4 @@ local pillEffectName = {
     "EXPERIMENTAL"
 }
 
-return {
-    tarot = tarotType,
-    reverse = reverseTarotType,
-    suit = suitType,
-    special = specialType,
-    rune = runeType,
-    object = objectType,
-    pill = pillEffectType,
-    pillNames = pillEffectName
-}
+return export

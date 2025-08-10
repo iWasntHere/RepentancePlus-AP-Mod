@@ -36,7 +36,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     end
 
     -- Do we need to spawn anything?
-    if #util.table_keys(toSpawn) == 0 then
+    if #util.tableKeys(toSpawn) == 0 then
         return
     end
 

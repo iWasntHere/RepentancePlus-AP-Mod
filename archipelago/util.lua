@@ -73,13 +73,13 @@ export.taintedCharacters = {
 
 --- Returns the name of the currently played character.
 --- @return string
-function export.get_character_name()
+function export.getCharacterName()
     return export.playerTypeNames[Isaac.GetPlayer():GetPlayerType()]
 end
 
 --- 'true' if the currently played character is tainted.
 --- @return boolean
-function export.is_character_tainted()
+function export.isCharacterTainted()
     return export.taintedCharacters[Isaac.GetPlayer():GetPlayerType()] ~= nil
 end
 
@@ -87,8 +87,8 @@ end
 --- @param rng RNG
 --- @param table table
 --- @return any
-function export.random_from_table(rng, table)
-    local keys = export.table_keys(table)
+function export.randomFromTable(rng, table)
+    local keys = export.tableKeys(table)
     return table[rng:RandomInt(#keys) + 1]
 end
 
@@ -96,14 +96,14 @@ end
 --- @param rng RNG
 --- @param table any[]
 --- @return any
-function export.random_from_array(rng, table)
+function export.randomFromArray(rng, table)
     return table[rng:RandomInt(#table) + 1]
 end
 
 --- Shuffles an array in-place.
 --- @param rng RNG
 --- @param table any[]
-function export.shuffle_table(rng, table)
+function export.shuffleTable(rng, table)
     for i = #table, 2, -1 do
         local j = rng:RandomInt(i) + 1
         table[i], table[j] = table[j], table[i]
@@ -111,11 +111,11 @@ function export.shuffle_table(rng, table)
 end
 
 --- Concatenates all given arrays into a single output array.
---- @param array_of_arrays table[]
+--- @param arrays table[]
 --- @return table
-function export.merge_arrays(array_of_arrays)
+function export.concatArrays(arrays)
     local collection = {}
-    for _, array in ipairs(array_of_arrays) do
+    for _, array in ipairs(arrays) do
         for _, value in ipairs(array) do
             collection[#collection + 1] = value
         end
@@ -124,10 +124,25 @@ function export.merge_arrays(array_of_arrays)
     return collection
 end
 
+--- Merges the given tables together into a single table.
+--- @param tables table[]
+--- @return table
+function export.mergeTables(tables)
+    local outTable = {}
+
+    for _, tab in ipairs(tables) do
+        for k, v in pairs(tab) do
+            outTable[k] = v
+        end
+    end
+
+    return outTable
+end
+
 --- Returns all of the keys for the table as an array.
 --- @param table table
 --- @return integer[]|string[]
-function export.table_keys(table)
+function export.tableKeys(table)
     local keys = {}
 
     for key, _ in pairs(table) do
@@ -141,25 +156,25 @@ end
 
 --- Returns 'true' if the string starts with the given substring.
 --- @param str string
---- @param starts_with string
+--- @param startsWith string
 --- @return boolean
-function export.string_starts_with(str, starts_with)
-	return str:sub(1, #starts_with) == starts_with
+function export.stringStartsWith(str, startsWith)
+	return str:sub(1, #startsWith) == startsWith
 end
 
 --- Returns 'true' if the string ends with the given substring.
 --- @param str string
---- @param ends_with string
+--- @param endsWith string
 --- @return boolean
-function export.string_ends_with(str, ends_with)
-	return ends_with == "" or str:sub(-#ends_with) == ends_with
+function export.stringEndsWith(str, endsWith)
+	return endsWith == "" or str:sub(-#endsWith) == endsWith
 end
 
 --- Splits a string into an array of substrings by a delimitter.
 --- @param str string
 --- @param delimiter string
 --- @return string[]
-function export.string_split(str, delimiter)
+function export.stringSplit(str, delimiter)
 	local output = {}
 	local i = 1
 	
@@ -171,19 +186,10 @@ function export.string_split(str, delimiter)
 	return output
 end
 
---- Adds all values from one table to the other, in place.
---- @param to_table table
---- @param from_table table
-function export.table_concat(to_table, from_table)
-    for _, v in ipairs(from_table) do
-        table.insert(to_table, v)
-    end
-end
-
 --- Turns a table into a string.
 --- @param table table
 --- @return string
-function export.table_tostring(table)
+function export.tableToString(table)
     local str = ""
     for key, value in pairs(table) do
         str = str .. key .. ": " .. value .. ", "
@@ -195,7 +201,7 @@ end
 --- Turns an array into a string.
 --- @param array table
 --- @return string
-function export.array_tostring(array)
+function export.arrayToString(array)
     local str = ""
     for key, value in ipairs(array) do
         str = str .. key .. ": " .. value .. ", "
@@ -208,7 +214,7 @@ end
 --- @param tab table
 --- @param count number The number of entries in each arrray.
 --- @return table
-function export.chunk_array(tab, count)
+function export.chunkArray(tab, count)
     local out = {}
 
     for i = 1, #tab, count do
@@ -230,7 +236,7 @@ end
 --- Returns the input table, but the keys and values are swapped.
 --- @param tab table
 --- @return table
-function export.invert_table(tab)
+function export.invertTable(tab)
     local newTable = {}
     for key, value in pairs(tab) do
         newTable[value] = key
@@ -242,7 +248,7 @@ end
 --- Creates a shallow copy of the table.
 --- @param tab table
 --- @return table
-function export.shallow_copy_table(tab)
+function export.shallowCopyTable(tab)
     local out = {}
     for k, v in pairs(tab) do
         out[k] = v

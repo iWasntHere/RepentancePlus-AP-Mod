@@ -5,7 +5,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
     end
 
     local challengeId = Game().Challenge
-    local locationName = AP_MAIN_MOD.CHALLENGE_DATA.ChallengeIDToName[challengeId]
+    local locationName = AP_MAIN_MOD.CHALLENGE_DATA.CHALLENGE_ID_TO_NAME[challengeId]
 
     if locationName == nil then -- Shouldn't happen, but the challenge has no name associated
         print("Challenge " .. tostring(challengeId) .. " has no name!")

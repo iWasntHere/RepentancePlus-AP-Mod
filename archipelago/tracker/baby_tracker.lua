@@ -31,7 +31,7 @@ missingBabySprite:Play("Idle")
 return function(offset, canControl, sfx)
     -- The pages array is populated here since at launch time the globalvar isn't available yet
     if pages == nil then
-        pages = util.chunk_array(TARGET_BABY_CODES, 9)
+        pages = util.chunkArray(TARGET_BABY_CODES, 9)
     end
 
     -- Page previous/back controls

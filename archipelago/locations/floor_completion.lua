@@ -11,7 +11,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
     end
 
     -- Get player name and chapter
-    local playerName = util.get_character_name()
+    local playerName = util.getCharacterName()
     local stage = level:GetStage()
 
     local chapterName = nil

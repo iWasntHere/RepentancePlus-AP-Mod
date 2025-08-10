@@ -1,6 +1,6 @@
 local export = {}
 
-export.ChallengeIDToName = {
+export.CHALLENGE_ID_TO_NAME = {
     [Challenge.CHALLENGE_PITCH_BLACK] = "Challenge #1 (Pitch Black)",
     [Challenge.CHALLENGE_HIGH_BROW] = "Challenge #2 (High Brow)",
     [Challenge.CHALLENGE_HEAD_TRAUMA] = "Challenge #3 (Head Trauma)",

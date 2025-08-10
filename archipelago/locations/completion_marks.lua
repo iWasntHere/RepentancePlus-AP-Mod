@@ -58,8 +58,8 @@ local function hasAllMarks(characterMarks)
 end
 
 local function tryAwardMark(markName)
-    local playerName = util.get_character_name()
-    local isTainted = util.is_character_tainted()
+    local playerName = util.getCharacterName()
+    local isTainted = util.isCharacterTainted()
 
     -- Get the completion marks data
     local marks = AP_SUPP_MOD:LoadKey("completion_marks", {})

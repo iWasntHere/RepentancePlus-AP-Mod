@@ -1,6 +1,6 @@
 local export = {}
 
-export.ItemNames = {
+export.ITEM_NAMES = {
     "Isaac", "Magdalene", "Cain", "Judas", "???",
     "Eve", "Samson",
     "Azazel", "Lazarus", "Eden", "Lost",
@@ -15,7 +15,7 @@ export.ItemNames = {
     "The Zealot", "The Deserter"
 }
 
-export.ItemNameToInternalName = {
+export.ITEM_NAME_TO_INTERNAL_NAME = {
     ["Isaac"] = "Isaac",
     ["Magdalene"] = "Magdalene",
     ["Cain"] = "Cain",
@@ -63,7 +63,7 @@ export.ItemNameToInternalName = {
     ["The Deserter"] = "Tainted Jacob",
 }
 
-export.CompletionMarks = {
+export.COMPLETION_MARKS = {
     "Mom",
     "Isaac",
     "Satan",

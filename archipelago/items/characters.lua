@@ -52,7 +52,7 @@ local function checkChallengeLocked()
         return
     end
 
-    local challengeName = AP_MAIN_MOD.CHALLENGE_DATA.ChallengeIDToName[challengeId]
+    local challengeName = AP_MAIN_MOD.CHALLENGE_DATA.CHALLENGE_ID_TO_NAME[challengeId]
 
     if not AP_MAIN_MOD:checkUnlockedByName(challengeName) then
         isLocked(false, true)
