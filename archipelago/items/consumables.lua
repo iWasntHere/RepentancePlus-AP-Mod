@@ -62,7 +62,6 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         return cardType
     end
 
-    
     local allSets = {}
 
     if onlyRunes then
@@ -78,16 +77,16 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         if includeRunes then
             sets[#sets + 1] = cardData.RUNE_TYPE
         end
-        
+
         allSets = util.concatArrays(sets)
     end
 
     local cardSet = {}
     -- Filter the set down to only unlocked cards
-    for _, cardType in ipairs(allSets) do
-        if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
+    for _, card in ipairs(allSets) do
+        if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[card]) then
             --print("Unlocked!")
-            cardSet[#cardSet + 1] = cardType
+            cardSet[#cardSet + 1] = card
         end
     end
 

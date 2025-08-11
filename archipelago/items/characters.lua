@@ -26,8 +26,8 @@ local function isLocked(character, challenge)
 
     -- Remove doors
     local room = Game():GetLevel():GetCurrentRoom()
-    for i = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
-        room:RemoveDoor(i)
+    for slot, door in util.doors(room) do
+        room:RemoveDoor(slot)
     end
 end
 

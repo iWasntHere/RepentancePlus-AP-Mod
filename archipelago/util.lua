@@ -446,4 +446,20 @@ function export.countFamiliars()
     return count
 end
 
+--- Iterates through each door a room can have. If the door doesn't exist, the second value will be nil.
+--- @param room Room
+--- @return fun(): DoorSlot|nil, GridEntityDoor|nil
+function export.doors(room)
+    --- @type DoorSlot
+    local slot = DoorSlot.LEFT0 - 1
+
+    return function()
+        slot = slot + 1
+        if slot < DoorSlot.NUM_DOOR_SLOTS then
+            return slot, room:GetDoor(slot)
+        end
+    end
+end
+
+
 return export

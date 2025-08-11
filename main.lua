@@ -271,5 +271,6 @@ require("archipelago.items.floors")
 require("archipelago.items.grid_entities")
 require("archipelago.items.characters")
 require("archipelago.items.curses")
+require("archipelago.items.planetarium")
 
 require("archipelago.tracker.tracker")
