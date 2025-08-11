@@ -280,7 +280,7 @@ end
 --- This is helpful in case Curse of the Labyrinth is on.
 --- @param room Room
 --- @return boolean
-function export.isFinalBossRoomOfFloor(room)
+function export.isChapterEndBoss(room)
     if room:GetType() ~= RoomType.ROOM_BOSS then -- This isn't even a boss room
         return false
     end
@@ -459,6 +459,13 @@ function export.doors(room)
             return slot, room:GetDoor(slot)
         end
     end
+end
+
+--- Returns the amount of health the player has, where 1 = one half-heart.
+--- @param player EntityPlayer
+--- @return integer
+function export.totalPlayerHealth(player)
+    return player:GetHearts() + player:GetSoulHearts() + player:GetEternalHearts() + player:GetBoneHearts()
 end
 
 

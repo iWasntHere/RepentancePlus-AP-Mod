@@ -145,7 +145,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     local stage = util.getEffectiveStage(level)
     local isAltPath = repStageTypes[level:GetStageType()] ~= nil
 
-    local isFinal = util.isFinalBossRoomOfFloor(room)
+    local isFinal = util.isChapterEndBoss(room)
 
     -- This is the Mom! fight
     if stage == LevelStage.STAGE3_2 and not isAltPath and isFinal then

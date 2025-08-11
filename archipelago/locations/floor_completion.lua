@@ -1,19 +1,14 @@
 local util = require("archipelago.util")
+local stats = require("archipelago.stats")
+local incrementStat = stats.incrementStat
+local StatKeys = stats.StatKeys
 
 --- Handles locations for completing chapters.
---- @param spawnPosition Vector
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPosition)
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
-
-    -- This isn't the final boss room on this floor (Labyrinth), so disregard
-    if not util.isFinalBossRoomOfFloor(room) then
-        return
-    end
-
+--- @param stage LevelStage
+--- @param stageType StageType
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
     -- Get player name and chapter
     local playerName = util.getCharacterName()
-    local stage = level:GetStage()
 
     local chapterName = nil
     if stage == LevelStage.STAGE1_2 then
@@ -30,31 +25,98 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(spawnPos
         chapterName = "Chapter 6"
     end
 
-    -- If we have curse of the labyrinth, then we need to do extra checks
-    if level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0 then
-        if stage == LevelStage.STAGE1_1 then
-            chapterName = "Chapter 1"
-        elseif stage == LevelStage.STAGE2_1 then
-            chapterName = "Chapter 2"
-        elseif stage == LevelStage.STAGE3_1 then
-            chapterName = "Chapter 3"
-        elseif stage == LevelStage.STAGE4_1 then
-            chapterName = "Chapter 4"
-        end
-    end
-
     -- This chapter isn't considered for locations
     if chapterName == nil then
         return
     end
 
-    local locationName = playerName .. " (" .. chapterName .. ")"
-    local locationCode = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
+    --- @type integer[]
+    local locations = {}
 
-    if locationCode == nil then
-        Isaac.DebugString("Missing location name '" .. locationName .. "'")
+    -- Location for clearing chapter
+    local location = AP_MAIN_MOD.LOCATIONS_DATA[chapterName .. " Cleared"]
+    if location then
+        locations[#locations + 1] = location
+    end
+
+    local game = Game()
+
+    -- Grant locations for completing stages without damage
+    local lastDamageStage = stats.getStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, stage)
+    if stage - lastDamageStage >= 2 then
+        location = AP_MAIN_MOD.LOCATIONS_DATA[chapterName .. " Cleared (No Damage)"]
+
+        if location then
+            locations[#locations + 1] = location
+        end
+    end
+
+    -- Clear a chapter > 1 with 0.5 hearts
+    local lastHPStage = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, stage)
+    if stage - lastHPStage >= 2 then
+        locations[#locations + 1] = 15
+    end
+
+    -- Chapter Clears as character
+    location = AP_MAIN_MOD.LOCATIONS_DATA[playerName .. " (" .. chapterName .. ")"]
+    if location then
+        locations[#locations + 1] = location
+    end
+
+    -- Clear whatever chapter like a billion times (these locations suck)
+    local isNormalPath = stageType ~= StageType.STAGETYPE_REPENTANCE and stageType ~= StageType.STAGETYPE_REPENTANCE_B
+    if isNormalPath then
+        if stage == LevelStage.STAGE1_2 then
+            if incrementStat(StatKeys.CHAPTER_1_CLEARS) >= 40 then -- 40 chapter 1 clears
+                locations[#locations + 1] = 12
+            end
+        elseif stage == LevelStage.STAGE2_2 then
+            if incrementStat(StatKeys.CHAPTER_2_CLEARS) >= 30 then -- 30 chapter 2 clears
+                locations[#locations + 1] = 13
+            end
+        elseif stage == LevelStage.STAGE3_2 then
+            if incrementStat(StatKeys.CHAPTER_3_CLEARS) >= 20 then -- 20 chapter 3 clears
+                locations[#locations + 1] = 14
+            end
+        end
+    end
+
+    AP_MAIN_MOD:sendLocations(locations)
+end)
+
+--- Used to reset the last time the player took damage.
+--- @param continued boolean
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+    if continued then
         return
     end
 
-    AP_MAIN_MOD:sendLocation(locationCode)
+    stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, 0)
+    stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, 0)
+end)
+
+--- Tracks the last time the player took damage.
+--- @param entity Entity
+--- @param amount number
+--- @param damageFlags integer
+--- @param source EntityRef
+--- @param countdownFrames integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
+    stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, Game():GetLevel():GetStage())
+end, EntityType.ENTITY_PLAYER)
+
+--- Tracks the last time the player had with more than one half heart
+--- @param player EntityPlayer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
+    if util.totalPlayerHealth(player) <= 1 then
+        return
+    end
+
+    local stage = Game():GetLevel():GetStage()
+    local lastWithoutHalfHeart = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, 0)
+
+    -- Only save if the value was updated
+    if stage ~= lastWithoutHalfHeart then
+        stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, 0)
+    end
 end)

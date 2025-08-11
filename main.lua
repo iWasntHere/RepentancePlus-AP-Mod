@@ -27,7 +27,9 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED", -- Called when the player picks up a pickup
     MC_ARCHIPELAGO_CHEST_OPENED = "ARCHIPELAGO_CHEST_OPENED", -- Called when the player opens a chest
     MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE = "ARCHIPELAGO_PRE_GET_COLLECTIBLE", -- Called when the player touches an item pedestal
-    MC_ARCHIPELAGO_POST_GET_COLLECTIBLE = "ARCHIPELAGO_POST_GET_COLLECTIBLE" -- Called when the item the player picked up is added to their inventory
+    MC_ARCHIPELAGO_POST_GET_COLLECTIBLE = "ARCHIPELAGO_POST_GET_COLLECTIBLE", -- Called when the item the player picked up is added to their inventory
+    MC_ARCHIPELAGO_POST_FLOOR_CLEARED = "ARCHIPELAGO_POST_FLOOR_CLEARED", -- Called when the boss of the floor is cleared
+    MC_ARCHIPELAGO_POST_CHAPTER_CLEARED = "ARCHIPELAGO_POST_CHAPTER_CLEARED", -- Called when the chapter is cleared
 }
 
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
