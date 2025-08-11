@@ -9,7 +9,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
     -- If the planetarium is adjacent, remove the door to it
     local room = Game():GetRoom()
     for slot, door in util.doors(room) do
-        if door.TargetRoomType == RoomType.ROOM_PLANETARIUM then
+        if door and door.TargetRoomType == RoomType.ROOM_PLANETARIUM then
             room:RemoveDoor(slot)
         end
     end

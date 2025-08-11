@@ -123,11 +123,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, player)
         AP_MAIN_MOD:sendLocation(486)
     end
 
-    -- Use Blank Card on The Sun
-    if itemType == CollectibleType.COLLECTIBLE_BLANK_CARD and player:GetCard(0) == Card.CARD_SUN then
-        AP_MAIN_MOD:sendLocation(480)
-    end
-
     -- Bible used on Mom
     if itemType == CollectibleType.COLLECTIBLE_BIBLE then
         for _, entity in ipairs(Isaac.GetRoomEntities()) do
@@ -135,6 +130,16 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, player)
                 AP_MAIN_MOD:sendLocation(444)
             end
         end
+    end
+end)
+
+--- @param cardType Card
+--- @param player EntityPlayer
+--- @param flags integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player, flags)
+    -- Use Blank Card on The Sun
+    if cardType == Card.CARD_SUN and flags & UseFlag.USE_MIMIC ~= 0 then
+        AP_MAIN_MOD:sendLocation(480)
     end
 end)
 
