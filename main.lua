@@ -305,5 +305,6 @@ require("archipelago.items.grid_entities")
 require("archipelago.items.characters")
 require("archipelago.items.curses")
 require("archipelago.items.planetarium")
+require("archipelago.items.starting_items")
 
 require("archipelago.tracker.tracker")
