@@ -313,6 +313,14 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, fu
     elseif entity.Variant == 2 and incrementStat(StatKeys.BLOOD_DONATIONS) == 30 then
         AP_MAIN_MOD:sendLocation(455)
     end
+
+    -- Rescuing tainted character from Home closet
+    if entity.Variant == 14 then
+        local taintedCharacterName = util.getTaintedCharacterName()
+        local code = AP_MAIN_MOD.LOCATIONS_DATA[taintedCharacterName .. " Unlock"]
+
+        AP_MAIN_MOD:sendLocation(code)
+    end
 end)
 
 --- @param player EntityPlayer

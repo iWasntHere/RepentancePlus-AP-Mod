@@ -73,6 +73,8 @@ function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
         }
 	end
 
+    local locationData = AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}})
+
 	-- Any time we expose data, it will ALWAYS be in this format
 	local apData = {
 		slot_name = ARCHIPELAGO_SLOT,
@@ -90,14 +92,25 @@ function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
     -- New location checks
     if locationChecks then
         apData.location_checks = util.concatArrays({apData.location_checks, locationChecks})
+
+        -- Mark that we have sent this location (it is complete)
+        for _, code in ipairs(apData.location_checks) do
+            locationData.sent[code] = true
+        end
     end
 
     -- New location scouts
     if locationScouts then
         apData.location_scouts = util.concatArrays({apData.location_scouts, locationScouts})
+
+        -- Mark that we have scout this location
+        for _, code in ipairs(apData.location_checks) do
+            locationData.scouted[code] = true
+        end
     end
 
 	mod:SaveData(json.encode(apData))
+    AP_SUPP_MOD:SaveKey("location_data", locationData)
 end
 
 --- Send a location to the server.
@@ -172,6 +185,20 @@ function mod:checkUnlockedByName(name)
     end
 
     return AP_SUPP_MOD:IsItemUnlocked(code) -- The codes are strings in the table
+end
+
+--- 'true' if the location code has already been sent.
+--- @param code integer
+--- @return boolean
+function mod:checkLocationSent(code)
+    return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).sent[code] ~= nil
+end
+
+--- 'true' if the location code has already been scouted.
+--- @param code integer
+--- @return boolean
+function mod:checkLocationScouted(code)
+    return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
 end
 
 --- Performs effects when you get an item.

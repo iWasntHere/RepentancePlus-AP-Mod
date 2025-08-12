@@ -1,3 +1,8 @@
+local util = require("archipelago.util")
+
+--- Returns a random collectible ID for the given room's pool.
+--- @param seed integer
+--- @return CollectibleType
 local function getItemForCurrentRoom(seed)
     local game = Game()
     local level = game:GetLevel()
@@ -5,6 +10,31 @@ local function getItemForCurrentRoom(seed)
     local itemPool = game:GetItemPool()
     local poolForRoom = itemPool:GetPoolForRoom(room:GetType(), seed)
     return itemPool:GetCollectible(poolForRoom, false, seed, CollectibleType.COLLECTIBLE_BREAKFAST)
+end
+
+--- 'true' if Inner Child should be replaced by a rescuable Isaac
+--- @return boolean
+local function shouldReplaceInnerChild()
+    local level = Game():GetLevel()
+
+    if level:GetStage() ~= LevelStage.STAGE8 then -- Must be in Home
+        return false
+    end
+
+    if level:GetCurrentRoomIndex() ~= 94 then -- Must be in the closet (this is a very specific room index)
+        return false
+    end
+
+    if util.isCharacterTainted() then -- Character must not be tainted
+        return false
+    end
+
+    local locationName = util.getTaintedCharacterName() .. " Unlock"
+    if AP_MAIN_MOD:checkLocationSent(AP_MAIN_MOD.LOCATIONS_DATA[locationName]) then -- Location must not be found already
+        return false
+    end
+
+    return true
 end
 
 --- @param entityType EntityType
@@ -23,6 +53,13 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
     if collectibleType == nil then
         AP_MAIN_MOD:Error("CollectibleType is nil")
         return
+    end
+
+    -- It's inner child, it may need to be replaced with a rescuable Isaac
+    if collectibleType == CollectibleType.COLLECTIBLE_INNER_CHILD then
+        if shouldReplaceInnerChild() then
+            return {EntityType.ENTITY_SLOT, 14, 0, seed} -- Replace with rescuable Isaac!
+        end
     end
 
     -- Get the code for the collectible that's trying to spawn

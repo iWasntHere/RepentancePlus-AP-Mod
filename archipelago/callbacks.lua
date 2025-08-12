@@ -142,8 +142,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
 
             local sprite = entity:GetSprite()
             if not data.archipelago_game_ended then
+                local prize = sprite:IsPlaying("Prize") or sprite:IsPlaying("Shell1Prize") or sprite:IsPlaying("Shell2Prize") or sprite:IsPlaying("Shell3Prize")
+                local closetPlayerRescue = entity.Variant == 14 and sprite:IsPlaying("PayPrize") -- Isaac in Home closet
+
                 -- If the prize animation is playing, set that the game ended
-                if sprite:IsPlaying("Prize") or sprite:IsPlaying("Shell1Prize") or sprite:IsPlaying("Shell2Prize") or sprite:IsPlaying("Shell3Prize") then
+                if prize or closetPlayerRescue then
                     data.archipelago_game_ended = true
 
                     Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, entity)

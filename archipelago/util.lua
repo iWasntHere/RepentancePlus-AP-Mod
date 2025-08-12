@@ -71,6 +71,30 @@ export.taintedCharacters = {
     [PlayerType.PLAYER_THESOUL_B] = true
 }
 
+export.taintedCounterpartNames = {
+    [PlayerType.PLAYER_ISAAC] = "Tainted Isaac",
+    [PlayerType.PLAYER_MAGDALENE] = "Tainted Magdalene",
+    [PlayerType.PLAYER_CAIN] = "Tainted Cain",
+    [PlayerType.PLAYER_JUDAS] = "Tainted Judas",
+    [PlayerType.PLAYER_BLUEBABY] = "Tainted ???",
+    [PlayerType.PLAYER_EVE] = "Tainted Eve",
+    [PlayerType.PLAYER_SAMSON] = "Tainted Samson",
+    [PlayerType.PLAYER_AZAZEL] = "Tainted Azazel",
+    [PlayerType.PLAYER_LAZARUS] = "Tainted Lazarus",
+    [PlayerType.PLAYER_EDEN] = "Tainted Eden",
+    [PlayerType.PLAYER_THELOST] = "Tainted Lost",
+    [PlayerType.PLAYER_LAZARUS2] = "Tainted Lazarus",
+    [PlayerType.PLAYER_BLACKJUDAS] = "Tainted Judas",
+    [PlayerType.PLAYER_LILITH] = "Tainted Lilith",
+    [PlayerType.PLAYER_KEEPER] = "Tainted Keeper",
+    [PlayerType.PLAYER_APOLLYON] = "Tainted Apollyon",
+    [PlayerType.PLAYER_THEFORGOTTEN] = "Tainted Forgotten",
+    [PlayerType.PLAYER_THESOUL] = "Tainted Forgotten",
+    [PlayerType.PLAYER_BETHANY] = "Tainted Bethany",
+    [PlayerType.PLAYER_JACOB] = "Tainted Jacob",
+    [PlayerType.PLAYER_ESAU] = "Tainted Jacob",
+}
+
 --- Returns the name of the currently played character.
 --- @return string
 function export.getCharacterName()
@@ -81,6 +105,13 @@ end
 --- @return boolean
 function export.isCharacterTainted()
     return export.taintedCharacters[Isaac.GetPlayer():GetPlayerType()] ~= nil
+end
+
+--- Returns the name of the current character's tainted counterpart.
+--- 'nil' if the current character is tainted.
+--- @return string|nil
+function export.getTaintedCharacterName()
+    return export.taintedCounterpartNames[Isaac.GetPlayer():GetPlayerType()]
 end
 
 --- Picks a random value from the table.
