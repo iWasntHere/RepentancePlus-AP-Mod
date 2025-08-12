@@ -240,7 +240,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
         AP_MAIN_MOD:sendLocation(460)
     end
 end, EntityType.ENTITY_THE_LAMB)
-
+ 
 --- When Mom's Heart dies (Lazarus to Mom's Heart w/o Deaths)
 --- @param entity EntityNPC
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
@@ -248,6 +248,75 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
         AP_MAIN_MOD:sendLocation(358)
     end
 end, EntityType.ENTITY_MOMS_HEART)
+
+--- Tracks destroying the Siren's skull.
+--- @param entity Entity
+--- @param amount number
+--- @param damageFlags integer
+--- @param source EntityRef
+--- @param countdownFrames integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
+    -- Blow up Siren's skull
+    if entity.Type == EntityType.ENTITY_SIREN and entity.Variant == 1 then
+        AP_MAIN_MOD:sendLocation(474)
+    end
+end, EntityType.ENTITY_SIREN)
+
+--- Tracks destroying shopkeepers.
+--- @param entity Entity
+--- @param amount number
+--- @param damageFlags integer
+--- @param source EntityRef
+--- @param countdownFrames integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
+    if incrementStat(StatKeys.SHOPKEEPERS_KILLED) == 20 then
+        AP_MAIN_MOD:sendLocation(447)
+    end
+end, EntityType.ENTITY_SHOPKEEPER)
+
+--- Tracks destroying slot machines and beggars.
+--- @param entity Entity
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, function (_, entity)
+    -- Blow up Battery Bum 10 times
+    if entity.Variant == 13 then
+        if incrementStat(StatKeys.BATTERY_BUMS_KILLED) == 10 then
+            AP_MAIN_MOD:sendLocation(477)
+        end
+
+    -- Blow up 30 slot machines
+    elseif entity.Variant == 1 then
+        if incrementStat(StatKeys.SLOT_MACHINES_KILLED) == 30 then
+            AP_MAIN_MOD:sendLocation(456)
+        end
+    end
+end)
+
+--- Tracks beggars paying out collectibles.
+--- @param entity Entity
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, function (_, entity)
+    print("boop")
+    -- Get 5 collectible payouts from a Battery Bum
+    if entity.Variant == 13 and incrementStat(StatKeys.BATTERY_BUM_COLLECTIBLE_PAYOUTS) == 5 then
+        AP_MAIN_MOD:sendLocation(476)
+    end
+end)
+
+--- Tracks playing shell games and slot machines.
+--- @param entity Entity
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, function (_, entity)
+    print("beep")
+
+    local isShellGame = entity.Variant == 6 or entity.Variant == 15
+
+    -- Play shell game 100 times
+    if isShellGame and incrementStat(StatKeys.SHELL_GAME_PLAYS) == 100 then
+        AP_MAIN_MOD:sendLocation(448)
+
+    -- Donate blood 30 times
+    elseif entity.Variant == 2 and incrementStat(StatKeys.BLOOD_DONATIONS) == 30 then
+        AP_MAIN_MOD:sendLocation(455)
+    end
+end)
 
 --- @param player EntityPlayer
 --- @param item ItemConfigItem

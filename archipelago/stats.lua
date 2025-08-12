@@ -31,7 +31,13 @@ export.StatKeys = {
     CHAPTER_2_CLEARS = "chapter_2_clears",
     CHAPTER_3_CLEARS = "chapter_3_clears",
     LAST_FLOOR_WITH_DAMAGE = "last_floor_with_damage",
-    LAST_FLOOR_WITHOUT_HALF_HEART = "last_floor_without_half_heart"
+    LAST_FLOOR_WITHOUT_HALF_HEART = "last_floor_without_half_heart",
+    BATTERY_BUMS_KILLED = "battery_bums_killed",
+    SLOT_MACHINES_KILLED = "slot_machines_destroyed",
+    SHOPKEEPERS_KILLED = "shopkeepers_killed",
+    SHELL_GAME_PLAYS = "shell_game_plays",
+    BATTERY_BUM_COLLECTIBLE_PAYOUTS = "battery_bum_collectible_payouts",
+    BLOOD_DONATIONS = "blood_donations"
 }
 
 --- Increases the given stat by 1, and returns the new value.

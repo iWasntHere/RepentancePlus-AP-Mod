@@ -30,6 +30,9 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_POST_GET_COLLECTIBLE = "ARCHIPELAGO_POST_GET_COLLECTIBLE", -- Called when the item the player picked up is added to their inventory
     MC_ARCHIPELAGO_POST_FLOOR_CLEARED = "ARCHIPELAGO_POST_FLOOR_CLEARED", -- Called when the boss of the floor is cleared
     MC_ARCHIPELAGO_POST_CHAPTER_CLEARED = "ARCHIPELAGO_POST_CHAPTER_CLEARED", -- Called when the chapter is cleared
+    MC_ARCHIPELAGO_PRE_SLOT_KILLED = "ARCHIPELAGO_PRE_SLOT_KILLED", -- Called just before a slot machine or beggar dies from an explosion
+    MC_ARCHIPELAGO_SLOT_GAME_END = "ARCHIPELAGO_SLOT_GAME_END", -- Called when a slot machine finishes playing, the player selects a shell from a shell game, or a beggar pays out
+    MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT = "ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT", -- Called when a beggar pays out a collectible and disappears
 }
 
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes

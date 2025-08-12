@@ -28,6 +28,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
     -- Get the code for the collectible that's trying to spawn
     local code = AP_MAIN_MOD.ITEMS_DATA.COLLECTIBLE_ID_TO_CODE[collectibleType]
 
+    -- Error catching
+    if code == nil then
+        AP_MAIN_MOD:Error("Code for collectible '" .. tostring(collectibleType) .. "' is nil")
+        return
+    end
+
     -- This item is unlocked, so we don't care
     if AP_MAIN_MOD:checkUnlocked(code) then
         return

@@ -16,6 +16,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
 
     -- We entered the planetarium, so kick the player out
     if room:GetType() == RoomType.ROOM_PLANETARIUM then
-        Isaac.GetPlayer(0):UseCard(Card.CARD_STARS, UseFlag.USE_NOHUD)
+        Isaac.GetPlayer(0):UseActiveItem(CollectibleType.COLLECTIBLE_TELEPORT, UseFlag.USE_NOANIM)
     end
 end)

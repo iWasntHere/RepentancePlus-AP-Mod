@@ -105,3 +105,56 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng,
     -- We completed a chapter!
     Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, stage, stageType)
 end)
+
+--- Handles detecting when EntitySlots die. It's a really bad algorithm, but, of course, there's no other way.
+--- This is really only used for beggars (since they have no death animation)
+--- @param entityType EntityType
+--- @param variant integer
+--- @param subType integer
+--- @param position Vector
+--- @param velocity Vector
+--- @param spawnerEntity Entity|nil
+--- @param seed integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
+    if entityType ~= EntityType.ENTITY_EFFECT then
+        return
+    end
+
+    if variant == EffectVariant.BOMB_EXPLOSION then
+        for _, entity in ipairs(Isaac.FindInRadius(position, 75, EntityPartition.PICKUP)) do
+            local sprite = entity:GetSprite()
+            if not sprite or not sprite:IsPlaying("Broken") then -- For slots that actually have an animation for being dead, check the animation
+                Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, entity)
+            end
+        end
+    end
+end)
+
+--- Handles slot machine events. Sigh.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+    for _, entity in ipairs(Isaac.GetRoomEntities()) do
+        if entity.Type == EntityType.ENTITY_SLOT then
+            local data = entity:GetData()
+
+            local sprite = entity:GetSprite()
+            if not data.archipelago_game_ended then
+                -- If the prize animation is playing, set that the game ended
+                if sprite:IsPlaying("Prize") or sprite:IsPlaying("Shell1Prize") or sprite:IsPlaying("Shell2Prize") or sprite:IsPlaying("Shell3Prize") then
+                    data.archipelago_game_ended = true
+
+                    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, entity)
+                end
+            else
+                -- If the game is set to ended and the sprite is in idle, then the game is reset for the next play
+                if sprite:IsPlaying("Idle") then
+                    data.archipelago_game_ended = false
+                
+                -- This occurs when a beggar pays out a collectible and leaves
+                elseif sprite:IsPlaying("Teleport") and not data.archipelago_beggar_paid_out then
+                    data.archipelago_beggar_paid_out = true
+                    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, entity)
+                end
+            end
+        end
+    end
+end)
