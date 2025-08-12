@@ -514,5 +514,33 @@ function export.totalPlayerHealth(player)
     return player:GetHearts() + player:GetSoulHearts() + player:GetEternalHearts() + player:GetBoneHearts()
 end
 
+--- Returns an option from the table, but options are weighted.
+--- @generic T
+--- @param options {value: T, weight: number}[]
+--- @param rng RNG
+--- @return T
+function export.chooseWeighted(options, rng)
+    -- Calculate total weight
+    local totalWeight = 0
+
+    for _, option in ipairs(options) do
+        totalWeight = totalWeight + option.weight
+    end
+
+    -- Go through each item and subtract until we hit 0 on our counter
+    local counter = rng:RandomFloat() * totalWeight
+
+    for _, option in ipairs(options) do
+        counter = counter - option.weight
+
+        if counter <= 0 then
+            return option.value
+        end
+    end
+
+    -- Fallback value
+    return options[1].value
+end
+
 
 return export

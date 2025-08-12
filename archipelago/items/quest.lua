@@ -49,6 +49,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
         return
     end
 
+    -- This is a 'random' collectible, so other callbacks should handle it
+    if collectibleType == CollectibleType.COLLECTIBLE_NULL then
+        return
+    end
+
     -- In case collectibleType is ever nil
     if collectibleType == nil then
         AP_MAIN_MOD:Error("CollectibleType is nil")

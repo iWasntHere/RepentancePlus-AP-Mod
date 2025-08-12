@@ -62,10 +62,11 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         return cardType
     end
 
+    --- @type Card[]
     local allSets = {}
 
     if onlyRunes then
-        allSets = cardData.rune
+        allSets = cardData.RUNE_TYPE
     else
         -- Gather applicable sets
         local sets = {cardData.TAROT_TYPE, cardData.REVERSE_TYPE, cardData.SPECIAL_TYPE, cardData.OBJECT_TYPE}
@@ -81,17 +82,19 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         allSets = util.concatArrays(sets)
     end
 
+    --- @type {value: Card, weight: number}[]
     local cardSet = {}
     -- Filter the set down to only unlocked cards
     for _, card in ipairs(allSets) do
         local code = AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[card]
         if code == nil then
             AP_MAIN_MOD:Error("nil card code for card type " .. tostring(card))
+            return cardType
         end
 
         if AP_MAIN_MOD:checkUnlocked(code) then
             --print("Unlocked!")
-            cardSet[#cardSet + 1] = card
+            cardSet[#cardSet + 1] = {value = card, weight = cardData.WEIGHTS[card]}
         end
     end
 
@@ -100,7 +103,7 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         return Card.CARD_RULES
     end
 
-    return util.randomFromArray(rng, cardSet)
+    return util.chooseWeighted(cardSet, rng)
 end
 
 --- When rolling a new card.
