@@ -130,8 +130,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
     end
 end)
 
---- Handles slot machine events. Sigh.
+--- @type table<integer, integer>
+local roomGridEntitySnapshot = {} -- Used to scan for changes, to see if a grid entity was destroyed. Index to state
+local currentRoomIndex = 0 -- Used to scan for when the room changes so the snapshot can be cleared
+--- Handles slot machine and grid entity events. Sigh.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+    -- Slot events
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity.Type == EntityType.ENTITY_SLOT then
             local data = entity:GetData()
@@ -155,6 +159,29 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
                     Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, entity)
                 end
             end
+        end
+    end
+
+    -- Grid events
+    local level = Game():GetLevel()
+    local room = level:GetCurrentRoom()
+    local roomIndex = level:GetCurrentRoomIndex()
+    
+    if roomIndex ~= currentRoomIndex then
+        currentRoomIndex = roomIndex
+        roomGridEntitySnapshot = {}
+    end
+
+    for index, gridEnt in util.gridEntities(room) do
+        if gridEnt then
+            local oldState = roomGridEntitySnapshot[index]
+
+            -- If a grid entity's state was changed... (this includes being added)
+            if gridEnt.State ~= oldState then
+                Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED, gridEnt, oldState)
+            end
+
+            roomGridEntitySnapshot[index] = gridEnt.State
         end
     end
 end)

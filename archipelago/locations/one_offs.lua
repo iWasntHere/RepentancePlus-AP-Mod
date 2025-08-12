@@ -294,7 +294,6 @@ end)
 --- Tracks beggars paying out collectibles.
 --- @param entity Entity
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, function (_, entity)
-    print("boop")
     -- Get 5 collectible payouts from a Battery Bum
     if entity.Variant == 13 and incrementStat(StatKeys.BATTERY_BUM_COLLECTIBLE_PAYOUTS) == 5 then
         AP_MAIN_MOD:sendLocation(476)
@@ -304,8 +303,6 @@ end)
 --- Tracks playing shell games and slot machines.
 --- @param entity Entity
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, function (_, entity)
-    print("beep")
-
     local isShellGame = entity.Variant == 6 or entity.Variant == 15
 
     -- Play shell game 100 times
@@ -482,9 +479,61 @@ end)
 --- @param effect PillEffect
 --- @param player EntityPlayer
 --- @param flags integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_PILL, function (effect, player, flags)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_PILL, function (_, effect, player, flags)
     if effect == PillEffect.PILLEFFECT_TEARS_UP then
         incrementStat(StatKeys.TEARS_UP_PILLS_THIS_RUN)
         tryTearsUpCollectionLocation(player)
+    end
+end)
+
+local GridState = {
+    ROCK_DESTROYED = 2,
+    POOP_DESTROYED = 1000
+}
+
+local GridRockTypes = {
+    [GridEntityType.GRID_ROCK] = true,
+    [GridEntityType.GRID_ROCKT] = true,
+    [GridEntityType.GRID_ROCK_BOMB] = true,
+    [GridEntityType.GRID_ROCK_GOLD] = true,
+    [GridEntityType.GRID_ROCK_SPIKED] = true,
+    [GridEntityType.GRID_ROCK_SS] = true
+}
+
+--- Used to track destruction of grid entities.
+--- @param gridEntity GridEntity
+--- @param oldState integer
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED, function (_, gridEntity, oldState)
+    local type = gridEntity:GetType()
+    local variant = gridEntity:GetVariant()
+
+    if type == GridEntityType.GRID_POOP and gridEntity.State == GridState.POOP_DESTROYED then
+        -- Destroy 5 rainbow poops
+        if variant == 4 and incrementStat(StatKeys.RAINBOW_POOPS_DESTROYED) == 5 then
+            AP_MAIN_MOD:sendLocation(484)
+        end
+
+        -- Destroy 100 poops
+        if incrementStat(StatKeys.POOPS_DESTROYED) == 100 then
+            AP_MAIN_MOD:sendLocation(453)
+        end
+    elseif GridRockTypes[type] and gridEntity.State == GridState.ROCK_DESTROYED then
+        local rocksDestroyed = incrementStat(StatKeys.ROCKS_DESTROYED)
+
+        if rocksDestroyed == 100 then -- Destroy 100 rocks
+            AP_MAIN_MOD:sendLocation(482)
+        elseif rocksDestroyed == 500 then -- Destroy 500 rocks
+            AP_MAIN_MOD:sendLocation(483)
+        end
+
+        if type == GridEntityType.GRID_ROCKT or type == GridEntityType.GRID_ROCK_SS then
+            local tintedRocksDestroyed = incrementStat(StatKeys.TINTED_ROCKS_DESTROYED)
+
+            if tintedRocksDestroyed == 10 then -- Destroy 10 tinted rocks
+                AP_MAIN_MOD:sendLocation(441)
+            elseif tintedRocksDestroyed == 100 then -- Destroy 100 tinted rocks
+                AP_MAIN_MOD:sendLocation(442)
+            end
+        end
     end
 end)

@@ -461,6 +461,21 @@ function export.doors(room)
     end
 end
 
+--- Iterates through each grid entity in a room. If the grid entity doesn't exist, the second value will be null.
+--- @param room Room
+--- @return fun(): integer|nil, GridEntity|nil
+function export.gridEntities(room)
+    local gridIndex = -1
+    local maxGridIndex = room:GetGridSize()
+
+    return function()
+        gridIndex = gridIndex + 1
+        if gridIndex < maxGridIndex then
+            return gridIndex, room:GetGridEntity(gridIndex)
+        end
+    end
+end
+
 --- Returns the amount of health the player has, where 1 = one half-heart.
 --- @param player EntityPlayer
 --- @return integer
