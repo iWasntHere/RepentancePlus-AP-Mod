@@ -114,10 +114,17 @@ function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 end
 
 --- Send a location to the server.
---- @param locationCode integer
-function mod:sendLocation(locationCode)
+--- @param location Location|string
+function mod:sendLocation(location)
+    local locationCode = nil
+    if type(location) == "string" then -- Convert location name string to location code
+        locationCode = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[location]
+    else
+        locationCode = location
+    end
+
     if locationCode == nil then
-        mod:Error("'nil' location given")
+        mod:Error("'nil' location given ('" .. tostring(location) .. "')")
         return false
     end
 

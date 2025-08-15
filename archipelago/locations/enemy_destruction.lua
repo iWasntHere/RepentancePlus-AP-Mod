@@ -35,7 +35,7 @@ end
 --- @param locations table The table of locations to modify
 local function defeatLocations(name, locations)
     local locationName = name .. " Defeated"
-    local locationID = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
+    local locationID = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName]
 
     -- Ultra Greed defeated as Azazel
     if name == "Ultra Greed" and Isaac.GetPlayer():GetPlayerType() == PlayerTypes.PLAYER_AZAZEL then
@@ -49,9 +49,6 @@ local function defeatLocations(name, locations)
 
     if locationID ~= nil then
         locations[#locations + 1] = locationID
-
-        -- Debug to ensure that the game caught it
-        print(locationName)
     end
 end
 

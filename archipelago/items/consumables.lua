@@ -58,7 +58,8 @@ end)
 --- @param onlyRunes boolean
 --- @return Card
 local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
-    if AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then -- This card is unlocked, we don't need to replace it
+    -- If this card is determined and is unlocked, we don't need to replace it
+    if cardType ~= 0 and AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
         return cardType
     end
 

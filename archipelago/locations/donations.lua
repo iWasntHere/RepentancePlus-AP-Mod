@@ -2,6 +2,7 @@ local util = require("archipelago.util")
 local beggarType = Isaac.GetEntityTypeByName("Archipelago Beggar")
 local beggarVariant = Isaac.GetEntityVariantByName("Archipelago Beggar")
 local sfx = SFXManager()
+local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 
 local SlotVariant = {
     DONATION_MACHINE = 8,
@@ -12,11 +13,11 @@ local SlotVariant = {
 local function awardDonationCheck()
     local isGreedMode = Game():IsGreedMode()
     local key = "donations"
-    local locationCode = AP_MAIN_MOD.LOCATIONS_DATA["Shop Donation"]
+    local locationCode = Locations.SHOP_DONATION
 
     if isGreedMode then
         key = "greed_donations"
-        locationCode = AP_MAIN_MOD.LOCATIONS_DATA["Greed Donation"]
+        locationCode = Locations.GREED_DONATION
     end
 
     local donations = AP_SUPP_MOD:LoadKey(key, 0)

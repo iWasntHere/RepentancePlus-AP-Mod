@@ -34,7 +34,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     local locations = {}
 
     -- Location for clearing chapter
-    local location = AP_MAIN_MOD.LOCATIONS_DATA[chapterName .. " Cleared"]
+    local location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared"]
     if location then
         locations[#locations + 1] = location
     end
@@ -44,7 +44,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     -- Grant locations for completing stages without damage
     local lastDamageStage = stats.getStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, stage)
     if stage - lastDamageStage >= 2 then
-        location = AP_MAIN_MOD.LOCATIONS_DATA[chapterName .. " Cleared (No Damage)"]
+        location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared (No Damage)"]
 
         if location then
             locations[#locations + 1] = location
@@ -58,7 +58,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     end
 
     -- Chapter Clears as character
-    location = AP_MAIN_MOD.LOCATIONS_DATA[playerName .. " (" .. chapterName .. ")"]
+    location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[playerName .. " (" .. chapterName .. ")"]
     if location then
         locations[#locations + 1] = location
     end

@@ -87,16 +87,16 @@ local function tryAwardMark(markName)
         -- Check for "all marks"
         if hasAllMarks(marks[playerName]) then
             locationName = playerName .. " (All Marks)"
-            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
+            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName])
         end
     
-        AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
+        AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName])
         return
     end
 
     -- Award tainted's locations for the few specific marks that give them
     if singleTaintedLocations[markName] then
-        AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
+        AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName])
     end
 
     -- Tainted characters have more specific logic
@@ -105,14 +105,14 @@ local function tryAwardMark(markName)
     if markName == "Isaac" or markName == "???" or markName == "Satan" or markName == "The Lamb" then
         if hasMain4BossMarks(marks[playerName]) then
             locationName = playerName .. " (Isaac, ???, Satan, The Lamb)"
-            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
+            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName])
         end
     end
 
     if markName == "Hush" then
         if hasBossRushAndHush(marks[playerName]) then
             locationName = playerName .. " (Hush & Boss Rush)"
-            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA[locationName])
+            AP_MAIN_MOD:sendLocation(AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName])
         end
     end
 end

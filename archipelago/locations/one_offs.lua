@@ -4,6 +4,7 @@ local setStat = stats.setStat
 local getStat = stats.getStat
 local incrementStat = stats.incrementStat
 local StatKeys = stats.StatKeys
+local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 
 --- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
@@ -14,7 +15,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     -- Reset 7 times
     if not getStat(StatKeys.LAST_RUN_COMPLETED) then
         if incrementStat(StatKeys.RESETS) == 7 then
-            AP_MAIN_MOD:sendLocation(461)
+            AP_MAIN_MOD:sendLocation(Locations.RESET_7X)
         end
 
         -- Invalidate the win streak
@@ -40,27 +41,27 @@ end)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     -- "Be Larger"
     if player:GetSprite().Scale.X > 1.9 then
-        AP_MAIN_MOD:sendLocation(487)
+        AP_MAIN_MOD:sendLocation(Locations.BE_LARGER_3X)
     end
 
     -- Have 7 or more heart containers
     if player:GetEffectiveMaxHearts() >= 14 then
-        AP_MAIN_MOD:sendLocation(436)
+        AP_MAIN_MOD:sendLocation(Locations._7_HEART_CONTAINERS)
     end
 
     -- Have 55 or more coins
     if player:GetNumCoins() >= 55 then
-        AP_MAIN_MOD:sendLocation(435)
+        AP_MAIN_MOD:sendLocation(Locations._55_COINS)
     end
 
     -- Have 4 or more soul hearts
     if player:GetSoulHearts() >= 8 then
-        AP_MAIN_MOD:sendLocation(434)
+        AP_MAIN_MOD:sendLocation(Locations._4_SOUL_HEARTS)
     end
 
     -- Have 20 or more blue flies at once
     if player:GetNumBlueFlies() >= 20 then
-        AP_MAIN_MOD:sendLocation(472)
+        AP_MAIN_MOD:sendLocation(Locations._20_BLUE_FLIES_AT_ONCE)
     end
 end)
 
@@ -78,7 +79,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, player)
     if itemType == CollectibleType.COLLECTIBLE_BIBLE then
         for _, entity in ipairs(Isaac.GetRoomEntities()) do
             if entity.Type == EntityType.ENTITY_MOM then
-                AP_MAIN_MOD:sendLocation(444)
+                AP_MAIN_MOD:sendLocation(Locations.BIBLE_USED_ON_MOM)
             end
         end
     end
@@ -90,7 +91,7 @@ end)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player, flags)
     -- Use Blank Card on The Sun
     if cardType == Card.CARD_SUN and flags & UseFlag.USE_MIMIC ~= 0 then
-        AP_MAIN_MOD:sendLocation(480)
+        AP_MAIN_MOD:sendLocation(Locations.BLANK_CARD_USED_WHILE_HOLDING_XIX___THE_SUN)
     end
 end)
 
@@ -101,7 +102,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_PILL, function (_, pillEffect, playe
     if pillEffect == PillEffect.PILLEFFECT_GULP then
         -- Use Gulp! 5 times in one run
         if incrementStat(StatKeys.GULP_USES_THIS_RUN) == 5 then
-            AP_MAIN_MOD:sendLocation(470)
+            AP_MAIN_MOD:sendLocation(Locations.GULP_PILL_USED_5X)
         end
     end
 end)
@@ -119,18 +120,18 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
 
     -- 2 stages cleared without damage
     if game:GetStagesWithoutDamage() >= 2 then
-        AP_MAIN_MOD:sendLocation(438)
+        AP_MAIN_MOD:sendLocation(Locations.NO_DAMAGE_FOR_TWO_FLOORS)
     end
 
     -- 2 stages cleared without picking up hearts
     if game:GetStagesWithoutHeartsPicked() >= 2 then
-        AP_MAIN_MOD:sendLocation(437)
+        AP_MAIN_MOD:sendLocation(Locations.NO_HEARTS_FOR_TWO_FLOORS)
     end
 
     -- Enter the Corpse
     local level = game:GetLevel()
     if level:GetStage() == LevelStage.STAGE4_1 and level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
-        AP_MAIN_MOD:sendLocation(433)
+        AP_MAIN_MOD:sendLocation(Locations.CORPSE_ENTERED)
     end
 end)
 
@@ -143,7 +144,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         setStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, true)
 
         if incrementStat(StatKeys.ARCADES_VISITED) == 10 then
-            AP_MAIN_MOD:sendLocation(443)
+            AP_MAIN_MOD:sendLocation(Locations.ARCADE_VISITED_10X)
         end
     end
 
@@ -152,25 +153,29 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
         setStat(StatKeys.SHOP_VISITED_THIS_FLOOR, true)
 
         if incrementStat(StatKeys.SHOPS_VISITED_THIS_RUN) == 6 then
-            AP_MAIN_MOD:sendLocation(465)
+            AP_MAIN_MOD:sendLocation(Locations._6_SHOPS_ENTERED_IN_ONE_RUN)
         end
     end
 
+    local secretRoomVists = 0
     if not getStat(StatKeys.SECRET_ROOM_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SECRET then
-        incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        secretRoomVists = incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        setStat(StatKeys.SECRET_ROOM_VISITED_THIS_FLOOR, true)
     end
 
     if not getStat(StatKeys.SUPER_SECRET_ROOM_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SUPERSECRET then
-        incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        secretRoomVists = incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        setStat(StatKeys.SUPER_SECRET_ROOM_VISITED_THIS_FLOOR, true)
     end
 
     if not getStat(StatKeys.ULTRA_SECRET_ROOM_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_ULTRASECRET then
-        incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        secretRoomVists = incrementStat(StatKeys.SECRET_ROOM_VISITS)
+        setStat(StatKeys.ULTRA_SECRET_ROOM_VISITED_THIS_FLOOR, true)
     end
 
     -- Visit 50 secret rooms
-    if getStat(StatKeys.SECRET_ROOM_VISITS, 0) >= 50 then
-        AP_MAIN_MOD:sendLocation(462)
+    if secretRoomVists >= 50 then
+        AP_MAIN_MOD:sendLocation(Locations.SECRET_ROOM_FOUND_50X)
     end
 end)
 
@@ -178,7 +183,7 @@ end)
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PICKUP_PICKED, function (_, pickup)
     if pickup.Variant == PickupVariant.PICKUP_LIL_BATTERY then
         if incrementStat(StatKeys.LIL_BATTERIES_PICKED) == 20 then
-            AP_MAIN_MOD:sendLocation(485) -- Collect 20 lil batteries
+            AP_MAIN_MOD:sendLocation(Locations.LIL_BATTERIES_PICKED_UP_20X) -- Collect 20 lil batteries
         end
     end
 
@@ -192,10 +197,10 @@ end)
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, function (_, chest)
     if (chest.Variant == PickupVariant.PICKUP_LOCKEDCHEST) then
         if incrementStat(StatKeys.LOCKED_CHESTS_OPENED) == 20 then
-            AP_MAIN_MOD:sendLocation(454) -- Open 20 locked chests
+            AP_MAIN_MOD:sendLocation(Locations.LOCKED_CHEST_OPENED_20X) -- Open 20 locked chests
         end
     elseif (chest.Variant == PickupVariant.PICKUP_MOMSCHEST) then
-        AP_MAIN_MOD:sendLocation(475) -- Open Mom's Chest
+        AP_MAIN_MOD:sendLocation(Locations.OPEN_MOMS_CHEST) -- Open Mom's Chest
     end
 end)
 
@@ -205,12 +210,12 @@ end)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player, flags)
     -- 20 Cards or Runes used
     if incrementStat(StatKeys.CARDS_USED) == 20 then
-        AP_MAIN_MOD:sendLocation(489)
+        AP_MAIN_MOD:sendLocation(Locations.CARDS_OR_RUNES_USED_20X)
     end
 
     if cardType == Card.CARD_DEATH then
         if incrementStat(StatKeys.DEATH_CARDS_USED) == 4 then
-            AP_MAIN_MOD:sendLocation(446)
+            AP_MAIN_MOD:sendLocation(Locations.XIII___DEATH_USED_4X)
         end
     end
 end)
@@ -221,13 +226,13 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
     -- Died in Sacrifice Room w/ Missing Poster
     if Game():GetRoom():GetType() == RoomType.ROOM_SACRIFICE then
         if util.hasTrinket(player, TrinketType.TRINKET_MISSING_POSTER) then
-            AP_MAIN_MOD:sendLocation(439)
+            AP_MAIN_MOD:sendLocation(Locations.DIED_IN_SACRIFICE_ROOM_W_MISSING_POSTER)
         end
     end
 
     -- Die 100 times
     if incrementStat(StatKeys.TOTAL_DEATHS) == 100 then
-        AP_MAIN_MOD:sendLocation(445)
+        AP_MAIN_MOD:sendLocation(Locations.DEATH_100X)
     end
 
     setStat(StatKeys.DIED_THIS_RUN, true)
@@ -237,7 +242,7 @@ end, EntityType.ENTITY_PLAYER)
 --- @param entity EntityNPC
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     if not getStat(StatKeys.HEARTS_COINS_BOMBS_PICKED_THIS_RUN, true) then
-        AP_MAIN_MOD:sendLocation(460)
+        AP_MAIN_MOD:sendLocation(Locations.ITS_THE_KEY)
     end
 end, EntityType.ENTITY_THE_LAMB)
  
@@ -245,7 +250,7 @@ end, EntityType.ENTITY_THE_LAMB)
 --- @param entity EntityNPC
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     if not getStat(StatKeys.DIED_THIS_RUN, true) and Isaac.GetPlayer(0):GetType() == PlayerType.PLAYER_LAZARUS then
-        AP_MAIN_MOD:sendLocation(358)
+        AP_MAIN_MOD:sendLocation(Locations.MOMS_HEART_DEFEATED_AS_LAZARUS_W_NO_DEATHS)
     end
 end, EntityType.ENTITY_MOMS_HEART)
 
@@ -258,7 +263,7 @@ end, EntityType.ENTITY_MOMS_HEART)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
     -- Blow up Siren's skull
     if entity.Type == EntityType.ENTITY_SIREN and entity.Variant == 1 then
-        AP_MAIN_MOD:sendLocation(474)
+        AP_MAIN_MOD:sendLocation(Locations.EXPLODED_SIRENS_SKULL)
     end
 end, EntityType.ENTITY_SIREN)
 
@@ -270,7 +275,7 @@ end, EntityType.ENTITY_SIREN)
 --- @param countdownFrames integer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
     if incrementStat(StatKeys.SHOPKEEPERS_KILLED) == 20 then
-        AP_MAIN_MOD:sendLocation(447)
+        AP_MAIN_MOD:sendLocation(Locations.SHOPKEEPERS_EXPLODED_20X)
     end
 end, EntityType.ENTITY_SHOPKEEPER)
 
@@ -280,13 +285,13 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, 
     -- Blow up Battery Bum 10 times
     if entity.Variant == 13 then
         if incrementStat(StatKeys.BATTERY_BUMS_KILLED) == 10 then
-            AP_MAIN_MOD:sendLocation(477)
+            AP_MAIN_MOD:sendLocation(Locations.BATTERY_BUM_EXPLODED_10X)
         end
 
     -- Blow up 30 slot machines
     elseif entity.Variant == 1 then
         if incrementStat(StatKeys.SLOT_MACHINES_KILLED) == 30 then
-            AP_MAIN_MOD:sendLocation(456)
+            AP_MAIN_MOD:sendLocation(Locations.SLOT_MACHINE_EXPLODED_30X)
         end
     end
 end)
@@ -296,7 +301,7 @@ end)
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, function (_, entity)
     -- Get 5 collectible payouts from a Battery Bum
     if entity.Variant == 13 and incrementStat(StatKeys.BATTERY_BUM_COLLECTIBLE_PAYOUTS) == 5 then
-        AP_MAIN_MOD:sendLocation(476)
+        AP_MAIN_MOD:sendLocation(Locations.BATTERY_BUM_PAYOUT_5X)
     end
 end)
 
@@ -307,19 +312,17 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, fu
 
     -- Play shell game 100 times
     if isShellGame and incrementStat(StatKeys.SHELL_GAME_PLAYS) == 100 then
-        AP_MAIN_MOD:sendLocation(448)
+        AP_MAIN_MOD:sendLocation(Locations.SHELL_GAME_PLAYED_100X)
 
     -- Donate blood 30 times
     elseif entity.Variant == 2 and incrementStat(StatKeys.BLOOD_DONATIONS) == 30 then
-        AP_MAIN_MOD:sendLocation(455)
+        AP_MAIN_MOD:sendLocation(Locations.BLOOD_DONATED_30X)
     end
 
     -- Rescuing tainted character from Home closet
     if entity.Variant == 14 then
         local taintedCharacterName = util.getTaintedCharacterName()
-        local code = AP_MAIN_MOD.LOCATIONS_DATA[taintedCharacterName .. " Unlock"]
-
-        AP_MAIN_MOD:sendLocation(code)
+        AP_MAIN_MOD:sendLocation(taintedCharacterName .. " Unlock")
     end
 end)
 
@@ -339,9 +342,9 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
         local taken = incrementStat(StatKeys.ANGEL_ITEMS_TAKEN)
 
         if taken == 10 then
-            AP_MAIN_MOD:sendLocation(466)
+            AP_MAIN_MOD:sendLocation(Locations.ANGEL_ITEMS_TAKEN_10X)
         elseif taken == 25 then
-            AP_MAIN_MOD:sendLocation(467)
+            AP_MAIN_MOD:sendLocation(Locations.ANGEL_ITEMS_TAKEN_25X)
         end
     end
 
@@ -350,16 +353,16 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
         local taken = incrementStat(StatKeys.DEVIL_ITEMS_TAKEN)
         
         if taken == 20 then
-            AP_MAIN_MOD:sendLocation(450)
+            AP_MAIN_MOD:sendLocation(Locations.DEVIL_DEALS_TAKEN_20X)
         elseif taken == 25 then
-            AP_MAIN_MOD:sendLocation(451)
+            AP_MAIN_MOD:sendLocation(Locations.DEVIL_DEALS_TAKEN_25X)
         elseif taken == 30 then
-            AP_MAIN_MOD:sendLocation(452)
+            AP_MAIN_MOD:sendLocation(Locations.DEVIL_DEALS_TAKEN_30X)
         end
 
         -- Pick up 3 devil items in one run
         if incrementStat(StatKeys.DEVIL_ITEMS_TAKEN_THIS_RUN) == 3 then
-            AP_MAIN_MOD:sendLocation(449)
+            AP_MAIN_MOD:sendLocation(Locations.DEVIL_DEALS_TAKEN_3X_IN_ONE_RUN)
         end
     end
 end)
@@ -370,7 +373,7 @@ local function tryTearsUpCollectionLocation(player)
     -- Collect at least 10 tears up items or pills
     local tearsItems = util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS)
     if tearsItems + getStat(StatKeys.TEARS_UP_PILLS_THIS_RUN, 0) >= 10 then
-        AP_MAIN_MOD:sendLocation(464)
+        AP_MAIN_MOD:sendLocation(Locations.TEARS_UP_COLLECTED_10X)
     end
 end
 
@@ -386,77 +389,77 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     -- Collected 5 Rubber Cements
     if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
         if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 5 then
-            AP_MAIN_MOD:sendLocation(430)
+            AP_MAIN_MOD:sendLocation(Locations.RUBBER_CEMENT_COLLECTED_5X)
         end
     end
 
     -- Collected 10 Blood Clots
-    if item.ID == CollectibleType.COLLECTIBLE_RUBBER_CEMENT then
-        if incrementStat(StatKeys.RUBBER_CEMENTS_COLLECTED) == 10 then
-            AP_MAIN_MOD:sendLocation(436)
+    if item.ID == CollectibleType.COLLECTIBLE_BLOOD_CLOT then
+        if incrementStat(StatKeys.BLOOD_CLOTS_COLLECTED) == 10 then
+            AP_MAIN_MOD:sendLocation(Locations.BLOOD_CLOT_COLLECTED_10X)
         end
     end
 
    -- Own at least 50 collectibles
     if player:GetCollectibleCount() >= 50 then
-        AP_MAIN_MOD:sendLocation(428)
+        AP_MAIN_MOD:sendLocation(Locations.ITEMS_OWNED_AT_ONCE_50X)
     end
 
     -- Collect Key Piece 1 and 2
     if util.hasAllCollectibles(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.KEY_PIECES) then
-        AP_MAIN_MOD:sendLocation(426)
+        AP_MAIN_MOD:sendLocation(Locations.KEY_PIECES_COLLECTED)
     end
 
     -- Collect Battery, 9 Volt, Car Battery
     if util.hasAllCollectibles(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.SIMPLE_BATTERIES) then
-        AP_MAIN_MOD:sendLocation(429)
+        AP_MAIN_MOD:sendLocation(Locations.COLLECTED_BATTERY_9_VOLT_AND_CAR_BATTERY)
     end
 
     -- Collect Broken Watch and Stop Watch
     if util.hasAllCollectibles(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.WATCH) then
-        AP_MAIN_MOD:sendLocation(432)
+        AP_MAIN_MOD:sendLocation(Locations.STOP_WATCH_AND_BROKEN_STOP_WATCH_COLLECTED)
     end
 
     -- Make a Super Meat Boy
     if player:GetCollectibleNum(CollectibleType.COLLECTIBLE_CUBE_OF_MEAT, true) >= 4 then
-        AP_MAIN_MOD:sendLocation(420)
+        AP_MAIN_MOD:sendLocation(Locations.SUPER_MEAT_BOY_MADE)
     end
 
     -- Make a Super Bandage Girl
     if player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BALL_OF_BANDAGES, true) >= 4 then
-        AP_MAIN_MOD:sendLocation(419)
+        AP_MAIN_MOD:sendLocation(Locations.SUPER_BANDAGE_GIRL_MADE)
     end
 
     -- Collect at least 2 battery items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.BATTERY) >= 2 then
-        AP_MAIN_MOD:sendLocation(424)
+        AP_MAIN_MOD:sendLocation(Locations._2_BATTERY_ITEMS_COLLECTED)
     end
 
     -- Collect at least 2 dead items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.DEAD) >= 2 then
-        AP_MAIN_MOD:sendLocation(421)
+        AP_MAIN_MOD:sendLocation(Locations._2_DEAD_ITEMS_COLLECTED)
     end
 
     -- Collect at least 3 mom items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.MOM) >= 2 then
-        AP_MAIN_MOD:sendLocation(422)
+        AP_MAIN_MOD:sendLocation(Locations._3_MOM_ITEMS_COLLECTED)
     end
 
     -- Collect at least 2 technology items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.TECH) >= 2 then
-        AP_MAIN_MOD:sendLocation(425)
+        AP_MAIN_MOD:sendLocation(Locations._2_TECHNOLOGY_ITEMS_COLLECTED)
     end
 
     -- Collect at least 3 celestial items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.STARS) >= 3 then
-        AP_MAIN_MOD:sendLocation(427)
+        AP_MAIN_MOD:sendLocation(Locations._3_CELESTIAL_ITEMS_COLLECTED)
     end
 
     tryTearsUpCollectionLocation(player)
 
     -- Collect at least 5 familiars
     if util.countFamiliars() >= 5 then
-        AP_MAIN_MOD:sendLocation(431)
+        AP_MAIN_MOD:sendLocation(Locations._5_FAMILIARS_COLLECTED_IN_ONE_RUN)
     end
 end)
 
@@ -473,12 +476,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_END, function (_, isGameOver)
 
         -- 3 Win Streak
         if wins >= 3 then
-            AP_MAIN_MOD:sendLocation(457)
+            AP_MAIN_MOD:sendLocation(Locations.WIN_STREAK_3X)
         end
 
         -- 5 Win Streak
         if wins >= 5 then
-            AP_MAIN_MOD:sendLocation(458)
+            AP_MAIN_MOD:sendLocation(Locations.WIN_STREAK_5X)
         end
     end
 end)
@@ -518,29 +521,29 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE
     if type == GridEntityType.GRID_POOP and gridEntity.State == GridState.POOP_DESTROYED then
         -- Destroy 5 rainbow poops
         if variant == 4 and incrementStat(StatKeys.RAINBOW_POOPS_DESTROYED) == 5 then
-            AP_MAIN_MOD:sendLocation(484)
+            AP_MAIN_MOD:sendLocation(Locations.RAINBOW_POOP_DESTROYED_5X)
         end
 
         -- Destroy 100 poops
         if incrementStat(StatKeys.POOPS_DESTROYED) == 100 then
-            AP_MAIN_MOD:sendLocation(453)
+            AP_MAIN_MOD:sendLocation(Locations.POOP_DESTROYED_100X)
         end
     elseif GridRockTypes[type] and gridEntity.State == GridState.ROCK_DESTROYED then
         local rocksDestroyed = incrementStat(StatKeys.ROCKS_DESTROYED)
 
         if rocksDestroyed == 100 then -- Destroy 100 rocks
-            AP_MAIN_MOD:sendLocation(482)
+            AP_MAIN_MOD:sendLocation(Locations.ROCK_DESTROYED_100X)
         elseif rocksDestroyed == 500 then -- Destroy 500 rocks
-            AP_MAIN_MOD:sendLocation(483)
+            AP_MAIN_MOD:sendLocation(Locations.ROCK_DESTROYED_500X)
         end
 
         if type == GridEntityType.GRID_ROCKT or type == GridEntityType.GRID_ROCK_SS then
             local tintedRocksDestroyed = incrementStat(StatKeys.TINTED_ROCKS_DESTROYED)
 
             if tintedRocksDestroyed == 10 then -- Destroy 10 tinted rocks
-                AP_MAIN_MOD:sendLocation(441)
+                AP_MAIN_MOD:sendLocation(Locations.TINTED_ROCK_DESTROYED_10X)
             elseif tintedRocksDestroyed == 100 then -- Destroy 100 tinted rocks
-                AP_MAIN_MOD:sendLocation(442)
+                AP_MAIN_MOD:sendLocation(Locations.TINTED_ROCK_DESTROYED_100X)
             end
         end
     end
