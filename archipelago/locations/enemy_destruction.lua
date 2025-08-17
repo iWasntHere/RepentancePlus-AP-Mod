@@ -277,7 +277,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     slain[#slain + 1] = {type = type, variant = variant}
 
     -- Dogma doesn't "clear" the room when killed, so we'll need to immediately check for him
-    if type == EntityType.ENTITY_DOGMA and variant == 0 then
+    if type == EntityType.ENTITY_DOGMA and variant == 2 then -- "Angel" variant
         awardChecksForSlainEnemies()
     end
 end)
@@ -297,7 +297,7 @@ end)
 --- @param type EntityType
 --- @param variant integer
 --- @param subType integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (type, variant, subType)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType)
     if type ~= EntityType.ENTITY_GIDEON then
         return
     end
