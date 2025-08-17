@@ -515,6 +515,10 @@ local GridRockTypes = {
 --- @param gridEntity GridEntity
 --- @param oldState integer
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED, function (_, gridEntity, oldState)
+    if oldState == nil then
+        return -- We likely entered a new room, so we shouldn't count this
+    end
+
     local type = gridEntity:GetType()
     local variant = gridEntity:GetVariant()
 
