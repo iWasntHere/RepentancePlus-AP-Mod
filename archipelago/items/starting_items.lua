@@ -35,7 +35,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
         player:RemoveCollectible(CollectibleType.COLLECTIBLE_D6)
     
     -- Remove the pill from Magdalene
-    elseif playerType == PlayerType.PLAYER_MAGDALENE and not AP_MAIN_MOD:checkUnlockedByName("Maggy Now Holds a Pill") then
+    elseif playerType == PlayerType.PLAYER_MAGDALENE and not AP_MAIN_MOD:checkUnlockedByName("Maggy Now Holds a Pill!") then
         -- First we drop the pill, then on the next frame, delete it
         player:DropPocketItem(0, Vector(0, 0))
         nextFrameFunctions[#nextFrameFunctions + 1] = function ()

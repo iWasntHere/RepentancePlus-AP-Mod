@@ -66,7 +66,8 @@ end
 
 --- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
-    if continued then -- Only do this when the run first starts. Prevents getting stuck with Clicker
+    print(Game():GetLevel():GetStage())
+    if Game():GetLevel():GetStage() ~= LevelStage.STAGE1_1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
         return
     end
 
