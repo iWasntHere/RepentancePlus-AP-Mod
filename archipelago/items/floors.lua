@@ -158,6 +158,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 
     -- This is the Mom's Heart fight
     if stage == LevelStage.STAGE4_2 and not isAltPath and isFinal then
+        if not AP_MAIN_MOD:checkUnlockedByName("Blue Womb") then -- Blue Womb door
+            util.removeSecretExit(room)
+        end
+
         if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
             -- Spawn the chest!
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
@@ -168,10 +172,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     -- This is the Hush fight
     if stage == LevelStage.STAGE4_3 and isFinal then
         if not AP_MAIN_MOD:checkUnlockedByName("New Area") then -- Void door
-            local voidDoor = room:GetDoor(DoorSlot.UP1)
-            if voidDoor then
-                room:RemoveDoor(DoorSlot.UP1)
-            end
+            util.removeSecretExit(room)
         end
 
         if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
@@ -218,21 +219,35 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
     local room = level:GetCurrentRoom()
     local roomType = room:GetType()
 
-    -- Remove the Void door in Blue Womb when you re-enter
-    if roomType == RoomType.ROOM_BOSS and level:GetStage() == LevelStage.STAGE4_3 then
-        if not AP_MAIN_MOD:checkUnlockedByName("New Area") then
-            room:RemoveDoor(DoorSlot.UP1)
+    for slot, door in util.doors(room) do
+        if door then
+            print(tostring(slot) .. " " .. tostring(door:GetSprite():GetFilename()))
+        end
+    end
+
+    -- Remove blue womb door
+    if roomType == RoomType.ROOM_BOSS and util.getEffectiveStage(level) == LevelStage.STAGE4_2 then
+        if not AP_MAIN_MOD:checkUnlockedByName("Blue Womb") then
+            util.removeSecretExit(room)
             return
         end
     end
 
-    -- Remove the "Secret Exit" alt path entrance when you re-enter
+    -- Remove void door
+    if roomType == RoomType.ROOM_BOSS and level:GetStage() == LevelStage.STAGE4_3 then
+        if not AP_MAIN_MOD:checkUnlockedByName("New Area") then
+            util.removeSecretExit(room)
+            return
+        end
+    end
+
+    -- Remove alt path entrance when you re-enter
     if roomType == RoomType.ROOM_BOSS and not AP_MAIN_MOD:checkUnlockedByName("A Secret Exit") then
         util.removeSecretExit(room)
         return
     end
 
-    -- Remove the "Strange Door" ascent path entrance
+    -- Remove ascent path entrance
     if roomType == RoomType.ROOM_DEFAULT and not AP_MAIN_MOD:checkUnlockedByName("A Strange Door") then
         util.removeSecretExit(room)
         return

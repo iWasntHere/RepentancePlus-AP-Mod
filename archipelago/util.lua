@@ -372,15 +372,22 @@ function export.getEffectiveStage(level)
     return stage
 end
 
---- Removes the alt path door in boss rooms, and the ascent door in Depths.
+--- Removes the alt path door in boss rooms, the ascent door in Depths, the blue womb door in Womb II, and the Void door in Blue Womb.
 --- @param room Room
 function export.removeSecretExit(room)
-    for slot = 0, DoorSlot.NUM_DOOR_SLOTS, 1 do
-        local door = room:GetDoor(slot)
-
-        if door and door.TargetRoomType == RoomType.ROOM_SECRET_EXIT then
-            room:RemoveDoor(slot)
+    for slot, door in export.doors(room) do
+        if door then
+            if door.TargetRoomType == RoomType.ROOM_SECRET_EXIT then -- Secret exit doors
+                room:RemoveDoor(slot)
+            elseif export.isBlueWombDoor(door) then -- Blue Womb door in Womb II
+                room:RemoveDoor(slot)
+            end
         end
+    end
+
+    -- Void door in Blue Womb
+    if room:GetType() == RoomType.ROOM_BOSS and Game():GetLevel():GetStage() == LevelStage.STAGE4_3 then
+        room:RemoveDoor(DoorSlot.UP1)
     end
 end
 
@@ -542,5 +549,11 @@ function export.chooseWeighted(options, rng)
     return options[1].value
 end
 
+--- 'true' when the given GridEntityDoor is the door to the Blue Womb room on Womb II. (Say that five times fast)
+--- @param door GridEntityDoor
+--- @return boolean
+function export.isBlueWombDoor(door)
+    return door:GetSprite():GetFilename() == "gfx/grid/door_29_doortobluewomb.anm2"
+end
 
 return export
