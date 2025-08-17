@@ -46,14 +46,34 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
             end
         end
 
+    -- Remove Paperclip from Cain
+    elseif playerType == PlayerType.PLAYER_CAIN and not AP_MAIN_MOD:checkUnlockedByName("Cain Holds Paper Clip") then
+        player:TryRemoveTrinket(TrinketType.TRINKET_PAPER_CLIP)
+
     -- Remove Child's Heart from Samson
     elseif playerType == PlayerType.PLAYER_SAMSON and not AP_MAIN_MOD:checkUnlockedByName("Samson Feels Healthy!") then
         player:TryRemoveTrinket(TrinketType.TRINKET_CHILDS_HEART)
 
+    -- Remove Eve's Razor Blade
+    elseif playerType == PlayerType.PLAYER_EVE and not AP_MAIN_MOD:checkUnlockedByName("Eve Now Holds Razor Blade") then
+        player:RemoveCollectible(CollectibleType.COLLECTIBLE_RAZOR_BLADE)
+
     -- Remove Keeper's stuff
     elseif playerType == PlayerType.PLAYER_KEEPER then
-        player:RemoveCollectible(CollectibleType.COLLECTIBLE_WOODEN_NICKEL)
-        player:TryRemoveTrinket(TrinketType.TRINKET_STORE_KEY)
+        -- Wooden Nickel
+        if not AP_MAIN_MOD:checkUnlockedByName("Keeper Holds Wooden Nickel") then
+            player:RemoveCollectible(CollectibleType.COLLECTIBLE_WOODEN_NICKEL)
+        end
+
+        -- Store Key
+        if not AP_MAIN_MOD:checkUnlockedByName("Keeper Holds Store Key") then
+            player:TryRemoveTrinket(TrinketType.TRINKET_STORE_KEY)
+        end
+
+        -- Extra heart
+        if not AP_MAIN_MOD:checkUnlockedByName("Keeper Holds a Penny") then
+            player:AddMaxHearts(-2)
+        end
     end
 end)
 
