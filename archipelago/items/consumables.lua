@@ -131,6 +131,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
         return
     end
 
+    -- If in Mines II Mom's Shadow zone (to prevent Hanged Man from being re-rolled)
+    if Isaac.GetPlayer(0):HasCurseMistEffect() then
+        return
+    end
+
     local rng = RNG()
     rng:SetSeed(seed, 35)
 
