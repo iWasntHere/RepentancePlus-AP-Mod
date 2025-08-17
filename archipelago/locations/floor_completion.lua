@@ -7,6 +7,10 @@ local StatKeys = stats.StatKeys
 --- @param stage LevelStage
 --- @param stageType StageType
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
+    if Game():GetLevel():IsAscent() then -- Ascent should cancel all of this
+        return
+    end
+
     -- Get player name and chapter
     local playerName = util.getCharacterName()
 
@@ -38,8 +42,6 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     if location then
         locations[#locations + 1] = location
     end
-
-    local game = Game()
 
     -- Grant locations for completing stages without damage
     local lastDamageStage = stats.getStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, stage)
@@ -117,6 +119,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
 
     -- Only save if the value was updated
     if stage ~= lastWithoutHalfHeart then
-        stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, 0)
+        stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, lastWithoutHalfHeart)
     end
 end)
