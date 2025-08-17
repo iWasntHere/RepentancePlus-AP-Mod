@@ -3,7 +3,7 @@ local util = require("archipelago.util")
 local gridEntityTypeToName = {
     [GridEntityType.GRID_ROCK_SS] = "Super Special Rocks",
     [GridEntityType.GRID_ROCK_GOLD] = "Fool's Gold",
-    [GridEntityType.GRID_ROCK_ALT2] = "A Strange Door"
+    [GridEntityType.GRID_ROCK_ALT2] = "A Strange Door",
 }
 
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
@@ -17,20 +17,45 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
         local gridEnt = room:GetGridEntity(i)
         if gridEnt then
             local type = gridEnt:GetType()
-            local name = gridEntityTypeToName[type]
+            local variant = gridEnt:GetVariant()
+            
+            local shouldRemove = false
 
-            if name then
-                local isUnlocked = gridEntityTypeToUnlocked[type]
-                if isUnlocked == nil then -- We can cache the value to make this faster (on this loop)
-                    isUnlocked = AP_MAIN_MOD:checkUnlockedByName(name)
-                    gridEntityTypeToUnlocked[type] = isUnlocked
-                end
+            -- Super Secret Rocks
+            if type == GridEntityType.GRID_ROCK_SS then
+                if not AP_MAIN_MOD:checkUnlockedByName("Super Special Rocks") then
+                    shouldRemove = true
 
-                if not AP_MAIN_MOD:checkUnlockedByName(name) then
-                    room:RemoveGridEntity(i, 0, true)
-                    gridEnt:Update()
                     toSpawn[i] = GridEntityType.GRID_ROCK
                 end
+
+            -- Fool's Gold
+            elseif type == GridEntityType.GRID_ROCK_GOLD then
+                if not AP_MAIN_MOD:checkUnlockedByName("Fool's Gold") then
+                    shouldRemove = true
+
+                    toSpawn[i] = GridEntityType.GRID_ROCK
+                end
+
+            -- Tinted Skull
+            elseif type == GridEntityType.GRID_ROCK_ALT2 then
+                if not AP_MAIN_MOD:checkUnlockedByName("A Strange Door") then
+                    shouldRemove = true
+                end
+
+            -- Charming Poop
+            elseif type == GridEntityType.GRID_POOP and variant == 11 then -- '11' being Charming Poop in this instance
+                if not AP_MAIN_MOD:checkUnlockedByName("Charming Poop") then
+                    shouldRemove = true
+
+                    toSpawn[i] = GridEntityType.GRID_POOP
+                end
+            end
+
+            -- Remove if needed
+            if shouldRemove then
+                room:RemoveGridEntity(i, 0, true)
+                gridEnt:Update()
             end
         end
     end
