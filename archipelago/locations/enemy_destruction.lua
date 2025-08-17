@@ -1,3 +1,5 @@
+local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -120,29 +122,29 @@ local function otherKillLocations(killsTable, locations)
         locations[#locations + 1] = 372
     end
 
-    if getKillsFor(killsTable, "Baby Plum") == 10 then
-        locations[#locations + 1] = 340
+    if getKillsFor(killsTable, "Baby Plum") == 10 then -- Baby Plum x10
+        locations[#locations + 1] = Locations.BABY_PLUM_DEFEATED_10X
     end
 
-    if getKillsFor(killsTable, "Little Horn") == 10 then
-        locations[#locations + 1] = 373
+    if getKillsFor(killsTable, "Little Horn") == 20 then -- Little Horn x20
+        locations[#locations + 1] = Locations.LITTLE_HORN_DEFEATED_20X
     end
 
-    if getKillsFor(killsTable, "Satan") == 10 then
-        locations[#locations + 1] = 359
+    if getKillsFor(killsTable, "Satan") == 5 then -- Satan x5
+        locations[#locations + 1] = Locations.SATAN_DEFEATED_5X
     end
 
-    if getKillsFor(killsTable, "Hush") == 3 then
-        locations[#locations + 1] = 347
+    if getKillsFor(killsTable, "Hush") == 3 then -- Hush x3
+        locations[#locations + 1] = Locations.HUSH_DEFEATED_3X
     end
 
     local isaacKills = getKillsFor(killsTable, "Isaac")
 
     -- Isaac kills
     if isaacKills == 5 then
-        locations[#locations + 1] = 361
+        locations[#locations + 1] = Locations.ISAAC_DEFEATED_5X
     elseif isaacKills == 10 then
-        locations[#locations + 1] = 362
+        locations[#locations + 1] = Locations.ISAAC_DEFEATED_10X
     end
 
     local famineKills = getKillsFor(killsTable, "Famine")
@@ -153,12 +155,12 @@ local function otherKillLocations(killsTable, locations)
 
     -- Any Harbinger killed
     if famineKills > 0 or pestilenceKills > 0 or warKills > 0 or deathKills > 0 or conquestKills > 0 then
-        locations[#locations + 1] = 343
+        locations[#locations + 1] = Locations.ANY_HARBINGER_DEFEATED
     end
 
     -- All Harbingers killed
     if famineKills > 0 and pestilenceKills > 0 and warKills > 0 and deathKills > 0 and conquestKills > 0 then
-        locations[#locations + 1] = 344
+        locations[#locations + 1] = Locations.ALL_5_HARBINGERS_DEFEATED
     end
 
     local blueBabyKills = getKillsFor(killsTable, "???")
@@ -166,7 +168,7 @@ local function otherKillLocations(killsTable, locations)
 
     -- ??? and Lamb killed
     if blueBabyKills > 0 and lambKills > 0 then
-        locations[#locations + 1] = 346
+        locations[#locations + 1] = Locations.BLUEBABY_AND_THE_LAMB_DEFEATED
     end
 
     -- All sins defeated
@@ -183,13 +185,13 @@ local function otherKillLocations(killsTable, locations)
     end
 
     if killedAllSins then
-        locations[#locations + 1] = 342
+        locations[#locations + 1] = Locations.ALL_7_SINS_DEFEATED
     end
 
     -- Angels killed
     local angelKills = getKillsFor(killsTable, "Gabriel") + getKillsFor(killsTable, "Uriel")
     if angelKills == 10 then
-        locations[#locations + 1] = 345
+        locations[#locations + 1] = Locations.ANGEL_DEFEATED_10X
     end
 
     -- 'All Bosses' killed in area
@@ -204,56 +206,45 @@ local function otherKillLocations(killsTable, locations)
     end
 
     if allBossesKilled(BasementBosses) then
-        locations[#locations + 1] = 364
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_BASEMENT
     end
 
     if allBossesKilled(CavesBosses) then
-        locations[#locations + 1] = 365
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_CAVES
     end
 
     if allBossesKilled(DepthsBosses) then
-        locations[#locations + 1] = 366
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_DEPTHS
     end
 
     if allBossesKilled(DownpourBosses) then
-        locations[#locations + 1] = 367
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_DOWNPOUR
     end
 
     if allBossesKilled(MinesBosses) then
-        locations[#locations + 1] = 368
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_MINES
     end
 
     if allBossesKilled(MausoleumBosses) then
-        locations[#locations + 1] = 369
+        locations[#locations + 1] = Locations.DEFEAT_ALL_BOSSES_IN_MAUSOLEUM
     end
 
     -- Kill 20 portals
     if getKillsFor(killsTable, "Portal") == 20 then
-        locations[#locations + 1] = 481
+        locations[#locations + 1] = Locations.PORTAL_DEFEATED_20X
     end
 end
 
--- Enemies we've seen this room
-local seen = {}
+-- Enemies we've slain this room
+local slain = {}
 
---- Handles "seeing" enemies (that we have defeated!).
---- @param entity Entity
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
-    local type = entity.Type
-    local variant = entity.Variant
-
-    -- Mark enemies that we've "seen" (read: killed) in this room.
-    -- When the room is completed, checks will be granted and this will be flushed
-    seen[#seen + 1] = {type = type, variant = variant}
-end)
-
---- Fired when the room is cleared, to grant locations for all enemies that were defeated in the room.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
+-- Awards locations for all enemies slain in the room.
+local function awardChecksForSlainEnemies()
     local kills = getAllKills() -- Load all stats
     local locations = {}
 
     -- Grant locations for defeating foes, and count their kills
-    for _, v in ipairs(seen) do
+    for _, v in ipairs(slain) do
         local name = typeVariantToName(v.type, v.variant)
 
         if name ~= nil then
@@ -272,12 +263,33 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
 
     setKills(kills) -- Save all stats
 
-    seen = {} -- Flush the seen table
+    slain = {} -- Flush the slain table
+end
+
+--- Handles counting slain enemies.
+--- @param entity Entity
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
+    local type = entity.Type
+    local variant = entity.Variant
+
+    -- Mark enemies that we've slain in this room.
+    -- When the room is completed, checks will be granted and this will be flushed
+    slain[#slain + 1] = {type = type, variant = variant}
+
+    -- Dogma doesn't "clear" the room when killed, so we'll need to immediately check for him
+    if type == EntityType.ENTITY_DOGMA and variant == 0 then
+        awardChecksForSlainEnemies()
+    end
+end)
+
+--- Fired when the room is cleared, to grant locations for all enemies that were defeated in the room.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
+    awardChecksForSlainEnemies()
 end)
 
 --- Flushes the 'seen' table when entering a new room, in case the player escapes a fight and doesn't actually win.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
-    seen = {}
+    slain = {}
 end)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)

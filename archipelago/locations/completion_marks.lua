@@ -136,6 +136,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
         bossName = "Ultra Greedier"
     elseif type == EntityType.ENTITY_ISAAC and variant == 2 then
         return -- This is actually Hush's first form
+    elseif type == EntityType.ENTITY_BEAST and variant ~= 0 then
+        return -- This isn't the actual Beast
     end
 
     tryAwardMark(bossName)
