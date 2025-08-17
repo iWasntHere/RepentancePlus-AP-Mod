@@ -41,12 +41,12 @@ local function defeatLocations(name, locations)
 
     -- Ultra Greed defeated as Azazel
     if name == "Ultra Greed" and Isaac.GetPlayer():GetPlayerType() == PlayerTypes.PLAYER_AZAZEL then
-        locations[#locations + 1] = 363
+        locations[#locations + 1] = Locations.ULTRA_GREED_DEFEATED_AS_AZAZEL
     end
 
     -- Lamb Defeated in 20 minutes
-    if name == "The Lamb" and (Game().BossRushParTime / 60 / 60) < 20 then
-        locations[#locations + 1] = 360
+    if name == "The Lamb" and (Game().TimeCounter / 30 / 60) < 20 then
+        locations[#locations + 1] = Locations.THE_LAMB_DEFEATED_LESS_THAN_20_MINUTES
     end
 
     if locationID ~= nil then
