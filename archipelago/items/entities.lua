@@ -210,7 +210,7 @@ local function replaceEntity(type, variant, subType)
 
         -- Crane Game
         if variant == SlotVariant.CRANE_GAME and not AP_MAIN_MOD:checkUnlockedByName(EntityItemName.CRANE_GAME) then
-            return {type, SlotVariant.BEGGAR, subType}
+            return {type, SlotVariant.SLOT_MACHINE, subType}
         end
 
         -- Confessional
