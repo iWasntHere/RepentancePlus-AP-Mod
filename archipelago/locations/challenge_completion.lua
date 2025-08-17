@@ -15,7 +15,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
         return
     end
 
-    local code = AP_MAIN_MOD.LOCATIONS_DATA[locationName]
+    local code = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName]
 
     if code == nil then -- Shouldn't happen, but the location name has no code associated
     print("Challenge location '" .. locationName .. "' has no code!")
