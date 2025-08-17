@@ -138,6 +138,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
         return -- This is actually Hush's first form
     elseif type == EntityType.ENTITY_BEAST and variant ~= 0 then
         return -- This isn't the actual Beast
+    elseif type == EntityType.ENTITY_MOTHER and variant ~= 10 then
+        return -- This isn't Mother's second form
     end
 
     tryAwardMark(bossName)

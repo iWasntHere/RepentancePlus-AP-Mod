@@ -292,6 +292,19 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     slain = {}
 end)
 
+--- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as the
+--- room starts.
+--- @param type EntityType
+--- @param variant integer
+--- @param subType integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (type, variant, subType)
+    if type ~= EntityType.ENTITY_GIDEON then
+        return
+    end
+
+    slain[#slain + 1] = "Great Gideon"
+end)
+
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
 
 --- Handles sparing Baby Plum.
@@ -306,5 +319,5 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, npc)
     end
 
     babyPlumSpared = true
-    AP_MAIN_MOD:sendLocation(341)
+    AP_MAIN_MOD:sendLocation(Locations.BABY_PLUM_SPARED)
 end, EntityType.ENTITY_BABY_PLUM)
