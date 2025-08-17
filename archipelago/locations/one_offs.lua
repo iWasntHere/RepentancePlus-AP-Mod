@@ -37,6 +37,30 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     setStat(StatKeys.DIED_THIS_RUN, false)
 end)
 
+--- Used to count familiars and check if the player has a Super Meat Boy or Bandage Girl
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+    if Isaac.GetFrameCount() % 500 ~= 0 then
+        return
+    end
+
+    local familiarStatus = util.familiarStatus()
+
+    -- Collect at least 5 familiars
+    if familiarStatus.count >= 5 then
+        AP_MAIN_MOD:sendLocation(Locations._5_FAMILIARS_COLLECTED_IN_ONE_RUN)
+    end
+
+    -- Make a Super Meat Boy
+    if familiarStatus.meat_boy then
+        AP_MAIN_MOD:sendLocation(Locations.SUPER_MEAT_BOY_MADE)
+    end
+
+    -- Make a Super Bandage Girl
+    if familiarStatus.bandage_girl then
+        AP_MAIN_MOD:sendLocation(Locations.SUPER_BANDAGE_GIRL_MADE)
+    end
+end)
+
 --- @param player EntityPlayer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     -- "Be Larger"
@@ -420,16 +444,6 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
         AP_MAIN_MOD:sendLocation(Locations.STOP_WATCH_AND_BROKEN_STOP_WATCH_COLLECTED)
     end
 
-    -- Make a Super Meat Boy
-    if player:GetCollectibleNum(CollectibleType.COLLECTIBLE_CUBE_OF_MEAT, true) >= 4 then
-        AP_MAIN_MOD:sendLocation(Locations.SUPER_MEAT_BOY_MADE)
-    end
-
-    -- Make a Super Bandage Girl
-    if player:GetCollectibleNum(CollectibleType.COLLECTIBLE_BALL_OF_BANDAGES, true) >= 4 then
-        AP_MAIN_MOD:sendLocation(Locations.SUPER_BANDAGE_GIRL_MADE)
-    end
-
     -- Collect at least 2 battery items
     if util.countCollectibleTypes(player, AP_MAIN_MOD.COLLECTIBLE_TAGS_DATA.BATTERY) >= 2 then
         AP_MAIN_MOD:sendLocation(Locations._2_BATTERY_ITEMS_COLLECTED)
@@ -456,11 +470,6 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIB
     end
 
     tryTearsUpCollectionLocation(player)
-
-    -- Collect at least 5 familiars
-    if util.countFamiliars() >= 5 then
-        AP_MAIN_MOD:sendLocation(Locations._5_FAMILIARS_COLLECTED_IN_ONE_RUN)
-    end
 end)
 
 --- Used to track when the player resets (starts a new run without finishing the last)

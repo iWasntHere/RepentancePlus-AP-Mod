@@ -468,20 +468,37 @@ local disallowedFamiliars = {
     [FamiliarVariant.BONE_ORBITAL] = true
 }
 
---- Returns the number of follower familiars in the room.
---- @return integer
-function export.countFamiliars()
+--- Returns number of familiars, and if Super Meat Boy/Bandage Girl exists.
+--- @return {count: integer, meat_boy: boolean, bandage_girl: boolean}
+function export.familiarStatus()
     local count = 0
+    local meatBoy = false
+    local bandageGirl = false
 
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         local familiar = entity:ToFamiliar()
 
-        if familiar ~= nil and not disallowedFamiliars[entity.Variant] then
-            count = count + 1
+        if familiar ~= nil then
+            if not disallowedFamiliars[entity.Variant] then
+                count = count + 1
+            end
+
+            -- Super Meat Boy!
+            if familiar.Variant == 47 then
+                meatBoy = true
+
+            -- Super Bandage Girl!
+            elseif familiar.Variant == 72 then
+                bandageGirl = true
+            end
         end
     end
 
-    return count
+    return {
+        count = count,
+        meat_boy = meatBoy,
+        bandage_girl = bandageGirl
+    }
 end
 
 --- Iterates through each door a room can have. If the door doesn't exist, the second value will be nil.
