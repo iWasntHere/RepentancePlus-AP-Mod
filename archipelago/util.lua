@@ -465,7 +465,8 @@ local disallowedFamiliars = {
     [FamiliarVariant.SWARM_FLY_ORBITAL] = true,
     [FamiliarVariant.SIREN_MINION] = true,
     [FamiliarVariant.TINYTOMA_2] = true,
-    [FamiliarVariant.BONE_ORBITAL] = true
+    [FamiliarVariant.BONE_ORBITAL] = true,
+    [FamiliarVariant.FLY_ORBITAL] = true
 }
 
 --- Returns number of familiars, and if Super Meat Boy/Bandage Girl exists.
@@ -484,11 +485,11 @@ function export.familiarStatus()
             end
 
             -- Super Meat Boy!
-            if familiar.Variant == 47 then
+            if familiar.Variant == FamiliarVariant.CUBE_OF_MEAT_4 then
                 meatBoy = true
 
             -- Super Bandage Girl!
-            elseif familiar.Variant == 72 then
+            elseif familiar.Variant == FamiliarVariant.BALL_OF_BANDAGES_4 then
                 bandageGirl = true
             end
         end
