@@ -35,6 +35,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
     end
 end)
 
+--- Used to run callbacks for opening Mom's chest (specifically, yeah..)
+--- @param pickup EntityPickup
+--- @param collider Entity
+--- @param low boolean
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
+    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
+end, PickupVariant.PICKUP_MOMSCHEST)
+
 --- @type QueuedItemData
 local lastFrameItem = nil
 

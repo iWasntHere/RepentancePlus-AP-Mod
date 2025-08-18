@@ -219,12 +219,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
     local room = level:GetCurrentRoom()
     local roomType = room:GetType()
 
-    for slot, door in util.doors(room) do
-        if door then
-            print(tostring(slot) .. " " .. tostring(door:GetSprite():GetFilename()))
-        end
-    end
-
     -- Remove blue womb door
     if roomType == RoomType.ROOM_BOSS and util.getEffectiveStage(level) == LevelStage.STAGE4_2 then
         if not AP_MAIN_MOD:checkUnlockedByName("Blue Womb") then
