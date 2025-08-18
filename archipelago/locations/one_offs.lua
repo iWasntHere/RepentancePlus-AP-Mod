@@ -59,6 +59,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     if familiarStatus.bandage_girl then
         AP_MAIN_MOD:sendLocation(Locations.SUPER_BANDAGE_GIRL_MADE)
     end
+
+    if familiarStatus.charmed_count >= 3 then
+        AP_MAIN_MOD:sendLocation(Locations._3_ENEMIES_CHARMED_AT_ONCE)
+    end
 end)
 
 --- @param player EntityPlayer

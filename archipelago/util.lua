@@ -470,11 +470,12 @@ local disallowedFamiliars = {
 }
 
 --- Returns number of familiars, and if Super Meat Boy/Bandage Girl exists.
---- @return {count: integer, meat_boy: boolean, bandage_girl: boolean}
+--- @return {count: integer, meat_boy: boolean, bandage_girl: boolean, charmed_count: integer}
 function export.familiarStatus()
     local count = 0
     local meatBoy = false
     local bandageGirl = false
+    local charmedCount = 0
 
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         local familiar = entity:ToFamiliar()
@@ -492,13 +493,16 @@ function export.familiarStatus()
             elseif familiar.Variant == FamiliarVariant.BALL_OF_BANDAGES_4 then
                 bandageGirl = true
             end
+        elseif entity:GetEntityFlags() & EntityFlag.FLAG_CHARM ~= 0 then
+            charmedCount = charmedCount + 1
         end
     end
 
     return {
         count = count,
         meat_boy = meatBoy,
-        bandage_girl = bandageGirl
+        bandage_girl = bandageGirl,
+        charmed_count = charmedCount
     }
 end
 
