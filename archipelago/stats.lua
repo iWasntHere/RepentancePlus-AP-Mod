@@ -41,7 +41,8 @@ export.StatKeys = {
     POOPS_DESTROYED = "poops_destroyed",
     RAINBOW_POOPS_DESTROYED = "rainbow_poops_destroyed",
     ROCKS_DESTROYED = "rocks_destroyed",
-    TINTED_ROCKS_DESTROYED = "tinted_rocks_destroyed"
+    TINTED_ROCKS_DESTROYED = "tinted_rocks_destroyed",
+    DONATION_BEGGAR_KILLED_THIS_RUN = "donation_beggar_killed_this_run"
 }
 
 --- Increases the given stat by 1, and returns the new value.

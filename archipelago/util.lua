@@ -302,7 +302,7 @@ end
 function export.getRNG()
     local startSeed = Game():GetSeeds():GetStartSeed()
     local rng = RNG()
-    rng:SetSeed(startSeed, 35)
+    rng:SetSeed(startSeed, 35) -- 35 is the 'recommended shift index,' whatever that means
 
     return rng
 end
@@ -572,6 +572,13 @@ end
 --- @return boolean
 function export.isBlueWombDoor(door)
     return door:GetSprite():GetFilename() == "gfx/grid/door_29_doortobluewomb.anm2"
+end
+
+--- Creates a unit vector pointed in a random direction.
+--- @param rng RNG
+function export.randomVector(rng)
+    local angle = rng:RandomFloat() * math.pi * 2
+    return Vector(math.cos(angle), math.sin(angle))
 end
 
 return export

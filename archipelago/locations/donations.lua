@@ -1,8 +1,13 @@
 local util = require("archipelago.util")
+
 local beggarType = Isaac.GetEntityTypeByName("Archipelago Beggar")
 local beggarVariant = Isaac.GetEntityVariantByName("Archipelago Beggar")
+
+local graveVariant = Isaac.GetEntityVariantByName("Beggar Grave")
+
 local sfx = SFXManager()
 local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
+local stats = require("archipelago.stats")
 
 local SlotVariant = {
     DONATION_MACHINE = 8,
@@ -30,6 +35,15 @@ local function awardDonationCheck()
     end
 end
 
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+    if continued then
+        return
+    end
+
+    -- Unkill the beggar
+    stats.setStat(stats.StatKeys.DONATION_BEGGAR_KILLED_THIS_RUN, false)
+end)
+
 --- Replaces the donation machine with the special Archipelago beggar.
 --- @param type EntityType
 --- @param variant integer
@@ -41,6 +55,11 @@ end
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
     if type ~= EntityType.ENTITY_SLOT or (variant ~= SlotVariant.DONATION_MACHINE and variant ~= SlotVariant.GREED_DONATION_MACHINE) then
         return
+    end
+
+    -- Don't spawn the beggar if they are dead, instead spawn a grave (lmao)
+    if stats.getStat(stats.StatKeys.DONATION_BEGGAR_KILLED_THIS_RUN, false) then
+        return {EntityType.ENTITY_PICKUP, graveVariant, 0, seed}
     end
 
     return {beggarType, beggarVariant, 0, seed}
@@ -77,9 +96,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
 
     -- Spawn 6 - 14 pennies on death
     local rng = util.getRNG()
-    for _ = 1, rng:RandomInt(6, 14), 1 do
-        Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY, entity.Position, rng:RandomVector())
+    local game = Game()
+    local seed = game:GetRoom():GetSpawnSeed()
+    for _ = 0, rng:RandomInt(8) + 6, 1 do
+        game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, entity.Position, util.randomVector(rng) * (rng:RandomFloat() * 5.0), entity, CoinSubType.COIN_PENNY, seed)
     end
+
+    -- Mark beggar as killed
+    stats.setStat(stats.StatKeys.DONATION_BEGGAR_KILLED_THIS_RUN, true)
 end, EntityType.ENTITY_SLOT)
 
 --- Update cycle for the Archipelago beggar.
@@ -106,4 +130,15 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
             return -- There will basically always be only one of these in the room at a time.
         end
     end
+end)
+
+--- For when the beggar is exploded, violently.
+--- @param entity Entity
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, function (_, entity)
+    if entity.Variant ~= beggarVariant then
+        return
+    end
+
+    entity:Kill()
+    entity:Remove()
 end)
