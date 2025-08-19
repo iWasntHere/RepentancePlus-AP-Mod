@@ -1,5 +1,8 @@
 local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 
+-- True when Gideon is updated. False when the room changes.
+local gideonFlag = false
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -292,20 +295,22 @@ end)
 --- Flushes the 'seen' table when entering a new room, in case the player escapes a fight and doesn't actually win.
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     slain = {}
+    gideonFlag = false
 end)
 
---- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as the
---- room starts.
+--- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
+--- he appears.
 --- @param type EntityType
 --- @param variant integer
 --- @param subType integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType)
-    if type ~= EntityType.ENTITY_GIDEON then
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, type, variant, subType)
+    if gideonFlag then
         return
     end
 
-    slain[#slain + 1] = "Great Gideon"
-end)
+    gideonFlag = true
+    slain[#slain + 1] = {type = EntityType.ENTITY_GIDEON, variant = 0}
+end, EntityType.ENTITY_GIDEON)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
 
