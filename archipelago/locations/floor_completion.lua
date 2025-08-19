@@ -8,8 +8,7 @@ local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 --- @param stage LevelStage
 --- @param stageType StageType
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
-    local level = Game():GetLevel()
-    if level:IsAscent() or level:GetStage() == LevelStage.STAGE8 then -- Ascent should cancel all of this
+    if Game():GetLevel():IsAscent() then -- Ascent should cancel all of this
         return
     end
 
