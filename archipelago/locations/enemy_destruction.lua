@@ -39,6 +39,8 @@ local function defeatLocations(name, locations)
     local locationName = name .. " Defeated"
     local locationID = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName]
 
+    print(locationName)
+
     -- Ultra Greed defeated as Azazel
     if name == "Ultra Greed" and Isaac.GetPlayer():GetPlayerType() == PlayerTypes.PLAYER_AZAZEL then
         locations[#locations + 1] = Locations.ULTRA_GREED_DEFEATED_AS_AZAZEL

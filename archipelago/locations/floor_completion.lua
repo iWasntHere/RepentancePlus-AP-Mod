@@ -2,12 +2,14 @@ local util = require("archipelago.util")
 local stats = require("archipelago.stats")
 local incrementStat = stats.incrementStat
 local StatKeys = stats.StatKeys
+local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 
 --- Handles locations for completing chapters.
 --- @param stage LevelStage
 --- @param stageType StageType
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
-    if Game():GetLevel():IsAscent() then -- Ascent should cancel all of this
+    local level = Game():GetLevel()
+    if level:IsAscent() or level:GetStage() == LevelStage.STAGE8 then -- Ascent should cancel all of this
         return
     end
 
@@ -56,7 +58,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     -- Clear a chapter > 1 with 0.5 hearts
     local lastHPStage = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, stage)
     if stage - lastHPStage >= 2 then
-        locations[#locations + 1] = 15
+        locations[#locations + 1] = Locations.CHAPTER_GREATER_THAN_1_CLEARED_W_ONLY_05_HEARTS
     end
 
     -- Chapter Clears as character
@@ -70,15 +72,15 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     if isNormalPath then
         if stage == LevelStage.STAGE1_2 then
             if incrementStat(StatKeys.CHAPTER_1_CLEARS) >= 40 then -- 40 chapter 1 clears
-                locations[#locations + 1] = 12
+                locations[#locations + 1] = Locations.BASEMENT_CLEARED_40X
             end
         elseif stage == LevelStage.STAGE2_2 then
             if incrementStat(StatKeys.CHAPTER_2_CLEARS) >= 30 then -- 30 chapter 2 clears
-                locations[#locations + 1] = 13
+                locations[#locations + 1] = Locations.CHAPTER_2_CLEARED_30X
             end
         elseif stage == LevelStage.STAGE3_2 then
             if incrementStat(StatKeys.CHAPTER_3_CLEARS) >= 20 then -- 20 chapter 3 clears
-                locations[#locations + 1] = 14
+                locations[#locations + 1] = Locations.CHAPTER_3_CLEARED_20X
             end
         end
     end
