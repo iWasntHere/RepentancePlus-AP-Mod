@@ -3,6 +3,9 @@ local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 -- True when Gideon is updated. False when the room changes.
 local gideonFlag = false
 
+-- Same thing as gideonFlag, but for Rotgut's first form
+local rotgutFlag = false
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -296,14 +299,12 @@ end)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     slain = {}
     gideonFlag = false
+    rotgutFlag = false
 end)
 
 --- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
 --- he appears.
---- @param type EntityType
---- @param variant integer
---- @param subType integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, type, variant, subType)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     if gideonFlag then
         return
     end
@@ -311,6 +312,17 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, type, variant, 
     gideonFlag = true
     slain[#slain + 1] = {type = EntityType.ENTITY_GIDEON, variant = 0}
 end, EntityType.ENTITY_GIDEON)
+
+--- Used to handle slaying Rotgut. Because of his room-changing mechanic, and that he's already dying by
+--- the time the player is returned to the boss room, this is used to set that he's been slain.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+    if rotgutFlag then
+        return
+    end
+
+    rotgutFlag = true
+    slain[#slain + 1] = {type = EntityType.ENTITY_ROTGUT, variant = 0}
+end, EntityType.ENTITY_ROTGUT)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
 
