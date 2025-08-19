@@ -6,12 +6,15 @@ local incrementStat = stats.incrementStat
 local StatKeys = stats.StatKeys
 local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
 local moneySpentInCurrentRoom = 0
+local lastIpecacDamage = 0
 
 --- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if continued then
         return
     end
+
+    lastIpecacDamage = 0
 
     -- Reset 7 times
     if not getStat(StatKeys.LAST_RUN_COMPLETED) then
@@ -264,11 +267,29 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player,
     end
 end)
 
+--- For when the player is damaged by ipecac.
+--- @param entity Entity
+--- @param amount integer
+--- @param damageFlags DamageFlag
+--- @param source Entity|nil
+--- @param countdownFrames integer
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
+    if not source then
+        return
+    end
+
+    if source.Type == EntityType.ENTITY_TEAR and damageFlags & DamageFlag.DAMAGE_EXPLOSION > 0 then
+        lastIpecacDamage = Game().TimeCounter
+    end
+end, EntityType.ENTITY_PLAYER)
+
 --- When the player dies
 --- @param player EntityPlayer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
+    local game = Game()
+
     -- Died in Sacrifice Room w/ Missing Poster
-    if Game():GetRoom():GetType() == RoomType.ROOM_SACRIFICE then
+    if game:GetRoom():GetType() == RoomType.ROOM_SACRIFICE then
         if util.hasTrinket(player, TrinketType.TRINKET_MISSING_POSTER) then
             AP_MAIN_MOD:sendLocation(Locations.DIED_IN_SACRIFICE_ROOM_W_MISSING_POSTER)
         end
@@ -280,6 +301,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
     end
 
     setStat(StatKeys.DIED_THIS_RUN, true)
+
+    -- The last ipecac damage was less than a second ago: so we died from it.
+    if lastIpecacDamage - game.TimeCounter < 60 then
+        AP_MAIN_MOD:sendLocation(Locations.EXPLODED_BY_OWN_IPECAC_SHOT)
+    end
 end, EntityType.ENTITY_PLAYER)
 
 --- When The Lamb dies (It's the Key!)
@@ -596,7 +622,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BED_SLEEP, functi
 end)
 
 --- Used to track money spent in a shop
---- @param moneyLost
+--- @param moneyLost integer
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_MONEY_SPENT, function (_, moneyLost)
     local level = Game():GetLevel()
 
