@@ -291,7 +291,9 @@ end, EntityType.ENTITY_MOMS_HEART)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
     -- Blow up Siren's skull
     if entity.Type == EntityType.ENTITY_SIREN and entity.Variant == 1 then
-        AP_MAIN_MOD:sendLocation(Locations.EXPLODED_SIRENS_SKULL)
+        if damageFlags & DamageFlag.DAMAGE_EXPLOSION ~= 0 then
+            AP_MAIN_MOD:sendLocation(Locations.EXPLODED_SIRENS_SKULL)
+        end
     end
 end, EntityType.ENTITY_SIREN)
 
