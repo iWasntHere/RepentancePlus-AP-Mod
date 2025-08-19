@@ -615,4 +615,11 @@ function export.getNewEntitiesThisFrame(type, variant, subType)
     return entities
 end
 
+--- Gets the tearflag bitset for the given tearflag number.
+--- @param x integer
+--- @return BitSet128
+function export.tearflag(x)
+    return x >= 64 and BitSet128(0,1<<(x-64)) or BitSet128(1<<x,0)
+end
+
 return export

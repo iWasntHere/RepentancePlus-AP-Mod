@@ -99,7 +99,7 @@ end)
 
 --- @param itemType CollectibleType
 --- @param player EntityPlayer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, player)
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, rng, player)
     local level = Game():GetLevel()
 
     -- Use Pandora's Box in Dark Room
@@ -115,6 +115,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, player)
             end
         end
     end
+
+    -- Temp. homing w/ homing
+    if itemType == CollectibleType.COLLECTIBLE_TELEPATHY_BOOK and player.TearFlags & TearFlags.TEAR_HOMING > 0 then
+        AP_MAIN_MOD:sendLocation(Locations.GET_TEMPORARY_HOMING_W_HOMING)
+    end
 end)
 
 --- @param cardType Card
@@ -124,6 +129,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_CARD, function (_, cardType, player,
     -- Use Blank Card on The Sun
     if cardType == Card.CARD_SUN and flags & UseFlag.USE_MIMIC ~= 0 then
         AP_MAIN_MOD:sendLocation(Locations.BLANK_CARD_USED_WHILE_HOLDING_XIX___THE_SUN)
+    end
+
+    -- Temp. homing w/ homing
+    if cardType == Card.CARD_MAGICIAN and player.TearFlags & TearFlags.TEAR_HOMING > 0 then
+        AP_MAIN_MOD:sendLocation(Locations.GET_TEMPORARY_HOMING_W_HOMING)
     end
 end)
 
