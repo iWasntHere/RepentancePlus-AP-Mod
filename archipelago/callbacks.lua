@@ -1,5 +1,6 @@
 -- Provides callbacks for annoying operations
 local util = require("archipelago.util")
+local moneyLastFrame = 0
 
 --- For picking up pickups and opening chests.
 --- @param pickup EntityPickup
@@ -50,7 +51,7 @@ end, PickupVariant.PICKUP_MOMSCHEST)
 --- @type QueuedItemData
 local lastFrameItem = nil
 
---- Handles picking up collectibles.
+--- Handles picking up collectibles and spending money.
 --- @param player EntityPlayer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     local queuedItem = player.QueuedItem
@@ -75,6 +76,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     end
 
     lastFrameItem = queuedItem
+
+    -- Tracks spending money
+    local currentCoins = player:GetNumCoins()
+    if currentCoins < moneyLastFrame then
+        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_MONEY_SPENT, moneyLastFrame - currentCoins)
+    end
+
+    moneyLastFrame = currentCoins
 end)
 
 local chapterEndStages = {

@@ -37,6 +37,7 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED = "ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED", -- Called when a grid entity's state is changed
     MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE = "ARCHIPELAGO_FORTUNE_TELLER_FORTUNE", -- Called when a fortune teller machine or fortune cookie gives a fortune
     MC_ARCHIPELAGO_BED_SLEEP = "ARCHIPELAGO_BED_SLEEP", -- Called when the player sleeps in a bed
+    MC_ARCHIPELAGO_MONEY_SPENT = "ARCHIPELAGO_MONEY_SPENT" -- Called when money is subtracted from the player
 }
 
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes

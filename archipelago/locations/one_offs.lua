@@ -5,6 +5,7 @@ local getStat = stats.getStat
 local incrementStat = stats.incrementStat
 local StatKeys = stats.StatKeys
 local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
+local moneySpentInCurrentRoom = 0
 
 --- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
@@ -65,6 +66,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     end
 end)
 
+--- For various checks regarding the player.
 --- @param player EntityPlayer
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     -- "Be Larger"
@@ -91,6 +93,8 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     if player:GetNumBlueFlies() >= 20 then
         AP_MAIN_MOD:sendLocation(Locations._20_BLUE_FLIES_AT_ONCE)
     end
+
+
 end)
 
 --- @param itemType CollectibleType
@@ -166,6 +170,8 @@ end)
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     local game = Game()
     local roomType = game:GetRoom():GetType()
+
+    moneySpentInCurrentRoom = 0
 
     -- Visit 10 arcades
     if not getStat(StatKeys.ARCADE_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_ARCADE then
@@ -572,11 +578,28 @@ end)
 AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BED_SLEEP, function (_)
     local sleeps = incrementStat(StatKeys.BEDS_SLEPT_IN)
 
-    print("EEUGH")
-
     if sleeps == 1 then
         AP_MAIN_MOD:sendLocation(Locations.BED_SLEPT_IN)
     elseif sleeps == 10 then
         AP_MAIN_MOD:sendLocation(Locations.BED_SLEPT_IN_10X)
+    end
+end)
+
+--- Used to track money spent in a shop
+--- @param moneyLost
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_MONEY_SPENT, function (_, moneyLost)
+    local level = Game():GetLevel()
+
+    -- Ensure room is clear (so no Greed, etc)
+    if not level:GetCurrentRoom():IsClear() then
+        return
+    end
+
+    moneySpentInCurrentRoom = moneySpentInCurrentRoom + moneyLost
+
+    if moneySpentInCurrentRoom >= 40 then
+        AP_MAIN_MOD:sendLocation(Locations._040_SPENT_IN_ONE_SHOP)
+    elseif moneySpentInCurrentRoom >= 99 then
+        AP_MAIN_MOD:sendLocation(Locations._099_SPENT_IN_ONE_SHOP)
     end
 end)
