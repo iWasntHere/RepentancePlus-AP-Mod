@@ -170,6 +170,17 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
                     Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, entity)
                 end
             end
+
+            -- Fortune telling machines paying out with a fortune
+            if entity.Variant == 3 and sprite:IsPlaying("Prize") then
+                if sprite:GetFrame() == 4 then -- I'll be honest, I stole this code
+                    local numNewEntities = util.getNewEntitiesThisFrame(EntityType.ENTITY_PICKUP)
+
+                    if #numNewEntities == 0 then -- No entities were spawned as a result
+                        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
+                    end
+                end
+            end
         end
     end
 
@@ -196,3 +207,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
         end
     end
 end)
+
+--- Used to detect when the Fortune Cookie pays out with a fortune.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function(_)
+    local numNewEntities = util.getNewEntitiesThisFrame(EntityType.ENTITY_PICKUP)
+
+    if #numNewEntities == 0 then -- No entities were spawned as a result
+        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
+    end
+end, CollectibleType.COLLECTIBLE_FORTUNE_COOKIE)

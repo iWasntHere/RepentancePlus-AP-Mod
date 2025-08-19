@@ -9,6 +9,7 @@ mod.BABY_SKIN_DATA = require("archipelago.data.baby_skin_data")
 mod.CHARACTER_DATA = require("archipelago.data.character_data")
 mod.CHALLENGE_DATA = require("archipelago.data.challenge_data")
 mod.COLLECTIBLE_TAGS_DATA = require("archipelago.data.collectible_tags")
+mod.FORTUNES = require("archipelago.data.fortunes")
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
 local codes = {}
@@ -34,6 +35,7 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_SLOT_GAME_END = "ARCHIPELAGO_SLOT_GAME_END", -- Called when a slot machine finishes playing, the player selects a shell from a shell game, or a beggar pays out
     MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT = "ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT", -- Called when a beggar pays out a collectible and disappears
     MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED = "ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED", -- Called when a grid entity's state is changed
+    MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE = "ARCHIPELAGO_FORTUNE_TELLER_FORTUNE", -- Called when a fortune teller machine or fortune cookie gives a fortune
 }
 
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
@@ -315,3 +317,4 @@ require("archipelago.items.planetarium")
 require("archipelago.items.starting_items")
 
 require("archipelago.tracker.tracker")
+require("archipelago.fortunes")

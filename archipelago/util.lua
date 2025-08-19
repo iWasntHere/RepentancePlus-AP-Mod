@@ -546,7 +546,7 @@ end
 --- Returns an option from the table, but options are weighted.
 --- @generic T
 --- @param options {value: T, weight: number}[]
---- @param rng RNG
+--- @param rng? RNG If omitted, the 'math' module will be used instead.
 --- @return T
 function export.chooseWeighted(options, rng)
     -- Calculate total weight
@@ -557,7 +557,13 @@ function export.chooseWeighted(options, rng)
     end
 
     -- Go through each item and subtract until we hit 0 on our counter
-    local counter = rng:RandomFloat() * totalWeight
+    local counter
+
+    if rng ~= nil then
+        counter = rng:RandomFloat() * totalWeight -- RNG is supplied
+    else
+        counter = math.random() * totalWeight -- RNG is not supplied
+    end
 
     for _, option in ipairs(options) do
         counter = counter - option.weight
@@ -583,6 +589,30 @@ end
 function export.randomVector(rng)
     local angle = rng:RandomFloat() * math.pi * 2
     return Vector(math.cos(angle), math.sin(angle))
+end
+
+--- Gets an array of entities created this frame (FrameCount <= 0).
+--- @param type EntityType
+--- @param variant? integer @default: '-1'
+--- @param subType? integer @default: '-1'
+--- @return Entity[]
+function export.getNewEntitiesThisFrame(type, variant, subType)
+    if variant == nil then
+        variant = -1
+    end
+
+    if subType == nil then
+        subType = -1
+    end
+
+    local entities = {}
+    for _, entity in ipairs(Isaac.FindByType(type, variant, subType)) do
+        if entity.FrameCount <= 0 then
+            entities[#entities + 1] = entity
+        end
+    end
+
+    return entities
 end
 
 return export
