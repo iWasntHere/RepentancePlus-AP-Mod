@@ -567,3 +567,16 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE
         end
     end
 end)
+
+--- Used to track how many times the player has slept in a bed.
+AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BED_SLEEP, function (_)
+    local sleeps = incrementStat(StatKeys.BEDS_SLEPT_IN)
+
+    print("EEUGH")
+
+    if sleeps == 1 then
+        AP_MAIN_MOD:sendLocation(Locations.BED_SLEPT_IN)
+    elseif sleeps == 10 then
+        AP_MAIN_MOD:sendLocation(Locations.BED_SLEPT_IN_10X)
+    end
+end)

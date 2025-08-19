@@ -40,6 +40,10 @@ end)
 --- @param collider Entity
 --- @param low boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
+    if not collider:ToPlayer() then -- Collider wasn't a player
+        return
+    end
+
     Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
 end, PickupVariant.PICKUP_MOMSCHEST)
 
@@ -216,3 +220,30 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function(_)
         Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
     end
 end, CollectibleType.COLLECTIBLE_FORTUNE_COOKIE)
+
+--- Used to run callbacks for sleeping.
+--- @param pickup EntityPickup
+--- @param collider Entity
+--- @param low boolean
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
+    if pickup.SubType == BedSubType.BED_MOM then -- Isaac's Bed only
+        return
+    end
+
+    if pickup.Touched then -- Unused beds only please
+        return
+    end
+
+    local player = collider:ToPlayer()
+
+    if not player then -- Collider wasn't a player..?
+        return
+    end
+
+    local maxHearts = player:GetEffectiveMaxHearts()
+
+    -- We have to recreate the conditional for if you can sleep, of course...
+    if maxHearts == 1 or player:GetHearts() < maxHearts then
+        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BED_SLEEP)
+    end
+end, PickupVariant.PICKUP_BED)
