@@ -9,6 +9,9 @@ local rotgutFlag = false
 -- Same as gideonFlag, but for Chimera (unsplit)
 local chimeraFlag = false
 
+-- ITS THE SAME THING AGAIN :(
+local matriarchFlag = false
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -304,6 +307,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     gideonFlag = false
     rotgutFlag = false
     chimeraFlag = false
+    matriarchFlag = false
 end)
 
 --- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
@@ -338,6 +342,16 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     chimeraFlag = true
     slain[#slain + 1] = {type = EntityType.ENTITY_CHIMERA, variant = 0}
 end, EntityType.ENTITY_CHIMERA)
+
+--- Used to handle slaying Matriarch. She splits. That's about it.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+    if matriarchFlag then
+        return
+    end
+
+    matriarchFlag = true
+    slain[#slain + 1] = {type = EntityType.ENTITY_MATRIARCH, variant = 0}
+end, EntityType.ENTITY_MATRIARCH)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
 
