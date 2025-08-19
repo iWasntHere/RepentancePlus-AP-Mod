@@ -6,6 +6,9 @@ local gideonFlag = false
 -- Same thing as gideonFlag, but for Rotgut's first form
 local rotgutFlag = false
 
+-- Same as gideonFlag, but for Chimera (unsplit)
+local chimeraFlag = false
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -300,6 +303,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     slain = {}
     gideonFlag = false
     rotgutFlag = false
+    chimeraFlag = false
 end)
 
 --- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
@@ -323,6 +327,17 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     rotgutFlag = true
     slain[#slain + 1] = {type = EntityType.ENTITY_ROTGUT, variant = 0}
 end, EntityType.ENTITY_ROTGUT)
+
+--- Used to handle slaying Chimera. Because he can split in half, and becomes two separate NPCs without dying,
+--- he needs to be subject to counting as "slain" the moment he appears.
+AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+    if chimeraFlag then
+        return
+    end
+
+    chimeraFlag = true
+    slain[#slain + 1] = {type = EntityType.ENTITY_CHIMERA, variant = 0}
+end, EntityType.ENTITY_CHIMERA)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
 
