@@ -32,7 +32,8 @@ Mod.Callbacks = {
     MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED = "ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED", -- Called when a grid entity's state is changed
     MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE = "ARCHIPELAGO_FORTUNE_TELLER_FORTUNE", -- Called when a fortune teller machine or fortune cookie gives a fortune
     MC_ARCHIPELAGO_BED_SLEEP = "ARCHIPELAGO_BED_SLEEP", -- Called when the player sleeps in a bed
-    MC_ARCHIPELAGO_MONEY_SPENT = "ARCHIPELAGO_MONEY_SPENT" -- Called when money is subtracted from the player
+    MC_ARCHIPELAGO_MONEY_SPENT = "ARCHIPELAGO_MONEY_SPENT", -- Called when money is subtracted from the player
+    MC_ARCHIPELAGO_DIRT_PATCH_DUG = "ARCHIPELAGO_DIRT_PATCH_DUG" -- Called when a dirt patch is dug up
 }
 
 Mod.util = util
@@ -83,7 +84,7 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 		oldData = json.decode(loadedString)
 
         -- Check if the data is for a different slot
-        if oldData.slot_name ~- nil then
+        if oldData.slot_name ~= nil then
             if oldData.slot_name ~= ArchipelagoSlot.SLOT_NAME or oldData.seed_Name ~= ArchipelagoSlot.SEED then
                 oldData = nil -- Invalidate the old data
             end

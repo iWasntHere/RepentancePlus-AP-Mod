@@ -638,4 +638,25 @@ function export.Error(text, stackTrace)
     Isaac.DebugString(text)
 end
 
+--- Returns the dirt patch the player dug up and the contents. Nil for both if no dirt patch was dug.
+--- @param player EntityPlayer
+--- @return Entity?, EntityPickup?
+function export.checkDirtPatchDug(player)
+    local newEntities = export.getNewEntitiesThisFrame(EntityType.ENTITY_PICKUP)
+
+    if #newEntities == 0 then -- No chests were created so it couldn't have been a dirt patch
+        return nil
+    end
+
+    -- Found a dirt patch
+    for _, entity in ipairs(Isaac.FindByType(EntityType.ENTITY_EFFECT, EffectVariant.DIRT_PATCH)) do
+        if player.Position:DistanceSquared(entity.Position) < 256 then
+            return entity, newEntities[1]:ToPickup()
+        end
+    end
+
+    -- None found :(
+    return nil
+end
+
 return export

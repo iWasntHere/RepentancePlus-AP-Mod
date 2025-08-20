@@ -636,3 +636,25 @@ Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_MONEY_SPENT, functi
         Archipelago:sendLocation(Locations._099_SPENT_IN_ONE_SHOP)
     end
 end)
+
+--- Used to give the Mom's Shovel in Dark Room check
+--- @param player EntityPlayer
+--- @param dirtPatch Entity
+--- @param itemType CollectibleType
+--- @param reward EntityPickup
+Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_DIRT_PATCH_DUG, function (_, player, dirtPatch, itemType, reward)
+    if itemType ~= CollectibleType.COLLECTIBLE_MOMS_SHOVEL then -- Not mom's shovel
+        return
+    end
+
+    if Archipelago:checkLocationSent(Locations.DARK_ROOM_MOMS_SHOVEL_SPOT) then -- Check already done
+        return
+    end
+
+    Archipelago:sendLocation(Locations.DARK_ROOM_MOMS_SHOVEL_SPOT)
+    dirtPatch:GetSprite():PlayOverlay("DugUpBones", true) -- Show the bones in the spot, must be played as an overlay
+    reward:Remove() -- Remove the reward chest
+    
+    -- Spawn the Forgotten's soul effect
+    Archipelago.game:Spawn(EntityType.ENTITY_EFFECT, EffectVariant.FORGOTTEN_SOUL, dirtPatch.Position, Vector.Zero, dirtPatch, 0, 1)
+end)

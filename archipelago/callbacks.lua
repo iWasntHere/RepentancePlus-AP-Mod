@@ -253,3 +253,31 @@ Archipelago:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, picku
         Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_BED_SLEEP)
     end
 end, PickupVariant.PICKUP_BED)
+
+--- Tries to detect when the player digs a dirt patch up.
+--- @param player EntityPlayer
+--- @param itemType CollectibleType Type of the item
+local function tryDetectDig(player, itemType)
+    local dirtPatch, reward = util.checkDirtPatchDug(player)
+    if not dirtPatch then -- No dirt patch to dig
+        return
+    end
+
+    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_DIRT_PATCH_DUG, player, dirtPatch, itemType, reward)
+end
+
+--- Used to detect when the player digs a dirt patch.
+--- @param collectibleType CollectibleType
+--- @param rng RNG
+--- @param player EntityPlayer
+Archipelago:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, collectibleType, rng, player)
+    tryDetectDig(player, collectibleType)
+end, CollectibleType.COLLECTIBLE_WE_NEED_TO_GO_DEEPER)
+
+--- Used to detect when the player digs a dirt patch.
+--- @param collectibleType CollectibleType
+--- @param rng RNG
+--- @param player EntityPlayer
+Archipelago:AddCallback(ModCallbacks.MC_USE_ITEM, function(_, collectibleType, rng, player)
+    tryDetectDig(player, collectibleType)
+end, CollectibleType.COLLECTIBLE_MOMS_SHOVEL)
