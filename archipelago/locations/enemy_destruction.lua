@@ -1,5 +1,6 @@
 local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 local stats = Archipelago.stats
+local util = Archipelago.util
 
 -- True when Gideon is updated. False when the room changes.
 local gideonFlag = false
@@ -243,6 +244,18 @@ local function otherKillLocations(killsTable, locations)
     end
 end
 
+--- Checks if the bestiary is complete.
+--- @param kills table
+--- @return boolean
+local function checkBestiaryCompletion(kills)
+    -- Inverting the table will remove any duplicate entries
+    local totalEntries = #util.tableKeys(util.invertTable(Archipelago.ENTITIES_DATA))
+    local ownedEntries = #util.tableKeys(kills)
+
+    -- You can miss up to 5 entries
+    return totalEntries - ownedEntries < 5
+end
+
 -- Enemies we've slain this room
 local slain = {}
 
@@ -263,6 +276,11 @@ local function awardChecksForSlainEnemies()
 
     -- Check for locations like "kill X boss Y times"
     otherKillLocations(kills, locations)
+
+    -- Bestiary completion
+    if not Archipelago:checkLocationSent(Locations.BESTIARY_COMPLETED) and checkBestiaryCompletion(kills) then
+        locations[#locations + 1] = Locations.BESTIARY_COMPLETED
+    end
 
     -- Grant locations
     if #locations > 0 then

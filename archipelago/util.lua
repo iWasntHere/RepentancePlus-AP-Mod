@@ -183,6 +183,19 @@ function export.tableKeys(table)
     return keys
 end
 
+--- Returns all values from the table.
+--- @param table table
+--- @return any[]
+function export.tableValues(table)
+    local values = {}
+
+    for _, value in pairs(table) do
+        values[#values + 1] = values
+    end
+
+    return values
+end
+
 -- http://lua-users.org/wiki/StringRecipes
 
 --- Returns 'true' if the string starts with the given substring.
