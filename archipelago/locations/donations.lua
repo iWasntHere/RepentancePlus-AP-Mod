@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 local beggarType = Isaac.GetEntityTypeByName("Archipelago Beggar")
 local beggarVariant = Isaac.GetEntityVariantByName("Archipelago Beggar")
@@ -6,8 +6,8 @@ local beggarVariant = Isaac.GetEntityVariantByName("Archipelago Beggar")
 local graveVariant = Isaac.GetEntityVariantByName("Beggar Grave")
 
 local sfx = SFXManager()
-local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
-local stats = require("archipelago.stats")
+local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
+local stats = Archipelago.stats
 
 local SlotVariant = {
     DONATION_MACHINE = 8,
@@ -26,14 +26,14 @@ local function awardDonationCheck()
     end
 
     local donations = stats.incrementStat(key)
-    AP_MAIN_MOD:sendLocation(locationCode + (donations - 1))
+    Archipelago:sendLocation(locationCode + (donations - 1))
 
     if not isGreedMode then
         -- TODO: Give donation-esque bonuses
     end
 end
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if continued then
         return
     end
@@ -50,7 +50,7 @@ end)
 --- @param velocity Vector
 --- @param spawnerEntity Entity|nil
 --- @param seed integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, variant, subType, position, velocity, spawnerEntity, seed)
     if type ~= EntityType.ENTITY_SLOT or (variant ~= SlotVariant.DONATION_MACHINE and variant ~= SlotVariant.GREED_DONATION_MACHINE) then
         return
     end
@@ -67,7 +67,7 @@ end)
 --- @param playerEntity EntityPlayer
 --- @param collidedEntity Entity
 --- @param low boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, playerEntity, collidedEntity, low)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_PLAYER_COLLISION, function (_, playerEntity, collidedEntity, low)
     if collidedEntity.Type ~= beggarType or collidedEntity.Variant ~= beggarVariant then -- Archi beggar only
         return
     end
@@ -87,7 +87,7 @@ end)
 
 --- Fired when you blow up the Archipelago beggar.
 --- @param entity Entity
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
+Archipelago:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     if entity.Variant ~= beggarVariant then
         return
     end
@@ -121,7 +121,7 @@ end
 
 --- There is no other way to update a custom slot entity. Please. Please. Please. Please. Please.
 --- This calls the update cycle for the beggar.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity.Type == beggarType and entity.Variant == beggarVariant then
             updateBeggar(entity)
@@ -132,7 +132,7 @@ end)
 
 --- For when the beggar is exploded, violently.
 --- @param entity Entity
-AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, function (_, entity)
+Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, function (_, entity)
     if entity.Variant ~= beggarVariant then
         return
     end

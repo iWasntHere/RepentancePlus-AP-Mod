@@ -622,4 +622,20 @@ function export.tearflag(x)
     return x >= 64 and BitSet128(0,1<<(x-64)) or BitSet128(1<<x,0)
 end
 
+--- Prints an error to the console and log output.
+--- @param text string
+--- @param stackTrace? boolean Whether to print an entire stack trace, 'true' by default
+function export.Error(text, stackTrace)
+    if stackTrace == nil then -- Default parameter value
+        stackTrace = true
+    end
+
+    if stackTrace and debug then -- Lua debugging, then transform to print a traceback
+        text = debug.traceback(text)
+    end
+
+    print(text)
+    Isaac.DebugString(text)
+end
+
 return export

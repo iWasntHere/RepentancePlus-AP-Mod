@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 
@@ -72,8 +72,8 @@ return function(offset, canControl, sfx)
         local x = columnStart + (96 * column)
         local y = rowStart + (48 * row)
 
-        local name = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_NAME[code]
-        local unlocked = AP_MAIN_MOD:checkUnlocked(code)
+        local name = Archipelago.ITEMS_DATA.CODE_TO_NAME[code]
+        local unlocked = Archipelago:checkUnlocked(code)
 
         -- Truncate the name if it's too long
         local clippedName = string.sub(name, 1, 16)
@@ -82,7 +82,7 @@ return function(offset, canControl, sfx)
         end
 
         if unlocked then
-            local skin = AP_MAIN_MOD.BABY_SKIN_DATA[AP_MAIN_MOD.ITEMS_DATA.CODE_TO_BABY_ID[code]]
+            local skin = Archipelago.BABY_SKIN_DATA[Archipelago.ITEMS_DATA.CODE_TO_BABY_ID[code]]
             babySprite:ReplaceSpritesheet(0, "gfx/characters/player2/" .. skin)
             babySprite:LoadGraphics()
             babySprite:Play("HeadDown", true)

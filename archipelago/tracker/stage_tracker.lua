@@ -1,4 +1,3 @@
-local util = require("archipelago.util")
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 
@@ -104,7 +103,7 @@ return function(offset, canControl, sfx)
 
             local unlocked = true
             if itemAndAnim.item ~= nil then
-                unlocked = AP_MAIN_MOD:checkUnlockedByName(itemAndAnim.item)
+                unlocked = Archipelago:checkUnlockedByName(itemAndAnim.item)
             end
 
             local anim = itemAndAnim.anim

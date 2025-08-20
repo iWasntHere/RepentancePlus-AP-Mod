@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 local sfx = SFXManager()
 
 local page = 1
@@ -19,7 +19,7 @@ local trackerYPosition = 0
 local wasOutLastFrame = false
 
 --- Handles rendering tracker pages.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     local isOut = false
     local screenWidth = Isaac.GetScreenWidth()
 

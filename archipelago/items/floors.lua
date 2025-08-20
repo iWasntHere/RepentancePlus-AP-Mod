@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 local stageNames = {
     ["1-" .. tostring(StageType.STAGETYPE_ORIGINAL)] = "Basement",
@@ -79,7 +79,7 @@ local stageTypeToPath = {
     [StageType.STAGETYPE_REPENTANCE_B] = "Alt",
 }
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
     local level = Game():GetLevel()
     local stage = level:GetStage()
     local stageType = level:GetStageType()
@@ -93,12 +93,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
     local stageKey = chapterString .. "-" .. tostring(stageType)
     local stageName = stageNames[stageKey]
 
-    local code = AP_MAIN_MOD.ITEMS_DATA.NAME_TO_CODE[stageName]
+    local code = Archipelago.ITEMS_DATA.NAME_TO_CODE[stageName]
     if code == nil then -- This floor isn't an item, so it's always unlocked
         return
     end
 
-    if AP_MAIN_MOD:checkUnlocked(code) then -- Floor is unlocked so we do nothing
+    if Archipelago:checkUnlocked(code) then -- Floor is unlocked so we do nothing
         return
     end
 
@@ -116,10 +116,10 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
 
     -- Now, we run down the list until we find the first unlocked stage.
     for _, stageData in ipairs(stageGroup) do
-        local code = AP_MAIN_MOD.ITEMS_DATA.NAME_TO_CODE[stageData.name]
+        local code = Archipelago.ITEMS_DATA.NAME_TO_CODE[stageData.name]
 
         -- If the stage isn't an item, or the stage is unlocked, then switch to it
-        if code == nil or AP_MAIN_MOD:checkUnlocked(code) then
+        if code == nil or Archipelago:checkUnlocked(code) then
             Isaac.ExecuteCommand("stage " .. tostring(stage) .. stageData.letter)
             return
         end
@@ -138,7 +138,7 @@ local roomJustCompleted = false
 --- Ends the game early in most cases, prevents entry to The Void from Hush.
 --- @param rng RNG
 --- @param spawnPosition Vector
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, spawnPosition)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, spawnPosition)
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()
 
@@ -149,7 +149,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 
     -- This is the Mom! fight
     if stage == LevelStage.STAGE3_2 and not isAltPath and isFinal then
-        if not AP_MAIN_MOD:checkUnlockedByName("The Womb") then
+        if not Archipelago:checkUnlockedByName("The Womb") then
             -- Spawn the chest!
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
@@ -158,11 +158,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 
     -- This is the Mom's Heart fight
     if stage == LevelStage.STAGE4_2 and not isAltPath and isFinal then
-        if not AP_MAIN_MOD:checkUnlockedByName("Blue Womb") then -- Blue Womb door
+        if not Archipelago:checkUnlockedByName("Blue Womb") then -- Blue Womb door
             util.removeSecretExit(room)
         end
 
-        if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
+        if not Archipelago:checkUnlockedByName("It Lives!") then
             -- Spawn the chest!
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
@@ -171,11 +171,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 
     -- This is the Hush fight
     if stage == LevelStage.STAGE4_3 and isFinal then
-        if not AP_MAIN_MOD:checkUnlockedByName("New Area") then -- Void door
+        if not Archipelago:checkUnlockedByName("New Area") then -- Void door
             util.removeSecretExit(room)
         end
 
-        if not AP_MAIN_MOD:checkUnlockedByName("It Lives!") then
+        if not Archipelago:checkUnlockedByName("It Lives!") then
             -- Spawn the chest!
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
             return true -- Cancel regular spawning
@@ -184,7 +184,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 
     -- This is a regular boss fight, remove Secret Exit
     if room:GetType() == RoomType.ROOM_BOSS then
-        if not AP_MAIN_MOD:checkUnlockedByName("A Secret Exit") then
+        if not Archipelago:checkUnlockedByName("A Secret Exit") then
             util.removeSecretExit(room)
         end
     end
@@ -193,7 +193,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
 end)
 
 --- Used to remove the Void trapdoor after you complete a boss fight.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
+Archipelago:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
     if not roomJustCompleted then
         return
     end
@@ -214,14 +214,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
 end)
 
 --- Used to remove various doors.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()
     local roomType = room:GetType()
 
     -- Remove blue womb door
     if roomType == RoomType.ROOM_BOSS and util.getEffectiveStage(level) == LevelStage.STAGE4_2 then
-        if not AP_MAIN_MOD:checkUnlockedByName("Blue Womb") then
+        if not Archipelago:checkUnlockedByName("Blue Womb") then
             util.removeSecretExit(room)
             return
         end
@@ -229,20 +229,20 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
 
     -- Remove void door
     if roomType == RoomType.ROOM_BOSS and level:GetStage() == LevelStage.STAGE4_3 then
-        if not AP_MAIN_MOD:checkUnlockedByName("New Area") then
+        if not Archipelago:checkUnlockedByName("New Area") then
             util.removeSecretExit(room)
             return
         end
     end
 
     -- Remove alt path entrance when you re-enter
-    if roomType == RoomType.ROOM_BOSS and not AP_MAIN_MOD:checkUnlockedByName("A Secret Exit") then
+    if roomType == RoomType.ROOM_BOSS and not Archipelago:checkUnlockedByName("A Secret Exit") then
         util.removeSecretExit(room)
         return
     end
 
     -- Remove ascent path entrance
-    if roomType == RoomType.ROOM_DEFAULT and not AP_MAIN_MOD:checkUnlockedByName("A Strange Door") then
+    if roomType == RoomType.ROOM_DEFAULT and not Archipelago:checkUnlockedByName("A Strange Door") then
         util.removeSecretExit(room)
         return
     end

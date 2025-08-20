@@ -1,10 +1,10 @@
 -- Provides callbacks for annoying operations
-local util = require("archipelago.util")
+local util = Archipelago.util
 local moneyLastFrame = 0
 
 --- For picking up pickups and opening chests.
 --- @param pickup EntityPickup
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
+Archipelago:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
     local data = pickup:GetData()
 
     -- Ensure that we have not already ran the callback for picking this up
@@ -28,11 +28,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, function (_, pickup)
     if sprite:IsPlaying("Collect") then -- This is a regular pickup (heart, coin, bomb, etc)
         data.archipelago_picked_up = true
 
-        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PICKUP_PICKED, pickup)
+        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_PICKUP_PICKED, pickup)
     elseif sprite:IsPlaying("Open") then -- This is a chest
         data.archipelago_picked_up = true
 
-        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
+        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
     end
 end)
 
@@ -40,12 +40,12 @@ end)
 --- @param pickup EntityPickup
 --- @param collider Entity
 --- @param low boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
     if not collider:ToPlayer() then -- Collider wasn't a player
         return
     end
 
-    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
+    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_CHEST_OPENED, pickup)
 end, PickupVariant.PICKUP_MOMSCHEST)
 
 --- @type QueuedItemData
@@ -53,7 +53,7 @@ local lastFrameItem = nil
 
 --- Handles picking up collectibles and spending money.
 --- @param player EntityPlayer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
+Archipelago:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     local queuedItem = player.QueuedItem
 
     -- Set the value for the last frame up properly
@@ -64,14 +64,14 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     -- Just started raising the item
     if lastFrameItem.Item == nil and queuedItem.Item ~= nil then
         if queuedItem.Item:IsCollectible() then
-            Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE, player, queuedItem.Item, queuedItem.Charge, queuedItem.Touched)
+            Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE, player, queuedItem.Item, queuedItem.Charge, queuedItem.Touched)
         end
     end
 
     -- The item is added
     if lastFrameItem.Item ~= nil and queuedItem.Item == nil then
         if lastFrameItem.Item:IsCollectible() then
-            Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_GET_COLLECTIBLE, player, lastFrameItem.Item, lastFrameItem.Charge, lastFrameItem.Touched)
+            Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_GET_COLLECTIBLE, player, lastFrameItem.Item, lastFrameItem.Charge, lastFrameItem.Touched)
         end
     end
 
@@ -80,7 +80,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     -- Tracks spending money
     local currentCoins = player:GetNumCoins()
     if currentCoins < moneyLastFrame then
-        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_MONEY_SPENT, moneyLastFrame - currentCoins)
+        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_MONEY_SPENT, moneyLastFrame - currentCoins)
     end
 
     moneyLastFrame = currentCoins
@@ -100,7 +100,7 @@ local chapterEndStages = {
 --- Handles clearing floors and chapters.
 --- @param rng RNG
 --- @param spawnPosition Vector
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng, spawnPosition)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng, spawnPosition)
     local level = Game():GetLevel()
     local room = level:GetCurrentRoom()
 
@@ -112,7 +112,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng,
     local stage = level:GetStage()
     local stageType = level:GetStageType()
 
-    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_FLOOR_CLEARED, stage, stageType)
+    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_FLOOR_CLEARED, stage, stageType)
 
     -- If labyrinth, then we are actually on stage + 1
     if level:GetCurses() & LevelCurse.CURSE_OF_LABYRINTH > 0 then
@@ -124,7 +124,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng,
     end
 
     -- We completed a chapter!
-    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, stage, stageType)
+    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, stage, stageType)
 end)
 
 --- Handles detecting when EntitySlots die. It's a really bad algorithm, but, of course, there's no other way.
@@ -136,7 +136,7 @@ end)
 --- @param velocity Vector
 --- @param spawnerEntity Entity|nil
 --- @param seed integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
     if entityType ~= EntityType.ENTITY_EFFECT then
         return
     end
@@ -145,7 +145,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
         for _, entity in ipairs(Isaac.FindInRadius(position, 75, EntityPartition.PICKUP)) do
             local sprite = entity:GetSprite()
             if not sprite or not sprite:IsPlaying("Broken") then -- For slots that actually have an animation for being dead, check the animation
-                Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, entity)
+                Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_PRE_SLOT_KILLED, entity)
             end
         end
     end
@@ -155,7 +155,7 @@ end)
 local roomGridEntitySnapshot = {} -- Used to scan for changes, to see if a grid entity was destroyed. Index to state
 local currentRoomIndex = 0 -- Used to scan for when the room changes so the snapshot can be cleared
 --- Handles slot machine and grid entity events. Sigh.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     -- Slot events
     for _, entity in ipairs(Isaac.GetRoomEntities()) do
         if entity.Type == EntityType.ENTITY_SLOT then
@@ -170,7 +170,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
                 if prize or closetPlayerRescue then
                     data.archipelago_game_ended = true
 
-                    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_SLOT_GAME_END, entity)
+                    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_SLOT_GAME_END, entity)
                 end
             else
                 -- If the game is set to ended and the sprite is in idle, then the game is reset for the next play
@@ -180,7 +180,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
                 -- This occurs when a beggar pays out a collectible and leaves
                 elseif sprite:IsPlaying("Teleport") and not data.archipelago_beggar_paid_out then
                     data.archipelago_beggar_paid_out = true
-                    Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, entity)
+                    Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_BEGGAR_COLLECTIBLE_PAYOUT, entity)
                 end
             end
 
@@ -190,7 +190,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
                     local numNewEntities = util.getNewEntitiesThisFrame(EntityType.ENTITY_PICKUP)
 
                     if #numNewEntities == 0 then -- No entities were spawned as a result
-                        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
+                        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
                     end
                 end
             end
@@ -213,7 +213,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
 
             -- If a grid entity's state was changed... (this includes being added)
             if gridEnt.State ~= oldState then
-                Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED, gridEnt, oldState)
+                Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_GRID_ENTITY_STATE_CHANGED, gridEnt, oldState)
             end
 
             roomGridEntitySnapshot[index] = gridEnt.State
@@ -222,11 +222,11 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
 end)
 
 --- Used to detect when the Fortune Cookie pays out with a fortune.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_USE_ITEM, function(_)
+Archipelago:AddCallback(ModCallbacks.MC_USE_ITEM, function(_)
     local numNewEntities = util.getNewEntitiesThisFrame(EntityType.ENTITY_PICKUP)
 
     if #numNewEntities == 0 then -- No entities were spawned as a result
-        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
+        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE)
     end
 end, CollectibleType.COLLECTIBLE_FORTUNE_COOKIE)
 
@@ -234,7 +234,7 @@ end, CollectibleType.COLLECTIBLE_FORTUNE_COOKIE)
 --- @param pickup EntityPickup
 --- @param collider Entity
 --- @param low boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, pickup, collider, low)
     if pickup.SubType == BedSubType.BED_MOM then -- Isaac's Bed only
         return
     end
@@ -253,6 +253,6 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_PICKUP_COLLISION, function (_, picku
 
     -- We have to recreate the conditional for if you can sleep, of course...
     if maxHearts == 1 or player:GetHearts() < maxHearts then
-        Isaac.RunCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_BED_SLEEP)
+        Isaac.RunCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_BED_SLEEP)
     end
 end, PickupVariant.PICKUP_BED)

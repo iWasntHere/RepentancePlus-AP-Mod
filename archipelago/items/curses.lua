@@ -1,8 +1,8 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 --- @param curses integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_CURSE_EVAL, function (_, curses)
-    local isTerrible = AP_MAIN_MOD:checkUnlockedByName("Everything is Terrible!!!")
+Archipelago:AddCallback(ModCallbacks.MC_POST_CURSE_EVAL, function (_, curses)
+    local isTerrible = Archipelago:checkUnlockedByName("Everything is Terrible!!!")
     local difficulty = Game().Difficulty
 
     -- Calculate the chance for a curse

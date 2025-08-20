@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 --- Shows a fortune by splitting it at |s.
 --- @param fortune string
@@ -8,7 +8,7 @@ local function showSplitFortune(fortune)
 end
 
 --- Replaces a fortune shown by Fortune Cookie or Fortune Teller.
-AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE, function (_)
+Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE, function (_)
     -- This doesn't need to be seeded. I don't really care right now.
 
     local typeVal = math.random()
@@ -39,7 +39,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FO
 
     -- AP fortune (80%)
     elseif typeVal < 0.8 then
-        fortune = AP_MAIN_MOD.FORTUNES[math.random(#AP_MAIN_MOD.FORTUNES)]
+        fortune = Archipelago.FORTUNES[math.random(#Archipelago.FORTUNES)]
         showSplitFortune(fortune)
     end
 end)

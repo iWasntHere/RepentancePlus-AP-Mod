@@ -1,13 +1,13 @@
-local util = require("archipelago.util")
-local stats = require("archipelago.stats")
+local util = Archipelago.util
+local stats = Archipelago.stats
 local incrementStat = stats.incrementStat
 local StatKeys = stats.StatKeys
-local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
+local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 
 --- Handles locations for completing chapters.
 --- @param stage LevelStage
 --- @param stageType StageType
-AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
+Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
     if Game():GetLevel():IsAscent() then -- Ascent should cancel all of this
         return
     end
@@ -39,7 +39,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     local locations = {}
 
     -- Location for clearing chapter
-    local location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared"]
+    local location = Archipelago.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared"]
     if location then
         locations[#locations + 1] = location
     end
@@ -47,7 +47,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     -- Grant locations for completing stages without damage
     local lastDamageStage = stats.getStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, stage)
     if stage - lastDamageStage >= 2 then
-        location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared (No Damage)"]
+        location = Archipelago.LOCATIONS_DATA.NAME_TO_CODE[chapterName .. " Cleared (No Damage)"]
 
         if location then
             locations[#locations + 1] = location
@@ -61,7 +61,7 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
     end
 
     -- Chapter Clears as character
-    location = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[playerName .. " (" .. chapterName .. ")"]
+    location = Archipelago.LOCATIONS_DATA.NAME_TO_CODE[playerName .. " (" .. chapterName .. ")"]
     if location then
         locations[#locations + 1] = location
     end
@@ -84,12 +84,12 @@ AP_MAIN_MOD:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEA
         end
     end
 
-    AP_MAIN_MOD:sendLocations(locations)
+    Archipelago:sendLocations(locations)
 end)
 
 --- Used to reset the last time the player took damage.
 --- @param continued boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if continued then
         return
     end
@@ -104,13 +104,13 @@ end)
 --- @param damageFlags integer
 --- @param source EntityRef
 --- @param countdownFrames integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
+Archipelago:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
     stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, Game():GetLevel():GetStage())
 end, EntityType.ENTITY_PLAYER)
 
 --- Tracks the last time the player had with more than one half heart
 --- @param player EntityPlayer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
+Archipelago:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     if util.totalPlayerHealth(player) <= 1 then
         return
     end

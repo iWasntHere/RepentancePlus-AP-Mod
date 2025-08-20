@@ -1,8 +1,8 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 --- Handles the planetarium being locked.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
-    if AP_MAIN_MOD:checkUnlockedByName("The Planetarium") then
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
+    if Archipelago:checkUnlockedByName("The Planetarium") then
         return -- It's unlocked so do nothing
     end
 

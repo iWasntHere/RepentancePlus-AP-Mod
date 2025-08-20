@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 
@@ -6,7 +6,7 @@ local smallFont = Font()
 smallFont:Load("font/teammeatfont10.fnt")
 
 local page = 1
-local pages = util.chunkArray(AP_MAIN_MOD.ITEMS_DATA.CODES, 30)
+local pages = util.chunkArray(Archipelago.ITEMS_DATA.CODES, 30)
 
 local itemTypeSprite = Sprite() -- Used to render icons next to item names to show type
 itemTypeSprite:Load("gfx/ui/Tracker_Icons.anm2", true)
@@ -59,13 +59,13 @@ local NAME_TO_ICON = {
 --- Returns an icon for a given item code in the item tracker.
 --- @return string
 local function getIcon(code)
-    local type = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_TYPE[code]
+    local type = Archipelago.ITEMS_DATA.CODE_TO_TYPE[code]
     if TYPE_TO_ICON[type] then
         return TYPE_TO_ICON[type]
     end
 
     -- No type for this, so try by name
-    local name = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_NAME[code]
+    local name = Archipelago.ITEMS_DATA.CODE_TO_NAME[code]
     if NAME_TO_ICON[name] then
         return NAME_TO_ICON[name]
     end
@@ -116,8 +116,8 @@ return function(offset, canControl, sfx)
         local x = columnStart + (96 * column)
         local y = rowStart + (16 * row)
 
-        local name = AP_MAIN_MOD.ITEMS_DATA.CODE_TO_NAME[code]
-        local unlocked = AP_MAIN_MOD:checkUnlocked(code)
+        local name = Archipelago.ITEMS_DATA.CODE_TO_NAME[code]
+        local unlocked = Archipelago:checkUnlocked(code)
 
         local icon = getIcon(code)
 

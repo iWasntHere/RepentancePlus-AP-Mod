@@ -1,4 +1,4 @@
-local Locations = AP_MAIN_MOD.LOCATIONS_DATA.LOCATIONS
+local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 
 -- True when Gideon is updated. False when the room changes.
 local gideonFlag = false
@@ -41,7 +41,7 @@ local MausoleumBosses = {
 --- @param variant integer
 --- @return string
 local function typeVariantToName(type, variant)
-    return AP_MAIN_MOD.ENTITIES_DATA[tostring(type) .. ":" .. tostring(variant)]
+    return Archipelago.ENTITIES_DATA[tostring(type) .. ":" .. tostring(variant)]
 end
 
 --- Tries to grant a location check for defeating this entity.
@@ -49,7 +49,7 @@ end
 --- @param locations table The table of locations to modify
 local function defeatLocations(name, locations)
     local locationName = name .. " Defeated"
-    local locationID = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[locationName]
+    local locationID = Archipelago.LOCATIONS_DATA.NAME_TO_CODE[locationName]
 
     print(locationName)
 
@@ -272,7 +272,7 @@ local function awardChecksForSlainEnemies()
 
     -- Grant locations
     if #locations > 0 then
-        AP_MAIN_MOD:sendLocations(locations)
+        Archipelago:sendLocations(locations)
     end
 
     setKills(kills) -- Save all stats
@@ -282,7 +282,7 @@ end
 
 --- Handles counting slain enemies.
 --- @param entity Entity
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
+Archipelago:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
     local type = entity.Type
     local variant = entity.Variant
 
@@ -297,12 +297,12 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
 end)
 
 --- Fired when the room is cleared, to grant locations for all enemies that were defeated in the room.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
+Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
     awardChecksForSlainEnemies()
 end)
 
 --- Flushes the 'seen' table when entering a new room, in case the player escapes a fight and doesn't actually win.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     slain = {}
     gideonFlag = false
     rotgutFlag = false
@@ -312,7 +312,7 @@ end)
 
 --- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
 --- he appears.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     if gideonFlag then
         return
     end
@@ -323,7 +323,7 @@ end, EntityType.ENTITY_GIDEON)
 
 --- Used to handle slaying Rotgut. Because of his room-changing mechanic, and that he's already dying by
 --- the time the player is returned to the boss room, this is used to set that he's been slain.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     if rotgutFlag then
         return
     end
@@ -334,7 +334,7 @@ end, EntityType.ENTITY_ROTGUT)
 
 --- Used to handle slaying Chimera. Because he can split in half, and becomes two separate NPCs without dying,
 --- he needs to be subject to counting as "slain" the moment he appears.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     if chimeraFlag then
         return
     end
@@ -344,7 +344,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
 end, EntityType.ENTITY_CHIMERA)
 
 --- Used to handle slaying Matriarch. She splits. That's about it.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
     if matriarchFlag then
         return
     end
@@ -357,7 +357,7 @@ local babyPlumSpared = false -- To debounce the location send (so it's not every
 
 --- Handles sparing Baby Plum.
 --- @param npc Entity
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, npc)
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, npc)
     if babyPlumSpared then
         return
     end
@@ -367,5 +367,5 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_, npc)
     end
 
     babyPlumSpared = true
-    AP_MAIN_MOD:sendLocation(Locations.BABY_PLUM_SPARED)
+    Archipelago:sendLocation(Locations.BABY_PLUM_SPARED)
 end, EntityType.ENTITY_BABY_PLUM)

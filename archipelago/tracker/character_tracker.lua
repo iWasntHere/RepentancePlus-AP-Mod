@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 local font = Font()
 font:Load("font/teammeatfont12.fnt")
 
@@ -6,7 +6,7 @@ local smallFont = Font()
 smallFont:Load("font/teammeatfont10.fnt")
 
 local page = 1
-local pages = util.chunkArray(AP_MAIN_MOD.CHARACTER_DATA.ITEM_NAMES, 4)
+local pages = util.chunkArray(Archipelago.CHARACTER_DATA.ITEM_NAMES, 4)
 
 local backgroundSprite = Sprite()
 backgroundSprite:Load("gfx/ui/Tracker_Page.anm2", true)
@@ -30,9 +30,9 @@ local function drawMarks(marks, x, y)
         marks = {}
     end
 
-    local numMarks = #AP_MAIN_MOD.CHARACTER_DATA.COMPLETION_MARKS
+    local numMarks = #Archipelago.CHARACTER_DATA.COMPLETION_MARKS
     local twoPi = 2 * math.pi
-    for i, mark in ipairs(AP_MAIN_MOD.CHARACTER_DATA.COMPLETION_MARKS) do
+    for i, mark in ipairs(Archipelago.CHARACTER_DATA.COMPLETION_MARKS) do
         local xx = x + math.cos((i / numMarks) * twoPi) * 32
         local yy = y + math.sin((i / numMarks) * twoPi) * 32
 
@@ -92,10 +92,10 @@ return function(offset, canControl, sfx)
         local x = columnStart + (52 * column)
         local y = rowStart + (82 * row)
 
-        local code = AP_MAIN_MOD.ITEMS_DATA.NAME_TO_CODE[name]
-        local unlocked = AP_MAIN_MOD:checkUnlocked(code)
+        local code = Archipelago.ITEMS_DATA.NAME_TO_CODE[name]
+        local unlocked = Archipelago:checkUnlocked(code)
 
-        local charName = AP_MAIN_MOD.CHARACTER_DATA.ITEM_NAME_TO_INTERNAL_NAME[name]
+        local charName = Archipelago.CHARACTER_DATA.ITEM_NAME_TO_INTERNAL_NAME[name]
         local animName = charName
         if not unlocked then
             animName = "Locked" .. animName

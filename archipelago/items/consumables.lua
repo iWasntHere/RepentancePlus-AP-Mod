@@ -1,11 +1,11 @@
-local cardData = require("archipelago.data.consumable_data")
-local util = require("archipelago.util")
+local cardData = Archipelago.CARD_DATA
+local util = Archipelago.util
 
 local apConsumableType = Isaac.GetCardIdByName("Soul of The Multiworld")
 
 --- When starting a new game, fix pill effects.
 --- @param continued boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     --[[ TODO: Re-enable once I'm able to generate lua for ALL pills (we're missing I Can See Forever and Phermones)
     if continued then -- Only on new runs pls
         return
@@ -65,7 +65,7 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
     end
 
     -- If this card is determined and is unlocked, we don't need to replace it
-    if cardType ~= 0 and AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
+    if cardType ~= 0 and Archipelago:checkUnlocked(Archipelago.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
         return cardType
     end
 
@@ -93,13 +93,13 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
     local cardSet = {}
     -- Filter the set down to only unlocked cards
     for _, card in ipairs(allSets) do
-        local code = AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[card]
+        local code = Archipelago.ITEMS_DATA.CARD_ID_TO_CODE[card]
         if code == nil then
-            AP_MAIN_MOD:Error("nil card code for card type " .. tostring(card))
+            util.Error("nil card code for card type " .. tostring(card))
             return cardType
         end
 
-        if AP_MAIN_MOD:checkUnlocked(code) then
+        if Archipelago:checkUnlocked(code) then
             --print("Unlocked!")
             cardSet[#cardSet + 1] = {value = card, weight = cardData.WEIGHTS[card]}
         end
@@ -120,7 +120,7 @@ end
 --- @param includePlaying boolean
 --- @param includeRunes boolean
 --- @param onlyRunes boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
+Archipelago:AddCallback(ModCallbacks.MC_GET_CARD, function (_, rng, card, includePlaying, includeRunes, onlyRunes)
     return rollCard(rng, card, includePlaying, includeRunes, onlyRunes)
 end)
 
@@ -132,7 +132,7 @@ end)
 --- @param velocity Vector
 --- @param spawnerEntity Entity|nil
 --- @param seed integer
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
+Archipelago:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityType, variant, subType, position, velocity, spawnerEntity, seed)
     if entityType ~= EntityType.ENTITY_PICKUP or variant ~= PickupVariant.PICKUP_TAROTCARD then
         return
     end

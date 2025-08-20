@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 
 local gridEntityTypeToName = {
     [GridEntityType.GRID_ROCK_SS] = "Super Special Rocks",
@@ -6,7 +6,7 @@ local gridEntityTypeToName = {
     [GridEntityType.GRID_ROCK_ALT2] = "A Strange Door",
 }
 
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     local room = Game():GetLevel():GetCurrentRoom()
     local toSpawn = {} -- Table of index to type to spawn
 
@@ -23,7 +23,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
 
             -- Super Secret Rocks
             if type == GridEntityType.GRID_ROCK_SS then
-                if not AP_MAIN_MOD:checkUnlockedByName("Super Special Rocks") then
+                if not Archipelago:checkUnlockedByName("Super Special Rocks") then
                     shouldRemove = true
 
                     toSpawn[i] = GridEntityType.GRID_ROCK
@@ -31,7 +31,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
 
             -- Fool's Gold
             elseif type == GridEntityType.GRID_ROCK_GOLD then
-                if not AP_MAIN_MOD:checkUnlockedByName("Fool's Gold") then
+                if not Archipelago:checkUnlockedByName("Fool's Gold") then
                     shouldRemove = true
 
                     toSpawn[i] = GridEntityType.GRID_ROCK
@@ -39,13 +39,13 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
 
             -- Tinted Skull
             elseif type == GridEntityType.GRID_ROCK_ALT2 then
-                if not AP_MAIN_MOD:checkUnlockedByName("A Strange Door") then
+                if not Archipelago:checkUnlockedByName("A Strange Door") then
                     shouldRemove = true
                 end
 
             -- Charming Poop
             elseif type == GridEntityType.GRID_POOP and variant == 11 then -- '11' being Charming Poop in this instance
-                if not AP_MAIN_MOD:checkUnlockedByName("Charming Poop") then
+                if not Archipelago:checkUnlockedByName("Charming Poop") then
                     shouldRemove = true
 
                     toSpawn[i] = GridEntityType.GRID_POOP

@@ -1,28 +1,23 @@
-local mod = RegisterMod("Archipelago", 1)
+local Mod = RegisterMod("Archipelago", 1)
 local json = require("json")
 local util = require("archipelago.util")
 
-mod.ITEMS_DATA = require("archipelago.data.item_data")
-mod.LOCATIONS_DATA = require("archipelago.data.location_data")
-mod.ENTITIES_DATA = require("archipelago.data.entities_data")
-mod.BABY_SKIN_DATA = require("archipelago.data.baby_skin_data")
-mod.CHARACTER_DATA = require("archipelago.data.character_data")
-mod.CHALLENGE_DATA = require("archipelago.data.challenge_data")
-mod.COLLECTIBLE_TAGS_DATA = require("archipelago.data.collectible_tags")
-mod.FORTUNES = require("archipelago.data.fortunes")
+Mod.ITEMS_DATA = require("archipelago.data.item_data")
+Mod.LOCATIONS_DATA = require("archipelago.data.location_data")
+Mod.ENTITIES_DATA = require("archipelago.data.entities_data")
+Mod.BABY_SKIN_DATA = require("archipelago.data.baby_skin_data")
+Mod.CHARACTER_DATA = require("archipelago.data.character_data")
+Mod.CHALLENGE_DATA = require("archipelago.data.challenge_data")
+Mod.COLLECTIBLE_TAGS_DATA = require("archipelago.data.collectible_tags")
+Mod.CARD_DATA = require("archipelago.data.consumable_data")
+Mod.FORTUNES = require("archipelago.data.fortunes")
 
--- Fill out the rest of ITEMS_DATA with data we can pull out of it
-local codes = {}
-for _, code in pairs(mod.ITEMS_DATA.NAME_TO_CODE) do
-    codes[#codes + 1] = code
-end
-table.sort(codes) -- We'd prefer this in order, thanks
-mod.ITEMS_DATA.CODES = codes
+Mod.util = util
+Mod.json = json
+Mod.stats = require("archipelago.stats")
+Mod.spawnConfetti = require("archipelago.confetti")
 
-AP_MAIN_MOD = mod
-local spawnConfetti = require("archipelago.confetti")
-
-ArchipelagoModCallbacks = {
+Mod.Callbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
     MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT", -- Called when the game sends an item through Archipelago
     MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED", -- Called when the player picks up a pickup
@@ -40,32 +35,27 @@ ArchipelagoModCallbacks = {
     MC_ARCHIPELAGO_MONEY_SPENT = "ARCHIPELAGO_MONEY_SPENT" -- Called when money is subtracted from the player
 }
 
+-- Fill out the rest of ITEMS_DATA with data we can pull out of it
+local codes = {}
+for _, code in pairs(Mod.ITEMS_DATA.NAME_TO_CODE) do
+    codes[#codes + 1] = code
+end
+table.sort(codes) -- We'd prefer this in order, thanks
+Mod.ITEMS_DATA.CODES = codes
+
+--- Global var for the mod
+Archipelago = Mod
+
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
 local sentLocations = {}
-
---- Prints an error to the console and log output.
---- @param text string
---- @param stackTrace boolean|nil Whether to print an entire stack trace, 'true' by default
-function mod:Error(text, stackTrace)
-    if stackTrace == nil then -- Default parameter value
-        stackTrace = true
-    end
-
-    if stackTrace and debug then -- Lua debugging, then transform to print a traceback
-        text = debug.traceback(text)
-    end
-
-    print(text)
-    Isaac.DebugString(text)
-end
 
 --- Set location checks, scouts, and death link for the client-server bridge to pick up.
 --- @param locationChecks table|nil
 --- @param locationScouts table|nil
 --- @param deathLinkReason string|nil
-function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
+function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
-	local loadedString = mod:LoadData()
+	local loadedString = Mod:LoadData()
     local oldData = {}
 	if loadedString ~= "" then
 		oldData = json.decode(loadedString)
@@ -113,22 +103,22 @@ function mod:exposeData(locationChecks, locationScouts, deathLinkReason)
         end
     end
 
-	mod:SaveData(json.encode(apData))
+	Mod:SaveData(json.encode(apData))
     AP_SUPP_MOD:SaveKey("location_data", locationData)
 end
 
 --- Send a location to the server.
 --- @param location Location|string
-function mod:sendLocation(location)
+function Mod:sendLocation(location)
     local locationCode = nil
     if type(location) == "string" then -- Convert location name string to location code
-        locationCode = AP_MAIN_MOD.LOCATIONS_DATA.NAME_TO_CODE[location]
+        locationCode = Archipelago.LOCATIONS_DATA.NAME_TO_CODE[location]
     else
         locationCode = location
     end
 
     if locationCode == nil then
-        mod:Error("'nil' location given ('" .. tostring(location) .. "')")
+        util.Error("'nil' location given ('" .. tostring(location) .. "')")
         return false
     end
 
@@ -137,7 +127,7 @@ end
 
 --- Sends multiple locations to the server.
 --- @param locationCodes integer[]
-function mod:sendLocations(locationCodes)
+function Mod:sendLocations(locationCodes)
     -- Filter out any location codes that have already been sent
     local finalCodes = {}
     for _, locationCode in ipairs(locationCodes) do
@@ -156,27 +146,27 @@ end
 
 --- Send a location scout to the server.
 --- @param locationCode integer
-function mod:sendLocationScout(locationCode)
+function Mod:sendLocationScout(locationCode)
     self:exposeData(nil, {locationCode}, nil)
 end
 
 --- Send deathlink to the server.
 --- @param reason string The reason for the deathlink being triggered
-function mod:sendDeathLink(reason)
+function Mod:sendDeathLink(reason)
     self:exposeData(nil, nil, reason)
 end
 
 --- 'true' if the item code is considered to be unlocked.
 --- @param code integer
 --- @return boolean
-function mod:checkUnlocked(code)
+function Mod:checkUnlocked(code)
     if code == nil then -- A nil code was given
-        mod:Error("'nil' item code given")
+        util.Error("'nil' item code given")
         return false
     end
 
-    if not mod.ITEMS_DATA.CODE_TO_NAME[code] then -- A nonexistant code was given
-        mod:Error("No such item code " .. tostring(code))
+    if not Mod.ITEMS_DATA.CODE_TO_NAME[code] then -- A nonexistant code was given
+        util.Error("No such item code " .. tostring(code))
         return false
     end
 
@@ -186,12 +176,12 @@ end
 --- 'true' if the item name is considered to be unlocked.
 --- @param name string
 --- @return boolean
-function mod:checkUnlockedByName(name)
-    local code = tostring(mod.ITEMS_DATA.NAME_TO_CODE[name])
+function Mod:checkUnlockedByName(name)
+    local code = tostring(Mod.ITEMS_DATA.NAME_TO_CODE[name])
 
     -- A bad item name was given
     if code == nil then
-        mod:Error("No such item named '" .. name .. "'")
+        util.Error("No such item named '" .. name .. "'")
         return false
     end
 
@@ -201,14 +191,14 @@ end
 --- 'true' if the location code has already been sent.
 --- @param code integer
 --- @return boolean
-function mod:checkLocationSent(code)
+function Mod:checkLocationSent(code)
     return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).sent[code] ~= nil
 end
 
 --- 'true' if the location code has already been scouted.
 --- @param code integer
 --- @return boolean
-function mod:checkLocationScouted(code)
+function Mod:checkLocationScouted(code)
     return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
 end
 
@@ -218,7 +208,7 @@ end
 --- @param locationName string The location the item came from
 --- @param isTrap boolean If the item is considered a trap (a bad item)
 --- @param isReceived boolean Whether the item is being sent, or received
-function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
+function Mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
     local hud = Game():GetHUD()
 
     if isReceived then
@@ -243,7 +233,7 @@ function mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
 end
 
 --- Draws the player's slot name to the screen to better verify that everything is set up correctly.
-mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 if ARCHIPELAGO_SEED then
         Isaac.RenderScaledText(ARCHIPELAGO_SLOT, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
     else
@@ -253,8 +243,8 @@ end)
 
 --- Remove collectibles and trinkets from the pool if they are locked.
 --- @param isContinued boolean
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
-	mod:exposeData() -- Expose the basic AP data
+Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
+	Mod:exposeData() -- Expose the basic AP data
 
 	local itemPool = Game():GetItemPool()
 
@@ -264,15 +254,15 @@ mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 	end
 	
     -- Lock collectibles
-    for collectibleId, code in pairs(mod.ITEMS_DATA.COLLECTIBLE_ID_TO_CODE) do
-        if not mod:checkUnlocked(code) then
+    for collectibleId, code in pairs(Mod.ITEMS_DATA.COLLECTIBLE_ID_TO_CODE) do
+        if not Mod:checkUnlocked(code) then
             itemPool:RemoveCollectible(collectibleId)
         end
     end
 
     -- Lock trinkets
-    for trinketId, code in pairs(mod.ITEMS_DATA.TRINKET_ID_TO_CODE) do
-        if not mod:checkUnlocked(code) then
+    for trinketId, code in pairs(Mod.ITEMS_DATA.TRINKET_ID_TO_CODE) do
+        if not Mod:checkUnlocked(code) then
             itemPool:RemoveTrinket(trinketId)
         end
     end
@@ -283,11 +273,11 @@ end)
 --- @param playerName string
 --- @param locationName string
 --- @param isTrap boolean
-mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
-    mod:showItemGet(itemName, playerName, locationName, isTrap, true)
+Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
+    Mod:showItemGet(itemName, playerName, locationName, isTrap, true)
 
     -- Celebratory confetti (awesome)
-    spawnConfetti(math.random(15, 30))
+    Mod.spawnConfetti(math.random(15, 30))
 end)
 
 --- Fired when an item is sent to the Archipelago server.
@@ -295,8 +285,8 @@ end)
 --- @param playerName string
 --- @param locationName string
 --- @param isTrap boolean
-mod:AddCallback(ArchipelagoModCallbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
-    mod:showItemGet(itemName, playerName, locationName, isTrap, false)
+Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
+    Mod:showItemGet(itemName, playerName, locationName, isTrap, false)
 end)
 
 require("archipelago.callbacks")

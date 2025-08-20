@@ -1,4 +1,4 @@
-local util = require("archipelago.util")
+local util = Archipelago.util
 local runLocked = false
 local characterLocked = false
 local challengeLocked = false
@@ -36,9 +36,9 @@ local function checkCharacterLocked()
     local player = Isaac.GetPlayer(0)
     local character = player:GetPlayerType()
 
-    local code = AP_MAIN_MOD.ITEMS_DATA.CHARACTER_ID_TO_CODE[character]
+    local code = Archipelago.ITEMS_DATA.CHARACTER_ID_TO_CODE[character]
 
-    if not AP_MAIN_MOD:checkUnlocked(code) then
+    if not Archipelago:checkUnlocked(code) then
         isLocked(true, false)
     else
         characterLocked = false -- In case we had previously determined it was
@@ -55,9 +55,9 @@ local function checkChallengeLocked()
         return
     end
 
-    local challengeName = AP_MAIN_MOD.CHALLENGE_DATA.CHALLENGE_ID_TO_NAME[challengeId]
+    local challengeName = Archipelago.CHALLENGE_DATA.CHALLENGE_ID_TO_NAME[challengeId]
 
-    if not AP_MAIN_MOD:checkUnlockedByName(challengeName) then
+    if not Archipelago:checkUnlockedByName(challengeName) then
         isLocked(false, true)
     else
         challengeLocked = false
@@ -65,7 +65,7 @@ local function checkChallengeLocked()
 end
 
 --- @param continued boolean
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
+Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
     if Game():GetLevel():GetStage() ~= LevelStage.STAGE1_1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
         return
     end
@@ -81,7 +81,7 @@ end)
 local font = Font()
 font:Load("font/terminus.fnt")
 local flashValue = 0
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_RENDER, function()
+Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     if not runLocked then
         return
     end

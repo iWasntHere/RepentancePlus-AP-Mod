@@ -12,7 +12,7 @@ local colours = {
 
 --- Sets the colour of the confetti.
 --- @param effect EntityEffect
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function (_, effect)
+Archipelago:AddCallback(ModCallbacks.MC_POST_EFFECT_INIT, function (_, effect)
     effect:GetSprite():Play(colours[math.random(#colours)], true)
 
     effect.PositionOffset = Vector(0, -math.random(128, 256))
@@ -22,7 +22,7 @@ end, confettiVariant)
 
 --- Render confetti.
 --- @param effect EntityEffect
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
+Archipelago:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
     -- Float down
     effect.PositionOffset = Vector(0, math.min(effect.PositionOffset.Y + effect:GetData().FallSpeed, 0))
 
@@ -33,7 +33,7 @@ AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_EFFECT_UPDATE, function (_, effect)
 end, confettiVariant)
 
 --- Reset confetti count when moving to a new room.
-AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
+Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     currentRoomConfetti = 0
 end)
 
