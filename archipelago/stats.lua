@@ -46,10 +46,12 @@ export.StatKeys = {
     BEDS_SLEPT_IN = "beds_slept_in",
     AP_CONSUMABLE_USES = "ap_consumable_uses",
     SHOP_DONATIONS = "shop_donations",
-    GREED_DONATIONS = "greed_donations"
+    GREED_DONATIONS = "greed_donations",
+    COMPLETION_MARKS = "completion_marks",
+    KILLS = "kills"
 }
 
---- Increases the given stat by 1, and returns the new value.
+--- Given that the stat is a number, increases the given stat by 1, and returns the new value.
 --- @param statKey StatKeys
 --- @return integer
 function export.incrementStat(statKey)

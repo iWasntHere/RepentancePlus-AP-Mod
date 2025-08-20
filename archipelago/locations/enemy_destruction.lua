@@ -1,4 +1,5 @@
 local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
+local stats = Archipelago.stats
 
 -- True when Gideon is updated. False when the room changes.
 local gideonFlag = false
@@ -87,16 +88,6 @@ local function getKillsFor(killsTable, name)
     end
 
     return count
-end
-
--- Loads the entire enemy kill stats from the save file
-local function getAllKills()
-    return AP_SUPP_MOD:LoadKey("kills", {})
-end
-
--- Sets enemy kill stats to the save file
-local function setKills(killsTable)
-    AP_SUPP_MOD:SaveKey("kills", killsTable)
 end
 
 --- Modifies the location tables to grant locations for more specific kill conditions.
@@ -254,7 +245,7 @@ local slain = {}
 
 -- Awards locations for all enemies slain in the room.
 local function awardChecksForSlainEnemies()
-    local kills = getAllKills() -- Load all stats
+    local kills = stats.getStat(stats.StatKeys.KILLS, {}) -- Load all stats
     local locations = {}
 
     -- Grant locations for defeating foes, and count their kills
@@ -275,7 +266,7 @@ local function awardChecksForSlainEnemies()
         Archipelago:sendLocations(locations)
     end
 
-    setKills(kills) -- Save all stats
+    stats.setStat(stats.StatKeys.KILLS, kills) -- Save all stats
 
     slain = {} -- Flush the slain table
 end

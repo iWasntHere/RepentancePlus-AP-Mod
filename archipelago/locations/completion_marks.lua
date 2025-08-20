@@ -1,4 +1,5 @@
 local util = Archipelago.util
+local stats = Archipelago.stats
 
 local bossLocationNames = {
     [EntityType.ENTITY_MOM] = "Mom",
@@ -68,7 +69,7 @@ local function tryAwardMark(markName)
     local isTainted = util.isCharacterTainted()
 
     -- Get the completion marks data
-    local marks = AP_SUPP_MOD:LoadKey("completion_marks", {})
+    local marks = stats.getStat(stats.StatKeys.COMPLETION_MARKS, {})
 
     -- Ensure that the mark entry exists
     if marks[playerName] == nil then
@@ -78,7 +79,7 @@ local function tryAwardMark(markName)
     marks[playerName][markName] = true
 
     -- Save 'em
-    AP_SUPP_MOD:SaveKey("completion_marks", marks)
+    stats.setStat(stats.StatKeys.COMPLETION_MARKS, marks)
 
     -- Now, we award locations
     local locationName = playerName .. " (" .. markName .. ")"

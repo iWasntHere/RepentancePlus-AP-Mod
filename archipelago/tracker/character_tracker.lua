@@ -2,6 +2,7 @@ local util = Archipelago.util
 local sfxManager = Archipelago.sfxManager
 local font = Archipelago.fonts.TeamMeat12
 local smallFont = Archipelago.fonts.TeamMeat10
+local stats = Archipelago.stats
 
 local page = 1
 local pages = util.chunkArray(Archipelago.CHARACTER_DATA.ITEM_NAMES, 4)
@@ -83,7 +84,7 @@ return function(offset, canControl)
 
     font:DrawStringScaled(tostring(page) .. "/" .. tostring(#pages), pageTopLeft.X + 8, pageTopLeft.Y + 8, 0.5, 0.5, color)
 
-    local marks = AP_SUPP_MOD:LoadKey("completion_marks", {})
+    local marks = stats.getStat(stats.StatKeys.COMPLETION_MARKS, {})
 
     for _, name in ipairs(pages[page]) do
         local x = columnStart + (52 * column)
