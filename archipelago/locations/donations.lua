@@ -17,18 +17,16 @@ local SlotVariant = {
 --- Awards the next location for donating on the current game mode.
 local function awardDonationCheck()
     local isGreedMode = Game():IsGreedMode()
-    local key = "donations"
+    local key = stats.StatKeys.SHOP_DONATIONS
     local locationCode = Locations.SHOP_DONATION
 
     if isGreedMode then
-        key = "greed_donations"
+        key = stats.StatKeys.GREED_DONATIONS
         locationCode = Locations.GREED_DONATION
     end
 
-    local donations = AP_SUPP_MOD:LoadKey(key, 0)
-    donations = donations + 1
-    AP_MAIN_MOD:sendLocation(locationCode + donations)
-    AP_SUPP_MOD:SaveKey(key, donations)
+    local donations = stats.incrementStat(key)
+    AP_MAIN_MOD:sendLocation(locationCode + (donations - 1))
 
     if not isGreedMode then
         -- TODO: Give donation-esque bonuses
