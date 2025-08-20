@@ -307,6 +307,7 @@ require("archipelago.locations.completion_marks")
 require("archipelago.locations.donations")
 require("archipelago.locations.challenge_completion")
 require("archipelago.locations.one_offs")
+require("archipelago.locations.consumable")
 
 require("archipelago.items.consumables")
 require("archipelago.items.entities")

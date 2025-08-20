@@ -43,7 +43,8 @@ export.StatKeys = {
     ROCKS_DESTROYED = "rocks_destroyed",
     TINTED_ROCKS_DESTROYED = "tinted_rocks_destroyed",
     DONATION_BEGGAR_KILLED_THIS_RUN = "donation_beggar_killed_this_run",
-    BEDS_SLEPT_IN = "beds_slept_in"
+    BEDS_SLEPT_IN = "beds_slept_in",
+    AP_CONSUMABLE_USES = "ap_consumable_uses"
 }
 
 --- Increases the given stat by 1, and returns the new value.

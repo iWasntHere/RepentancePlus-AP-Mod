@@ -1,6 +1,8 @@
 local cardData = require("archipelago.data.consumable_data")
 local util = require("archipelago.util")
 
+local apConsumableType = Isaac.GetCardIdByName("Soul of The Multiworld")
+
 --- When starting a new game, fix pill effects.
 --- @param continued boolean
 AP_MAIN_MOD:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
@@ -58,6 +60,10 @@ end)
 --- @param onlyRunes boolean
 --- @return Card
 local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
+    if cardType == apConsumableType then -- This is the archipelago rune, so don't replace it
+        return cardType
+    end
+
     -- If this card is determined and is unlocked, we don't need to replace it
     if cardType ~= 0 and AP_MAIN_MOD:checkUnlocked(AP_MAIN_MOD.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
         return cardType
