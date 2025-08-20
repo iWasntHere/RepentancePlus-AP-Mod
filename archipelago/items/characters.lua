@@ -1,4 +1,5 @@
 local util = Archipelago.util
+local font = Archipelago.fonts.Terminus
 local runLocked = false
 local characterLocked = false
 local challengeLocked = false
@@ -25,7 +26,7 @@ local function isLocked(character, challenge)
     end
 
     -- Remove doors
-    local room = Game():GetLevel():GetCurrentRoom()
+    local room = Archipelago.room()
     for slot, door in util.doors(room) do
         room:RemoveDoor(slot)
     end
@@ -47,7 +48,7 @@ end
 
 --- Checks if the current challenge is locked, applies locked code if it is.
 local function checkChallengeLocked()
-    local challengeId = Game().Challenge
+    local challengeId = Archipelago.game.Challenge
 
     -- Not doing a challenge
     if challengeId == 0 then
@@ -66,7 +67,7 @@ end
 
 --- @param continued boolean
 Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
-    if Game():GetLevel():GetStage() ~= LevelStage.STAGE1_1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
+    if Archipelago.level():GetStage() ~= LevelStage.STAGE1_1 then -- Only do this when the run first starts. Prevents getting stuck with Clicker
         return
     end
 
@@ -78,8 +79,6 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continue
     end
 end)
 
-local font = Font()
-font:Load("font/terminus.fnt")
 local flashValue = 0
 Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     if not runLocked then

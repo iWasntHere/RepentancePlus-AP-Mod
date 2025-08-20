@@ -103,7 +103,7 @@ end)
 --- @param itemType CollectibleType
 --- @param player EntityPlayer
 Archipelago:AddCallback(ModCallbacks.MC_USE_ITEM, function (_, itemType, rng, player)
-    local level = Game():GetLevel()
+    local level = Archipelago.level()
 
     -- Use Pandora's Box in Dark Room
     if itemType == CollectibleType.COLLECTIBLE_BLUE_BOX and level:GetStage() == LevelStage.STAGE6 and level:GetStageType() == StageType.STAGETYPE_ORIGINAL then
@@ -153,7 +153,7 @@ Archipelago:AddCallback(ModCallbacks.MC_USE_PILL, function (_, pillEffect, playe
 end)
 
 Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
-    local game = Game()
+    local game = Archipelago.game
 
     -- Reset these when a new floor is reached
     setStat(StatKeys.SECRET_ROOM_VISITED_THIS_FLOOR, false)
@@ -174,15 +174,14 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function (_)
     end
 
     -- Enter the Corpse
-    local level = game:GetLevel()
+    local level = Archipelago.level()
     if level:GetStage() == LevelStage.STAGE4_1 and level:GetStageType() == StageType.STAGETYPE_REPENTANCE then
         Archipelago:sendLocation(Locations.CORPSE_ENTERED)
     end
 end)
 
 Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
-    local game = Game()
-    local roomType = game:GetRoom():GetType()
+    local roomType = Archipelago.room():GetType()
 
     moneySpentInCurrentRoom = 0
 
@@ -196,7 +195,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function (_)
     end
 
     -- Visit 6 shops in one run (no greed mode)
-    if not Game():IsGreedMode() and not getStat(StatKeys.SHOP_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SHOP then
+    if not Archipelago.game:IsGreedMode() and not getStat(StatKeys.SHOP_VISITED_THIS_FLOOR, false) and roomType == RoomType.ROOM_SHOP then
         setStat(StatKeys.SHOP_VISITED_THIS_FLOOR, true)
 
         if incrementStat(StatKeys.SHOPS_VISITED_THIS_RUN) == 6 then
@@ -279,17 +278,17 @@ Archipelago:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, am
     end
 
     if source.Type == EntityType.ENTITY_TEAR and damageFlags & DamageFlag.DAMAGE_EXPLOSION > 0 then
-        lastIpecacDamage = Game().TimeCounter
+        lastIpecacDamage = Archipelago.game.TimeCounter
     end
 end, EntityType.ENTITY_PLAYER)
 
 --- When the player dies
 --- @param player EntityPlayer
 Archipelago:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, player)
-    local game = Game()
+    local game = Archipelago.game
 
     -- Died in Sacrifice Room w/ Missing Poster
-    if game:GetRoom():GetType() == RoomType.ROOM_SACRIFICE then
+    if Archipelago.room():GetType() == RoomType.ROOM_SACRIFICE then
         if util.hasTrinket(player, TrinketType.TRINKET_MISSING_POSTER) then
             Archipelago:sendLocation(Locations.DIED_IN_SACRIFICE_ROOM_W_MISSING_POSTER)
         end
@@ -407,7 +406,7 @@ Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE
         return
     end
 
-    local roomType = Game():GetRoom():GetType()
+    local roomType = Archipelago.room():GetType()
 
     -- Pick up 10, 25 angel items
     if roomType == RoomType.ROOM_ANGEL then
@@ -624,10 +623,8 @@ end)
 --- Used to track money spent in a shop
 --- @param moneyLost integer
 Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_MONEY_SPENT, function (_, moneyLost)
-    local level = Game():GetLevel()
-
     -- Ensure room is clear (so no Greed, etc)
-    if not level:GetCurrentRoom():IsClear() then
+    if not Archipelago.room():IsClear() then
         return
     end
 

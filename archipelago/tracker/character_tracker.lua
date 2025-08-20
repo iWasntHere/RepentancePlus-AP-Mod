@@ -1,9 +1,7 @@
 local util = Archipelago.util
-local font = Font()
-font:Load("font/teammeatfont12.fnt")
-
-local smallFont = Font()
-smallFont:Load("font/teammeatfont10.fnt")
+local sfxManager = Archipelago.sfxManager
+local font = Archipelago.fonts.TeamMeat12
+local smallFont = Archipelago.fonts.TeamMeat10
 
 local page = 1
 local pages = util.chunkArray(Archipelago.CHARACTER_DATA.ITEM_NAMES, 4)
@@ -50,18 +48,17 @@ end
 --- Renders the character tracker page.
 --- @param offset Vector The pixel offset to draw at
 --- @param canControl boolean Whether you can control the page or not
---- @param sfx SFXManager The SFX manager
-return function(offset, canControl, sfx)
+return function(offset, canControl)
     -- Page previous/back controls
     if canControl then
         if Input.IsButtonTriggered(Keyboard.KEY_RIGHT_BRACKET, 0) and page < #pages then
             page = page + 1
-            sfx:Play(SoundEffect.SOUND_CHARACTER_SELECT_RIGHT)
+            sfxManager:Play(SoundEffect.SOUND_CHARACTER_SELECT_RIGHT)
         end
 
         if Input.IsButtonTriggered(Keyboard.KEY_LEFT_BRACKET, 0) and page > 1 then
             page = page - 1
-            sfx:Play(SoundEffect.SOUND_CHARACTER_SELECT_LEFT)
+            sfxManager:Play(SoundEffect.SOUND_CHARACTER_SELECT_LEFT)
         end
     end
 

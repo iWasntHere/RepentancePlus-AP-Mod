@@ -101,11 +101,10 @@ local chapterEndStages = {
 --- @param rng RNG
 --- @param spawnPosition Vector
 Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng, spawnPosition)
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
+    local level = Archipelago.level()
 
     -- This isn't the final boss room on this floor (Labyrinth), so disregard
-    if not util.isChapterEndBoss(room) then
+    if not util.isChapterEndBoss(Archipelago.room()) then
         return
     end
 
@@ -198,16 +197,14 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_UPDATE, function (_)
     end
 
     -- Grid events
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
-    local roomIndex = level:GetCurrentRoomIndex()
+    local roomIndex = Archipelago.level():GetCurrentRoomIndex()
     
     if roomIndex ~= currentRoomIndex then
         currentRoomIndex = roomIndex
         roomGridEntitySnapshot = {}
     end
 
-    for index, gridEnt in util.gridEntities(room) do
+    for index, gridEnt in util.gridEntities(Archipelago.room()) do
         if gridEnt then
             local oldState = roomGridEntitySnapshot[index]
 

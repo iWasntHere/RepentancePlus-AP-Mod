@@ -4,7 +4,7 @@ local util = Archipelago.util
 --- @param fortune string
 local function showSplitFortune(fortune)
     local split = util.stringSplit(fortune, "|")
-    Game():GetHUD():ShowFortuneText(table.unpack(split))
+    Archipelago.hud:ShowFortuneText(table.unpack(split))
 end
 
 --- Replaces a fortune shown by Fortune Cookie or Fortune Teller.

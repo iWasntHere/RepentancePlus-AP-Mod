@@ -7,7 +7,7 @@ Archipelago:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, type, var
         return
     end
 
-    local challengeId = Game().Challenge
+    local challengeId = Archipelago.game.Challenge
     local locationName = Archipelago.CHALLENGE_DATA.CHALLENGE_ID_TO_NAME[challengeId]
 
     if locationName == nil then -- Shouldn't happen, but the challenge has no name associated

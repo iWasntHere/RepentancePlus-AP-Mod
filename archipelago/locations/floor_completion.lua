@@ -8,7 +8,7 @@ local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 --- @param stage LevelStage
 --- @param stageType StageType
 Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARED, function(_, stage, stageType)
-    if Game():GetLevel():IsAscent() then -- Ascent should cancel all of this
+    if Archipelago.level():IsAscent() then -- Ascent should cancel all of this
         return
     end
 
@@ -105,7 +105,7 @@ end)
 --- @param source EntityRef
 --- @param countdownFrames integer
 Archipelago:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, amount, damageFlags, source, countdownFrames)
-    stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, Game():GetLevel():GetStage())
+    stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, Archipelago.level():GetStage())
 end, EntityType.ENTITY_PLAYER)
 
 --- Tracks the last time the player had with more than one half heart
@@ -115,7 +115,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
         return
     end
 
-    local stage = Game():GetLevel():GetStage()
+    local stage = Archipelago.level():GetStage()
     local lastWithoutHalfHeart = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, 0)
 
     -- Only save if the value was updated

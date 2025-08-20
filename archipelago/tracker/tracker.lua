@@ -1,5 +1,5 @@
 local util = Archipelago.util
-local sfx = SFXManager()
+local sfxManager = Archipelago.sfxManager
 
 local page = 1
 
@@ -30,12 +30,12 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
         -- Up/Down controls
         if Input.IsButtonTriggered(Keyboard.KEY_ENTER, 0) and page > 1 then
             page = page - 1
-            sfx:Play(SoundEffect.SOUND_BOOK_PAGE_TURN_12, 1, 2, false, 0.9 + (math.random() * 0.1))
+            sfxManager:Play(SoundEffect.SOUND_BOOK_PAGE_TURN_12, 1, 2, false, 0.9 + (math.random() * 0.1))
         end
 
         if Input.IsButtonTriggered(Keyboard.KEY_RIGHT_SHIFT, 0) and page < #pages then
             page = page + 1
-            sfx:Play(SoundEffect.SOUND_BOOK_PAGE_TURN_12, 1, 2, false, 0.9 + (math.random() * 0.1))
+            sfxManager:Play(SoundEffect.SOUND_BOOK_PAGE_TURN_12, 1, 2, false, 0.9 + (math.random() * 0.1))
         end
     else -- Putting it away
         trackerXPosition = util.lerp(trackerXPosition, Isaac.GetScreenWidth() * 1.1, 0.1)
@@ -43,11 +43,11 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 
     if not wasOutLastFrame and isOut then
         -- We just pulled it out
-        sfx:Play(SoundEffect.SOUND_PAPER_IN)
+        sfxManager:Play(SoundEffect.SOUND_PAPER_IN)
         fadeSprite:Play("FadeIn", true)
     elseif wasOutLastFrame and not isOut then
         -- We just put it away
-        sfx:Play(SoundEffect.SOUND_PAPER_OUT)
+        sfxManager:Play(SoundEffect.SOUND_PAPER_OUT)
         fadeSprite:Play("FadeOut", true)
     end
 
@@ -70,6 +70,6 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_RENDER, function()
     for index, func in ipairs(pages) do
         local offset = Vector(trackerXPosition, trackerYPosition + ((index - 1) * height))
 
-        func(offset, page == index, sfx)
+        func(offset, page == index)
     end
 end)

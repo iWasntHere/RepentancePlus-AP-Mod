@@ -12,11 +12,6 @@ Mod.COLLECTIBLE_TAGS_DATA = require("archipelago.data.collectible_tags")
 Mod.CARD_DATA = require("archipelago.data.consumable_data")
 Mod.FORTUNES = require("archipelago.data.fortunes")
 
-Mod.util = util
-Mod.json = json
-Mod.stats = require("archipelago.stats")
-Mod.spawnConfetti = require("archipelago.confetti")
-
 Mod.Callbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
     MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT", -- Called when the game sends an item through Archipelago
@@ -33,6 +28,31 @@ Mod.Callbacks = {
     MC_ARCHIPELAGO_FORTUNE_TELLER_FORTUNE = "ARCHIPELAGO_FORTUNE_TELLER_FORTUNE", -- Called when a fortune teller machine or fortune cookie gives a fortune
     MC_ARCHIPELAGO_BED_SLEEP = "ARCHIPELAGO_BED_SLEEP", -- Called when the player sleeps in a bed
     MC_ARCHIPELAGO_MONEY_SPENT = "ARCHIPELAGO_MONEY_SPENT" -- Called when money is subtracted from the player
+}
+
+Mod.util = util
+Mod.json = json
+Mod.game = Game()
+Mod.room = function () return Mod.game:GetRoom() end
+Mod.level = function () return Mod.game:GetLevel() end
+Mod.stats = require("archipelago.stats")
+Mod.spawnConfetti = require("archipelago.confetti")
+Mod.sfxManager = SFXManager()
+Mod.hud = Mod.game:GetHUD()
+
+local teamMeat12Font = Font()
+teamMeat12Font:Load("font/teammeatfont12.fnt")
+
+local teamMeat10Font = Font()
+teamMeat10Font:Load("font/teammeatfont10.fnt")
+
+local terminusFont = Font()
+terminusFont:Load("font/terminus.fnt")
+
+Mod.fonts = {
+    TeamMeat12 = teamMeat12Font,
+    TeamMeat10 = teamMeat10Font,
+    Terminus = terminusFont
 }
 
 -- Fill out the rest of ITEMS_DATA with data we can pull out of it
@@ -209,7 +229,7 @@ end
 --- @param isTrap boolean If the item is considered a trap (a bad item)
 --- @param isReceived boolean Whether the item is being sent, or received
 function Mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
-    local hud = Game():GetHUD()
+    local hud = Archipelago.hud
 
     if isReceived then
         if playerName ~= ARCHIPELAGO_SLOT then -- Someone else sent us this item
@@ -228,8 +248,7 @@ function Mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
         sound = SoundEffect.SOUND_THUMBSUP
     end
 
-    local sfx = SFXManager()
-    sfx:Play(sound)
+    Mod.sfxManager:Play(sound)
 end
 
 --- Draws the player's slot name to the screen to better verify that everything is set up correctly.
@@ -246,7 +265,7 @@ end)
 Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 	Mod:exposeData() -- Expose the basic AP data
 
-	local itemPool = Game():GetItemPool()
+	local itemPool = Archipelago.game:GetItemPool()
 
 	-- No archipelago mod? That's not good.
 	if not ARCHIPELAGO_SEED then

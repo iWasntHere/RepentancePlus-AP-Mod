@@ -300,7 +300,7 @@ end
 --- Creates an RNG object, by seeding it with the run's seed.
 --- @return RNG
 function export.getRNG()
-    local startSeed = Game():GetSeeds():GetStartSeed()
+    local startSeed = Archipelago.game:GetSeeds():GetStartSeed()
     local rng = RNG()
     rng:SetSeed(startSeed, 35) -- 35 is the 'recommended shift index,' whatever that means
 
@@ -317,7 +317,7 @@ function export.isChapterEndBoss(room)
     end
 
     -- In The Void, the only 2x2 boss room is Delirium's room
-    local stage = Game():GetLevel():GetStage()
+    local stage = Archipelago.level():GetStage()
     if room:GetRoomShape() == RoomShape.ROOMSHAPE_2x2 and stage == LevelStage.STAGE7 then
         return true
     end
@@ -386,7 +386,7 @@ function export.removeSecretExit(room)
     end
 
     -- Void door in Blue Womb
-    if room:GetType() == RoomType.ROOM_BOSS and Game():GetLevel():GetStage() == LevelStage.STAGE4_3 then
+    if room:GetType() == RoomType.ROOM_BOSS and Archipelago.level():GetStage() == LevelStage.STAGE4_3 then
         room:RemoveDoor(DoorSlot.UP1)
     end
 end

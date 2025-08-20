@@ -4,9 +4,8 @@ local util = Archipelago.util
 --- @param seed integer
 --- @return CollectibleType
 local function getItemForCurrentRoom(seed)
-    local game = Game()
-    local level = game:GetLevel()
-    local room = level:GetCurrentRoom()
+    local game = Archipelago.game
+    local room = Archipelago.room()
     local itemPool = game:GetItemPool()
     local poolForRoom = itemPool:GetPoolForRoom(room:GetType(), seed)
     return itemPool:GetCollectible(poolForRoom, false, seed, CollectibleType.COLLECTIBLE_BREAKFAST)
@@ -15,7 +14,7 @@ end
 --- 'true' if Inner Child should be replaced by a rescuable Isaac
 --- @return boolean
 local function shouldReplaceInnerChild()
-    local level = Game():GetLevel()
+    local level = Archipelago.level()
 
     if level:GetStage() ~= LevelStage.STAGE8 then -- Must be in Home
         return false

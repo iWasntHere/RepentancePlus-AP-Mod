@@ -59,7 +59,7 @@ local function defeatLocations(name, locations)
     end
 
     -- Lamb Defeated in 20 minutes
-    if name == "The Lamb" and (Game().TimeCounter / 30 / 60) < 20 then
+    if name == "The Lamb" and (Archipelago.game.TimeCounter / 30 / 60) < 20 then
         locations[#locations + 1] = Locations.THE_LAMB_DEFEATED_LESS_THAN_20_MINUTES
     end
 

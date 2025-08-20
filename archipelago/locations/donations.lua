@@ -16,7 +16,7 @@ local SlotVariant = {
 
 --- Awards the next location for donating on the current game mode.
 local function awardDonationCheck()
-    local isGreedMode = Game():IsGreedMode()
+    local isGreedMode = Archipelago.game:IsGreedMode()
     local key = stats.StatKeys.SHOP_DONATIONS
     local locationCode = Locations.SHOP_DONATION
 
@@ -94,7 +94,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_ENTITY_KILL, function (_, entity)
 
     -- Spawn 6 - 14 pennies on death
     local rng = util.getRNG()
-    local game = Game()
+    local game = Archipelago.game
     local seed = game:GetRoom():GetSpawnSeed()
     for _ = 0, rng:RandomInt(8) + 6, 1 do
         game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, entity.Position, util.randomVector(rng) * (rng:RandomFloat() * 5.0), entity, CoinSubType.COIN_PENNY, seed)

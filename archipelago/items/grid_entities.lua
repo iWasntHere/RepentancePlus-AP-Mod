@@ -7,7 +7,7 @@ local gridEntityTypeToName = {
 }
 
 Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
-    local room = Game():GetLevel():GetCurrentRoom()
+    local room = Archipelago.room()
     local toSpawn = {} -- Table of index to type to spawn
 
     local gridEntityTypeToUnlocked = {}

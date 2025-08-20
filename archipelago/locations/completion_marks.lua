@@ -147,10 +147,7 @@ end)
 
 --- Fired when clearing boss rush.
 Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function ()
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
-
-    if room:GetType() ~= RoomType.ROOM_BOSSRUSH then
+    if Archipelago.room():GetType() ~= RoomType.ROOM_BOSSRUSH then
         return
     end
 

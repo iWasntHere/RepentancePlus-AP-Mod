@@ -80,7 +80,7 @@ local stageTypeToPath = {
 }
 
 Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_LEVEL, function()
-    local level = Game():GetLevel()
+    local level = Archipelago.level()
     local stage = level:GetStage()
     local stageType = level:GetStageType()
 
@@ -139,8 +139,8 @@ local roomJustCompleted = false
 --- @param rng RNG
 --- @param spawnPosition Vector
 Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, spawnPosition)
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
+    local level = Archipelago.level()
+    local room = Archipelago.room()
 
     local stage = util.getEffectiveStage(level)
     local isAltPath = repStageTypes[level:GetStageType()] ~= nil
@@ -200,7 +200,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_UPDATE, function()
 
     roomJustCompleted = false
 
-    local room = Game():GetLevel():GetCurrentRoom()
+    local room = Archipelago.room()
 
     -- Loop over all grid positions, remove any Void trapdoors found
     for gridIndex = 0, room:GetGridSize(), 1 do
@@ -215,8 +215,8 @@ end)
 
 --- Used to remove various doors.
 Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function()
-    local level = Game():GetLevel()
-    local room = level:GetCurrentRoom()
+    local level = Archipelago.level()
+    local room = Archipelago.room()
     local roomType = room:GetType()
 
     -- Remove blue womb door

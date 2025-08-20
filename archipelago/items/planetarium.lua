@@ -7,7 +7,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function(_)
     end
 
     -- If the planetarium is adjacent, remove the door to it
-    local room = Game():GetRoom()
+    local room = Archipelago.room()
     for slot, door in util.doors(room) do
         if door and door.TargetRoomType == RoomType.ROOM_PLANETARIUM then
             room:RemoveDoor(slot)
