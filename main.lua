@@ -78,16 +78,26 @@ local sentLocations = {}
 function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
 	local loadedString = Mod:LoadData()
-    local oldData = {}
+    local oldData = nil
 	if loadedString ~= "" then
 		oldData = json.decode(loadedString)
-	else
-		oldData = {
+
+        -- Check if the data is for a different slot
+        if oldData.slot_name ~- nil then
+            if oldData.slot_name ~= ArchipelagoSlot.SLOT_NAME or oldData.seed_Name ~= ArchipelagoSlot.SEED then
+                oldData = nil -- Invalidate the old data
+            end
+        end
+	end
+
+    -- Fallback data
+    if oldData == nil then
+        oldData = {
             location_checks = {},
             location_scouts = {},
             died = ""
         }
-	end
+    end
 
     local locationData = ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}})
 
