@@ -20,7 +20,7 @@ Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORT
         local hints = {}
         
         -- Hints for the current character are much more likely
-        for _, data in ipairs(ARCHIPELAGO_HINTS[characterName]) do
+        for _, data in ipairs(ArchipelagoSlot.HINT_FORTUNES[characterName]) do
             hints[#hints + 1] = {
                 value = data.text,
                 weight = 1
@@ -28,7 +28,7 @@ Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_FORTUNE_TELLER_FORT
         end
 
         -- Global hints aren't as likely
-        for _, data in ipairs(ARCHIPELAGO_HINTS["Global"]) do
+        for _, data in ipairs(ArchipelagoSlot.HINT_FORTUNES["Global"]) do
             hints[#hints + 1] = {
                 value = data.text,
                 weight = 0.1

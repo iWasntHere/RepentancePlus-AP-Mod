@@ -28,7 +28,7 @@ missingBabySprite:Play("Idle")
 return function(offset, canControl)
     -- The pages array is populated here since at launch time the globalvar isn't available yet
     if pages == nil then
-        pages = util.chunkArray(TARGET_BABY_CODES, 9)
+        pages = util.chunkArray(ArchipelagoSlot.TARGET_BABY_CODES, 9)
     end
 
     -- Page previous/back controls

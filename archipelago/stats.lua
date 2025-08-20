@@ -55,8 +55,8 @@ export.StatKeys = {
 --- @param statKey StatKeys
 --- @return integer
 function export.incrementStat(statKey)
-    local value = AP_SUPP_MOD:LoadKey(statKey, 0) + 1
-    AP_SUPP_MOD:SaveKey(statKey, value)
+    local value = ArchipelagoSlot:LoadKey(statKey, 0) + 1
+    ArchipelagoSlot:SaveKey(statKey, value)
 
     return value
 end
@@ -65,7 +65,7 @@ end
 --- @param statKey StatKeys
 --- @param value any
 function export.setStat(statKey, value)
-    AP_SUPP_MOD:SaveKey(statKey, value)
+    ArchipelagoSlot:SaveKey(statKey, value)
 end
 
 --- Gets the value of the stat key.
@@ -73,7 +73,7 @@ end
 --- @param default any
 --- @return any
 function export.getStat(statKey, default)
-    return AP_SUPP_MOD:LoadKey(statKey, default)
+    return ArchipelagoSlot:LoadKey(statKey, default)
 end
 
 return export

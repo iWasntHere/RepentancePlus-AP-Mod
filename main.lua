@@ -2,6 +2,11 @@ local Mod = RegisterMod("Archipelago", 1)
 local json = require("json")
 local util = require("archipelago.util")
 
+--- @module ArchipelagoSlot
+
+--- Global var for the mod
+Archipelago = Mod
+
 Mod.ITEMS_DATA = require("archipelago.data.item_data")
 Mod.LOCATIONS_DATA = require("archipelago.data.location_data")
 Mod.ENTITIES_DATA = require("archipelago.data.entities_data")
@@ -63,16 +68,13 @@ end
 table.sort(codes) -- We'd prefer this in order, thanks
 Mod.ITEMS_DATA.CODES = codes
 
---- Global var for the mod
-Archipelago = Mod
-
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
 local sentLocations = {}
 
 --- Set location checks, scouts, and death link for the client-server bridge to pick up.
---- @param locationChecks table|nil
---- @param locationScouts table|nil
---- @param deathLinkReason string|nil
+--- @param locationChecks? table
+--- @param locationScouts? table
+--- @param deathLinkReason? string
 function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
 	local loadedString = Mod:LoadData()
@@ -87,12 +89,12 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
         }
 	end
 
-    local locationData = AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}})
+    local locationData = ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}})
 
 	-- Any time we expose data, it will ALWAYS be in this format
 	local apData = {
-		slot_name = ARCHIPELAGO_SLOT,
-		seed_name = ARCHIPELAGO_SEED,
+		slot_name = ArchipelagoSlot.SLOT_NAME,
+		seed_name = ArchipelagoSlot.SEED,
 		location_checks = oldData.location_checks, -- For location codes we just checked
 		location_scouts = oldData.location_scouts, -- For location codes we just scouted
 		died = "" -- For deathlink (pending)
@@ -124,7 +126,7 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
     end
 
 	Mod:SaveData(json.encode(apData))
-    AP_SUPP_MOD:SaveKey("location_data", locationData)
+    ArchipelagoSlot:SaveKey("location_data", locationData)
 end
 
 --- Send a location to the server.
@@ -190,7 +192,7 @@ function Mod:checkUnlocked(code)
         return false
     end
 
-    return AP_SUPP_MOD:IsItemUnlocked(tostring(code)) -- The codes are strings in the table
+    return ArchipelagoSlot:IsItemUnlocked(tostring(code)) -- The codes are strings in the table
 end
 
 --- 'true' if the item name is considered to be unlocked.
@@ -205,21 +207,21 @@ function Mod:checkUnlockedByName(name)
         return false
     end
 
-    return AP_SUPP_MOD:IsItemUnlocked(code) -- The codes are strings in the table
+    return ArchipelagoSlot:IsItemUnlocked(code) -- The codes are strings in the table
 end
 
 --- 'true' if the location code has already been sent.
 --- @param code integer
 --- @return boolean
 function Mod:checkLocationSent(code)
-    return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).sent[code] ~= nil
+    return ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}}).sent[code] ~= nil
 end
 
 --- 'true' if the location code has already been scouted.
 --- @param code integer
 --- @return boolean
 function Mod:checkLocationScouted(code)
-    return AP_SUPP_MOD:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
+    return ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
 end
 
 --- Performs effects when you get an item.
@@ -232,7 +234,7 @@ function Mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
     local hud = Archipelago.hud
 
     if isReceived then
-        if playerName ~= ARCHIPELAGO_SLOT then -- Someone else sent us this item
+        if playerName ~= ArchipelagoSlot.SLOT_NAME then -- Someone else sent us this item
             hud:ShowItemText(itemName, "from " .. playerName .. " has appeared in the basement")
         else -- We got ourselves this item
             hud:ShowItemText(itemName, "has appeared in the basement")
@@ -253,8 +255,8 @@ end
 
 --- Draws the player's slot name to the screen to better verify that everything is set up correctly.
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
-if ARCHIPELAGO_SEED then
-        Isaac.RenderScaledText(ARCHIPELAGO_SLOT, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
+if ArchipelagoSlot.SEED then
+        Isaac.RenderScaledText(ArchipelagoSlot.SLOT_NAME, 4, 4, 0.5, 0.5, 1, 1, 1, 0.25)
     else
         Isaac.RenderScaledText("No Archipelago Mod Found", 4, 4, 0.5, 0.5, 1, 0, 0, 1)
     end
@@ -268,7 +270,7 @@ Mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (isContinued)
 	local itemPool = Archipelago.game:GetItemPool()
 
 	-- No archipelago mod? That's not good.
-	if not ARCHIPELAGO_SEED then
+	if not ArchipelagoSlot then
 		return
 	end
 	
