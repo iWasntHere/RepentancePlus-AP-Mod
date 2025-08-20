@@ -13,6 +13,9 @@ local chimeraFlag = false
 -- ITS THE SAME THING AGAIN :(
 local matriarchFlag = false
 
+-- Yeah...
+local brownieFlag = false
+
 local BasementBosses = {
     "Dingle", "The Duke of Flies", "Gemini", "Larry Jr.", "Monstro", "Gurglings", "Famine"
 }
@@ -299,6 +302,7 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, function ()
     rotgutFlag = false
     chimeraFlag = false
     matriarchFlag = false
+    brownieFlag = false
 end)
 
 --- Used to handle "slaying" Great Gideon. Since he is normally not killed, he is considered "slain" as soon as
@@ -342,6 +346,16 @@ Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
 
     matriarchFlag = true
     slain[#slain + 1] = {type = EntityType.ENTITY_MATRIARCH, variant = 0}
+end, EntityType.ENTITY_MATRIARCH)
+
+--- Used to handle slaying Brownie. It transforms.
+Archipelago:AddCallback(ModCallbacks.MC_NPC_UPDATE, function (_)
+    if brownieFlag then
+        return
+    end
+
+    brownieFlag = true
+    slain[#slain + 1] = {type = EntityType.ENTITY_BROWNIE, variant = 0}
 end, EntityType.ENTITY_MATRIARCH)
 
 local babyPlumSpared = false -- To debounce the location send (so it's not every frame)
