@@ -1,3 +1,5 @@
+local util = Archipelago.util
+
 local EntityItemName = {
     LUCKY_PENNIES = "Lucky Pennies",
     SPECIAL_HANGING_SHOPKEEPERS = "Special Hanging Shopkeepers",
@@ -231,8 +233,84 @@ local function replaceEntity(type, variant, subType)
         end
     end
 
-    if not Archipelago:checkUnlockedByName("Everything is Terrible!!!") and subType > 0 then
+    if not Archipelago:checkUnlockedByName("Everything is Terrible!!!") then
         -- TODO: Remove champion effect on enemies (no way to tell if this is an enemy yet)
+
+        -- Bulb to Fly
+        if type == EntityType.ENTITY_SUCKER and variant == 5 then
+            return {EntityType.ENTITY_FLY, 0, 0}
+
+        -- Micro Battery to Battery
+        elseif type == EntityType.ENTITY_PICKUP and variant == PickupVariant.PICKUP_LIL_BATTERY and subType == BatterySubType.BATTERY_MICRO then
+            return {EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_LIL_BATTERY, BatterySubType.BATTERY_NORMAL}
+        end
+    end
+
+    -- The Gate is Open! enemies
+    if not Archipelago:checkUnlockedByName("The gate is open!") then
+        local rng = RNG(Archipelago.room():GetSpawnSeed(), 35)
+        local level = Archipelago.level()
+
+        -- Blister
+        if type == EntityType.ENTITY_BLISTER then
+            if rng:RandomFloat() < 0.7 then -- 70% chance for Ticking Spider
+                return {EntityType.ENTITY_TICKING_SPIDER, 0, 0}
+            else -- 30% chance for Keeper
+                return {EntityType.ENTITY_KEEPER, 0, 0}
+            end
+
+        -- Mushroom
+        elseif type == EntityType.ENTITY_MUSHROOM then
+            if rng:RandomFloat() < 0.8 then -- 80% chance for Host
+                return {EntityType.ENTITY_HOST, 0, 0}
+            else -- 20% chance for Red Host
+                return {EntityType.ENTITY_HOST, 1, 0}
+            end
+        
+        -- Ministro
+        elseif type == EntityType.ENTITY_MINISTRO then
+            if level:GetStageType() == StageType.STAGETYPE_WOTL then -- Trite for WOTL levels
+                return {EntityType.ENTITY_HOPPER, 1, 0}
+            else -- Hopper for all others
+                return {EntityType.ENTITY_HOPPER, 0, 0}
+            end
+        
+        -- Nerve Ending 2 (Always becomes Nerve Ending)
+        elseif type == EntityType.ENTITY_NERVE_ENDING and variant == 1 then
+            return {EntityType.ENTITY_NERVE_ENDING, 0, 0}
+        
+        -- Poison Mind (Always becomes Brain)
+        elseif type == EntityType.ENTITY_POISON_MIND then
+            return {EntityType.ENTITY_BRAIN, 0, 0}
+
+        
+        elseif type == EntityType.ENTITY_STONEY then
+            if level:GetStage() >= LevelStage.STAGE3_1 then -- Pale Fatty on Depths+
+                return {EntityType.ENTITY_FATTY, 1, 0}
+            else -- Fatty everywhere else
+                return {EntityType.ENTITY_FATTY, 0, 0}
+            end
+
+        -- The Thing
+        elseif type == EntityType.ENTITY_THE_THING then
+            if level:GetStage() >= LevelStage.STAGE3_1 then
+                local r = rng:RandomFloat()
+
+                if r > 0.66 then -- 33% chance for Wall Creep
+                    return {EntityType.ENTITY_WALL_CREEP, 0, 0}
+                elseif r > 0.33 then -- 33% chance for Blind Creep
+                    return {EntityType.ENTITY_BLIND_CREEP, 0, 0}
+                else -- 33% chance for Rage Creep
+                    return {EntityType.ENTITY_RAGE_CREEP, 0, 0}
+                end
+            else -- Earlier stages cannot have Rage Creep
+                if rng:RandomFloat() < 0.5 then -- 50% chance for Wall Creep
+                    return {EntityType.ENTITY_WALL_CREEP, 0, 0}
+                else -- 50% chance for Blind Creep
+                    return {EntityType.ENTITY_BLIND_CREEP, 0, 0}
+                end
+            end
+        end
     end
 
     return nil
