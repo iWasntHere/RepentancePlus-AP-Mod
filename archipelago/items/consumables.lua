@@ -168,7 +168,7 @@ end)
 --- @param spawnPos Vector
 Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng, spawnPos)
     if stats.getStat(stats.StatKeys.AP_CONSUMABLE_USES, 0) < ArchipelagoSlot.CONSUMABLE_COUNT then
-        if rng:RandomFloat() < 0.9 then
+        if rng:RandomFloat() < 0.01 then
             local pos = Isaac.GetFreeNearPosition(spawnPos, 1)
             Archipelago.game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, pos, Vector.Zero, nil, Archipelago.SoulOfTheMultiworldType, rng:GetSeed())
         end

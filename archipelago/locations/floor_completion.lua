@@ -55,9 +55,11 @@ Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_POST_CHAPTER_CLEARE
     end
 
     -- Clear a chapter > 1 with 0.5 hearts
-    local lastHPStage = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, stage)
-    if stage - lastHPStage >= 2 then
-        locations[#locations + 1] = Locations.CHAPTER_GREATER_THAN_1_CLEARED_W_ONLY_05_HEARTS
+    if stage >= LevelStage.STAGE2_1 then
+        local lastHPStage = stats.getStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, stage)
+        if stage - lastHPStage >= 2 then
+            locations[#locations + 1] = Locations.CHAPTER_GREATER_THAN_1_CLEARED_W_ONLY_05_HEARTS
+        end
     end
 
     -- Chapter Clears as character
@@ -108,7 +110,7 @@ Archipelago:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, function (_, entity, am
     stats.setStat(StatKeys.LAST_FLOOR_WITH_DAMAGE, Archipelago.level():GetStage())
 end, EntityType.ENTITY_PLAYER)
 
---- Tracks the last time the player had with more than one half heart
+--- Tracks the last time the player had with more than one half heart.
 --- @param player EntityPlayer
 Archipelago:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
     if util.totalPlayerHealth(player) <= 1 then
@@ -120,6 +122,6 @@ Archipelago:AddCallback(ModCallbacks.MC_POST_PLAYER_UPDATE, function (_, player)
 
     -- Only save if the value was updated
     if stage ~= lastWithoutHalfHeart then
-        stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, lastWithoutHalfHeart)
+        stats.setStat(StatKeys.LAST_FLOOR_WITHOUT_HALF_HEART, stage)
     end
 end)
