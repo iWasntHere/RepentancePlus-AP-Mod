@@ -17,7 +17,7 @@ Mod.FORTUNES = require("archipelago.data.fortunes")
 
 Mod.Callbacks = {
     MC_ARCHIPELAGO_ITEM_RECEIVED = "ARCHIPELAGO_ITEM_RECEIVED", -- Called when the game receives an item through Archipelago
-    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT", -- Called when the game sends an item through Archipelago
+    MC_ARCHIPELAGO_ITEM_SENT = "ARCHIPELAGO_ITEM_SENT", -- Called when the game confirms that an item is sent through Archipelago
     MC_ARCHIPELAGO_PICKUP_PICKED = "ARCHIPELAGO_PICKUP_PICKED", -- Called when the player picks up a pickup
     MC_ARCHIPELAGO_CHEST_OPENED = "ARCHIPELAGO_CHEST_OPENED", -- Called when the player opens a chest
     MC_ARCHIPELAGO_PRE_GET_COLLECTIBLE = "ARCHIPELAGO_PRE_GET_COLLECTIBLE", -- Called when the player touches an item pedestal
@@ -72,8 +72,8 @@ Mod.ITEMS_DATA.CODES = codes
 local sentLocations = {}
 
 --- Set location checks, scouts, and death link for the client-server bridge to pick up.
---- @param locationChecks? table
---- @param locationScouts? table
+--- @param locationChecks? integer[]
+--- @param locationScouts? integer[]
 --- @param deathLinkReason? string
 function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 	-- There may be some data that hasn't been picked up yet! We'll need to merge it.
@@ -99,6 +99,7 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
         }
     end
 
+    --- @type {sent: {[string]:boolean}, scouted: {[string]:boolean}}
     local locationData = ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}})
 
 	-- Any time we expose data, it will ALWAYS be in this format
@@ -115,13 +116,32 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
         apData.died = deathLinkReason
     end
 
-    -- New location checks
+    -- Location checks
     if locationChecks then
-        apData.location_checks = util.concatArrays({apData.location_checks, locationChecks})
+        local alreadySentChecks = {}
+        for k, _ in pairs(locationData.sent) do
+            alreadySentChecks[#alreadySentChecks + 1] = tonumber(k)
+        end
+
+        -- Merge old sent checks and new ones
+        apData.location_checks = util.concatArrays({apData.location_checks, locationChecks, alreadySentChecks})
 
         -- Mark that we have sent this location (it is complete)
         for _, code in ipairs(apData.location_checks) do
-            locationData.sent[code] = true
+            local strCode = tostring(code) -- This needs to be as strings
+
+            -- Display a notification the moment we send it out (so we get a nice, responsive gameplay experience)
+            if not locationData.sent[strCode] then -- Only ones that haven't been sent before
+                local locationInfo = ArchipelagoSlot:GetLocationInfo(strCode) -- Yea this is a string
+                if locationInfo then -- It's possible that we could have sent a location that doesn't exist in the current seed
+                    Mod.notifications.createItemNotification(locationInfo["item_name"], locationInfo["player_name"], "", false, true, function ()
+                        Mod.spawnConfetti(math.random(10, 20))
+                    end)
+                end
+            end
+
+            -- Save the location to the saved location data table
+            locationData.sent[strCode] = true
         end
     end
 
@@ -131,7 +151,7 @@ function Mod:exposeData(locationChecks, locationScouts, deathLinkReason)
 
         -- Mark that we have scout this location
         for _, code in ipairs(apData.location_checks) do
-            locationData.scouted[code] = true
+            locationData.scouted[tostring(code)] = true
         end
     end
 
@@ -234,8 +254,6 @@ function Mod:checkLocationScouted(code)
     return ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
 end
 
-
-
 --- Draws the player's slot name to the screen to better verify that everything is set up correctly.
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
 if ArchipelagoSlot.SEED then
@@ -278,19 +296,14 @@ end)
 --- @param locationName string
 --- @param isTrap boolean
 Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
+    if playerName == ArchipelagoSlot.SLOT_NAME then -- Don't notify for our own gets
+        return
+    end
+
     Mod.notifications.createItemNotification(itemName, playerName, locationName, isTrap, true, function ()
         -- Celebratory confetti (awesome)
         Mod.spawnConfetti(math.random(15, 30))
     end)
-end)
-
---- Fired when an item is sent to the Archipelago server.
---- @param itemName string
---- @param playerName string
---- @param locationName string
---- @param isTrap boolean
-Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
-    Mod.notifications.createItemNotification(itemName, playerName, locationName, isTrap, false)
 end)
 
 require("archipelago.callbacks")
