@@ -283,7 +283,7 @@ local function replaceEntity(type, variant, subType)
         elseif type == EntityType.ENTITY_POISON_MIND then
             return {EntityType.ENTITY_BRAIN, 0, 0}
 
-        
+        -- Stoney
         elseif type == EntityType.ENTITY_STONEY then
             if level:GetStage() >= LevelStage.STAGE3_1 then -- Pale Fatty on Depths+
                 return {EntityType.ENTITY_FATTY, 1, 0}
