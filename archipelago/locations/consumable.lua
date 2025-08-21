@@ -1,4 +1,4 @@
-local apConsumableType = Isaac.GetCardIdByName("Soul of The Multiworld")
+Archipelago.SoulOfTheMultiworldType = Isaac.GetCardIdByName("Soul of The Multiworld")
 local stats = Archipelago.stats
 local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 
@@ -8,5 +8,11 @@ local Locations = Archipelago.LOCATIONS_DATA.LOCATIONS
 --- @param useFlags UseFlag
 Archipelago:AddCallback(ModCallbacks.MC_USE_CARD, function (_, card, player, useFlags)
     local uses = stats.incrementStat(stats.StatKeys.AP_CONSUMABLE_USES)
+
+    -- Done with consumable locations, stop sending them
+    if uses > ArchipelagoSlot.CONSUMABLE_COUNT then
+        return
+    end
+
     Archipelago:sendLocation(Locations.AP_CONSUMABLE + (uses - 1))
-end, apConsumableType)
+end, Archipelago.SoulOfTheMultiworldType)

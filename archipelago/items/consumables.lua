@@ -1,5 +1,6 @@
 local cardData = Archipelago.CARD_DATA
 local util = Archipelago.util
+local stats = Archipelago.stats
 
 local apConsumableType = Isaac.GetCardIdByName("Soul of The Multiworld")
 
@@ -160,4 +161,16 @@ Archipelago:AddCallback(ModCallbacks.MC_PRE_ENTITY_SPAWN, function (_, entityTyp
     end
 
     return {entityType, variant, subType, seed}
+end)
+
+--- If we haven't found all consumable locations, try to spawn a Soul of The Multiworld upon room clear.
+--- @param rng RNG
+--- @param spawnPos Vector
+Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function (_, rng, spawnPos)
+    if stats.getStat(stats.StatKeys.AP_CONSUMABLE_USES, 0) < ArchipelagoSlot.CONSUMABLE_COUNT then
+        if rng:RandomFloat() < 0.9 then
+            local pos = Isaac.GetFreeNearPosition(spawnPos, 1)
+            Archipelago.game:Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_TAROTCARD, pos, Vector.Zero, nil, Archipelago.SoulOfTheMultiworldType, rng:GetSeed())
+        end
+    end
 end)

@@ -2,8 +2,6 @@ local Mod = RegisterMod("Archipelago", 1)
 local json = require("json")
 local util = require("archipelago.util")
 
---- @module ArchipelagoSlot
-
 --- Global var for the mod
 Archipelago = Mod
 

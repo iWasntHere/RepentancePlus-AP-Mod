@@ -19,18 +19,24 @@ local function awardDonationCheck()
     local isGreedMode = Archipelago.game:IsGreedMode()
     local key = stats.StatKeys.SHOP_DONATIONS
     local locationCode = Locations.SHOP_DONATION
+    local maxLocations = ArchipelagoSlot.SHOP_DONATION_COUNT
 
     if isGreedMode then
         key = stats.StatKeys.GREED_DONATIONS
         locationCode = Locations.GREED_DONATION
+        maxLocations = ArchipelagoSlot.GREED_DONATION_COUNT
+    else
+        -- TODO: Give donation-esque bonuses
     end
 
     local donations = stats.incrementStat(key)
-    Archipelago:sendLocation(locationCode + (donations - 1))
 
-    if not isGreedMode then
-        -- TODO: Give donation-esque bonuses
+    -- Done with donation locations, stop sending them
+    if donations > maxLocations then
+        return
     end
+
+    Archipelago:sendLocation(locationCode + (donations - 1))
 end
 
 Archipelago:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, function (_, continued)
