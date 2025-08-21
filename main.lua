@@ -43,6 +43,7 @@ Mod.stats = require("archipelago.stats")
 Mod.spawnConfetti = require("archipelago.confetti")
 Mod.sfxManager = SFXManager()
 Mod.hud = Mod.game:GetHUD()
+Mod.notifications = require("archipelago.notifications")
 
 local teamMeat12Font = Font()
 teamMeat12Font:Load("font/teammeatfont12.fnt")
@@ -233,34 +234,7 @@ function Mod:checkLocationScouted(code)
     return ArchipelagoSlot:LoadKey("location_data", {sent = {}, scouted = {}}).scouted[code] ~= nil
 end
 
---- Performs effects when you get an item.
---- @param itemName string The item's name
---- @param playerName string The player that sent the item
---- @param locationName string The location the item came from
---- @param isTrap boolean If the item is considered a trap (a bad item)
---- @param isReceived boolean Whether the item is being sent, or received
-function Mod:showItemGet(itemName, playerName, locationName, isTrap, isReceived)
-    local hud = Archipelago.hud
 
-    if isReceived then
-        if playerName ~= ArchipelagoSlot.SLOT_NAME then -- Someone else sent us this item
-            hud:ShowItemText(itemName, "from " .. playerName .. " has appeared in the basement")
-        else -- We got ourselves this item
-            hud:ShowItemText(itemName, "has appeared in the basement")
-        end
-    else -- We got someone else's item
-        hud:ShowItemText(itemName, "for " .. playerName .. " has left the basement")
-    end
-
-    local sound = nil
-    if isTrap then
-        sound = SoundEffect.SOUND_THUMBS_DOWN
-    else
-        sound = SoundEffect.SOUND_THUMBSUP
-    end
-
-    Mod.sfxManager:Play(sound)
-end
 
 --- Draws the player's slot name to the screen to better verify that everything is set up correctly.
 Mod:AddCallback(ModCallbacks.MC_POST_RENDER, function()
@@ -304,10 +278,10 @@ end)
 --- @param locationName string
 --- @param isTrap boolean
 Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
-    Mod:showItemGet(itemName, playerName, locationName, isTrap, true)
-
-    -- Celebratory confetti (awesome)
-    Mod.spawnConfetti(math.random(15, 30))
+    Mod.notifications.createItemNotification(itemName, playerName, locationName, isTrap, true, function ()
+        -- Celebratory confetti (awesome)
+        Mod.spawnConfetti(math.random(15, 30))
+    end)
 end)
 
 --- Fired when an item is sent to the Archipelago server.
@@ -316,7 +290,7 @@ end)
 --- @param locationName string
 --- @param isTrap boolean
 Mod:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_SENT, function(_, itemName, playerName, locationName, isTrap)
-    Mod:showItemGet(itemName, playerName, locationName, isTrap, false)
+    Mod.notifications.createItemNotification(itemName, playerName, locationName, isTrap, false)
 end)
 
 require("archipelago.callbacks")
