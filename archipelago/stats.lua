@@ -55,6 +55,10 @@ export.StatKeys = {
 --- @param statKey StatKeys
 --- @return integer
 function export.incrementStat(statKey)
+    if Isaac.GetChallenge() ~= Challenge.CHALLENGE_NULL then
+        return ArchipelagoSlot:LoadKey(statKey, 0) -- If on a challenge, don't update.
+    end
+
     local value = ArchipelagoSlot:LoadKey(statKey, 0) + 1
     ArchipelagoSlot:SaveKey(statKey, value)
 
@@ -65,6 +69,10 @@ end
 --- @param statKey StatKeys
 --- @param value any
 function export.setStat(statKey, value)
+    if Isaac.GetChallenge() ~= Challenge.CHALLENGE_NULL then
+        return ArchipelagoSlot:LoadKey(statKey, value) -- If on a challenge, don't update.
+    end
+
     ArchipelagoSlot:SaveKey(statKey, value)
 end
 

@@ -68,6 +68,8 @@ end
 table.sort(codes) -- We'd prefer this in order, thanks
 Mod.ITEMS_DATA.CODES = codes
 
+local Locations = Mod.LOCATIONS_DATA.LOCATIONS
+
 --- @type table Codes of locations that have already been sent. Used to ensure that we're not incurring superfluous writes
 local sentLocations = {}
 
@@ -180,14 +182,22 @@ end
 --- Sends multiple locations to the server.
 --- @param locationCodes integer[]
 function Mod:sendLocations(locationCodes)
+    local isChallenge = Isaac.GetChallenge() ~= Challenge.CHALLENGE_NULL
+
     -- Filter out any location codes that have already been sent
     local finalCodes = {}
     for _, locationCode in ipairs(locationCodes) do
         if not sentLocations[locationCode] then
-            finalCodes[#finalCodes + 1] = locationCode
-
             -- Make sure we don't try sending this location again later
-            sentLocations[locationCode] = true
+            if not isChallenge then
+                finalCodes[#finalCodes + 1] = locationCode
+                sentLocations[locationCode] = true
+
+            -- If in a challenge, we'll need to make sure that ONLY challenge completion locations are sent
+            elseif locationCode >= Locations.CHALLENGE_NUM_1_PITCH_BLACK and locationCode <= Locations.CHALLENGE_NUM_45_DELETE_THIS then
+                    finalCodes[#finalCodes + 1] = locationCode
+                    sentLocations[locationCode] = true
+            end
         end
     end
 

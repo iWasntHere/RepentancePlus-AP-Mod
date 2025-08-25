@@ -139,6 +139,10 @@ local roomJustCompleted = false
 --- @param rng RNG
 --- @param spawnPosition Vector
 Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, spawnPosition)
+    if Isaac.GetChallenge() ~= Challenge.CHALLENGE_NULL then
+        return -- If on a challenge, don't end the game early
+    end
+
     local level = Archipelago.level()
     local room = Archipelago.room()
 
@@ -148,7 +152,7 @@ Archipelago:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, function(_, rng, 
     local isFinal = util.isChapterEndBoss(room)
 
     -- This is the Mom! fight
-    if stage == LevelStage.STAGE3_2 and not isAltPath and isFinal then
+    if stage == LevelStage.STAGE3_2 and isFinal then
         if not Archipelago:checkUnlockedByName("The Womb") then
             -- Spawn the chest!
             Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_BIGCHEST, 0, spawnPosition, Vector(0, 0), nil)
