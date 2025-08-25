@@ -65,6 +65,11 @@ local function rollCard(rng, cardType, includePlaying, includeRunes, onlyRunes)
         return cardType
     end
 
+    -- If Tainted Lost, allow Holy Cards
+    if Isaac.GetPlayer(0):GetPlayerType() == PlayerType.PLAYER_THELOST_B and cardType == Card.CARD_HOLY then
+        return cardType
+    end
+
     -- If this card is determined and is unlocked, we don't need to replace it
     if cardType ~= 0 and Archipelago:checkUnlocked(Archipelago.ITEMS_DATA.CARD_ID_TO_CODE[cardType]) then
         return cardType
