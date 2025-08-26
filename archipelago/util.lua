@@ -672,4 +672,26 @@ function export.checkDirtPatchDug(player)
     return nil
 end
 
+--- Iterates through all players.
+--- @return fun(): integer|nil, EntityPlayer|nil
+function export.players()
+    local playerId = 0
+
+    return function()
+        local player = Isaac.GetPlayer(playerId)
+
+        if player ~= nil then
+            return playerId, player
+        end
+    end
+end
+
+--- Runs the function on each player.
+--- @param func fun(player: EntityPlayer)
+function export.onAllPlayers(func)
+    for _, player in export.players() do
+        func(player)
+    end
+end
+
 return export

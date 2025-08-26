@@ -39,6 +39,7 @@ Mod.json = json
 Mod.game = Game()
 Mod.room = function () return Mod.game:GetRoom() end
 Mod.level = function () return Mod.game:GetLevel() end
+Mod.itemPool = Mod.game:GetItemPool()
 Mod.stats = require("archipelago.stats")
 Mod.spawnConfetti = require("archipelago.confetti")
 Mod.sfxManager = SFXManager()
@@ -335,6 +336,7 @@ require("archipelago.items.characters")
 require("archipelago.items.curses")
 require("archipelago.items.planetarium")
 require("archipelago.items.starting_items")
+require("archipelago.items.filler")
 
 require("archipelago.tracker.tracker")
 require("archipelago.fortunes")
