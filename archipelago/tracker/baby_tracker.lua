@@ -22,6 +22,34 @@ local missingBabySprite = Sprite()
 missingBabySprite:Load("gfx/ui/Missing_Baby.anm2", true)
 missingBabySprite:Play("Idle")
 
+local totalBabies = 0
+local requiredBabies = 0
+local currentBabies = 0
+
+--- Recalculate the number of unlocked babies.
+local function countBabies()
+    currentBabies = 0
+
+    for _, code in ipairs(ArchipelagoSlot.TARGET_BABY_CODES) do
+        if Archipelago:checkUnlocked(code) then
+            currentBabies = currentBabies + 1
+        end
+    end
+
+    totalBabies = #ArchipelagoSlot.TARGET_BABY_CODES
+    requiredBabies = ArchipelagoSlot.REQUIRED_BABY_COUNT
+end
+
+
+--- Fired when an item is received from the Archipelago server.
+--- @param itemName string
+--- @param playerName string
+--- @param locationName string
+--- @param isTrap boolean
+Archipelago:AddCallback(Archipelago.Callbacks.MC_ARCHIPELAGO_ITEM_RECEIVED, function(_, itemName, playerName, locationName, isTrap)
+    countBabies()
+end)
+
 --- Renders the baby tracker page.
 --- @param offset Vector The pixel offset to draw at
 --- @param canControl boolean Whether you can control the page or not
@@ -29,6 +57,7 @@ return function(offset, canControl)
     -- The pages array is populated here since at launch time the globalvar isn't available yet
     if pages == nil then
         pages = util.chunkArray(ArchipelagoSlot.TARGET_BABY_CODES, 9)
+        countBabies()
     end
 
     -- Page previous/back controls
@@ -64,6 +93,8 @@ return function(offset, canControl)
     local color = KColor(0.212, 0.184, 0.176, 1)
 
     font:DrawStringScaled(tostring(page) .. "/" .. tostring(#pages), pageTopLeft.X + 8, pageTopLeft.Y + 8, 0.5, 0.5, color)
+
+    smallFont:DrawStringScaled(tostring(currentBabies) .. "/" .. tostring(requiredBabies) .. " (" .. tostring(totalBabies) .. " total)", pageTopLeft.X + 8, pageTopLeft.Y + 16, 0.5, 0.5, color)
 
     for _, code in ipairs(pages[page]) do
         local x = columnStart + (96 * column)
